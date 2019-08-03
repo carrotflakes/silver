@@ -1,6 +1,17 @@
 extern crate image;
+pub mod vec3;
+pub mod ray;
+
+use vec3::Vec3;
+use ray::Ray;
 
 use std::env;
+
+fn lerp(r: &Ray) -> Vec3 {
+    let unit_direction: Vec3 = r.direction.unit_vector();
+    let t: f64 = 0.5 * (1.0 - unit_direction.y());
+    (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0)
+}
 
 fn main() {
     let mut args = env::args();
@@ -9,12 +20,19 @@ fn main() {
 
     let img: image::RgbImage = image::ImageBuffer::new(512, 512);
 
+    let origin: Vec3 = Vec3::new(0.0, 0.0, 0.0);
+    let bottom_left: Vec3 = Vec3::new(-2.0, -2.0, -1.0);
+    let horizontal: Vec3 = Vec3::new(4.0, 0.0, 0.0);
+    let vertical: Vec3 = Vec3::new(0.0, 4.0, 0.0);
     let mut img = image::ImageBuffer::from_fn(512, 512, |x, y| {
-        if x % 2 == 0 {
-            image::Rgb([0u8, 0u8, 0u8])
-        } else {
-            image::Rgb([255u8, 255u8, 255u8])
-        }
+        let u: f64 = x as f64 / 512 as f64;
+        let v: f64 = y as f64 / 512 as f64;
+        let r: Ray = Ray::new(origin, bottom_left + u * horizontal + v * vertical);
+        let col: Vec3 = lerp(&r);
+        image::Rgb([
+            (col.r() * 255.99).floor() as u8,
+            (col.g() * 255.99).floor() as u8,
+            (col.b() * 255.99).floor() as u8])
     });
 
     img.save(img_path).unwrap();
