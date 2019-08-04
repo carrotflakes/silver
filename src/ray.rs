@@ -11,14 +11,13 @@ impl Ray {
         Ray {origin: o, direction: d}
     }
 
-    pub fn at(&self, t: f64) -> Ray {
-        Ray {origin: self.origin + t * self.direction, direction: self.direction}
+    pub fn at(&self, t: f64) -> Vec3 {
+        self.origin + t * self.direction
     }
 }
 
 #[test]
 fn test_at() {
     let ray: Ray = Ray::new(Vec3::new(0.0, 0.0, 0.0), Vec3::new(1.0, 2.0, 3.0));
-    let advanced_ray: Ray = ray.at(1.0);
-    assert_eq!(advanced_ray.origin, Vec3::new(1.0, 2.0, 3.0));
+    assert_eq!(ray.at(1.0), Vec3::new(1.0, 2.0, 3.0));
 }

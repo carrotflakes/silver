@@ -11,14 +11,18 @@ use objects::sphere::Sphere;
 //use std::env;
 
 fn make_fn() -> Box<Fn(&Ray) -> Vec3> {
+    let sphere_center = Vec3::new(0.0, 0.0, -2.0);
     let sphere = Sphere::new(
-        Vec3::new(0.0, 0.0, -4.0),
+        sphere_center,
         1.0,
         materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)));
 
     Box::new(move |r: &Ray| -> Vec3 {
-        if sphere.hit(r) {
-            return sphere.material.color();
+        let t: f64 = sphere.hit(r);
+        if t > 0.0 {
+            let n = (r.at(t) - sphere_center).unit_vector();
+            return (n + Vec3::new(1.0, 1.0, 1.0)) * 0.5;
+            //return sphere.material.color();
         }
         let unit_direction: Vec3 = r.direction.unit_vector();
         let t: f64 = 0.5 * (1.0 - unit_direction.y());
