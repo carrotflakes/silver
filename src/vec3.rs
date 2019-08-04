@@ -11,6 +11,8 @@ impl Vec3 {
         Vec3 {elements: [x, y, z]}
     }
 
+    pub const ZERO: Vec3 = Vec3 {elements: [0.0, 0.0, 0.0]};
+
     pub fn x(&self) -> f64 {
         self.elements[0]
     }

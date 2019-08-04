@@ -25,7 +25,7 @@ fn make_fn() -> Box<Fn(&Ray) -> Vec3> {
             0.2,
             materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0))),
         Sphere::new(
-            Vec3::new(0.0, 2.0, -2.0),
+            Vec3::new(1.5, 1.5, -2.0),
             0.5,
             materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))
     ];
@@ -60,22 +60,33 @@ fn main() {
 
     let img_path = "./image.png";
 
-    let origin: Vec3 = Vec3::new(0.0, 0.0, 0.0);
+    let width: i64 = 512;
+    let height: i64 = 512;
+    let origin: Vec3 = Vec3::new(0.0, 0.0, 2.0);
     let bottom_left: Vec3 = Vec3::new(-2.0, -2.0, -1.0);
     let horizontal: Vec3 = Vec3::new(4.0, 0.0, 0.0);
     let vertical: Vec3 = Vec3::new(0.0, 4.0, 0.0);
+    let sample: i64 = 2;
     let rf = make_fn();
     let f = |x, y| {
-        let u: f64 = x as f64 / 512 as f64;
-        let v: f64 = y as f64 / 512 as f64;
-        let r: Ray = Ray::new(origin, bottom_left + u * horizontal + v * vertical);
-        let col: Vec3 = rf(&r);
+        let u: f64 = x as f64 / width as f64;
+        let v: f64 = y as f64 / height as f64;
+        let d: Vec3 = bottom_left + u * horizontal + v * vertical;
+        let mut col: Vec3 = Vec3::ZERO;
+        for dy in 0..sample {
+            for dx in 0..sample {
+                let dd: Vec3 = ((dx as f64 + 0.5) / sample as f64 - 0.5) / width as f64 * horizontal + ((dy as f64 + 0.5) / sample as f64 - 0.5) / height as f64 * vertical;
+                let r: Ray = Ray::new(origin, d + dd);
+                col = col + rf(&r);
+            }
+        }
+        col = col / sample.pow(2) as f64;
         image::Rgb([
             (col.r() * 255.99).floor() as u8,
             (col.g() * 255.99).floor() as u8,
             (col.b() * 255.99).floor() as u8])
     };
-    let img = image::ImageBuffer::from_fn(512, 512, f);
+    let img = image::ImageBuffer::from_fn(width as u32, height as u32, f);
 
     img.save(img_path).unwrap();
 
