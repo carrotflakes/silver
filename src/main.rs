@@ -38,7 +38,10 @@ impl Scene {
         }
     }
 
-    pub fn ray(&self, ray: &Ray) -> Vec3 {
+    pub fn ray_(&self, ray: &Ray, depth: u32) -> Vec3 {
+        if depth == 0 {
+            return Vec3::ZERO;
+        }
         let mut hit: Option<&Sphere> = Option::None;
         let mut hit_dist = std::f64::MAX;
         for shape in &self.shapes {
@@ -50,8 +53,12 @@ impl Scene {
         }
         match hit {
             Some(shape) => {
-                let n = (ray.at(hit_dist) - shape.center).unit_vector();
-                (n + Vec3::new(1.0, 1.0, 1.0)) * 0.5
+                let hit_loc: Vec3 = ray.at(hit_dist);
+                let n: Vec3 = (hit_loc - shape.center).unit_vector();
+                let b: Vec3 = -(ray.direction.dot(&n)) * n;
+                let r: Ray = Ray::new(hit_loc, ray.direction + 2.0 * b);
+                self.ray_(&r, depth - 1) * 0.8
+                //(n + Vec3::new(1.0, 1.0, 1.0)) * 0.5
                 //return sphere.material.color();
             }
             None => {
@@ -60,6 +67,10 @@ impl Scene {
                 (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0)
             }
         }
+    }
+
+    pub fn ray(&self, ray: &Ray) -> Vec3 {
+        self.ray_(ray, 10)
     }
 }
 
