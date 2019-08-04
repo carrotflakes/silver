@@ -10,31 +10,39 @@ use objects::sphere::Sphere;
 
 //use std::env;
 
-fn make_fn() -> Box<Fn(&Ray) -> Vec3> {
-    let spheres = vec![
-        Sphere::new(
-            Vec3::new(0.0, 0.0, -2.0),
-            1.0,
-            materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0))),
-        Sphere::new(
-            Vec3::new(2.0, 0.0, -2.0),
-            0.5,
-            materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0))),
-        Sphere::new(
-            Vec3::new(0.0, 0.0, -1.0),
-            0.2,
-            materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0))),
-        Sphere::new(
-            Vec3::new(1.5, 1.5, -2.0),
-            0.5,
-            materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))
-    ];
+struct Scene {
+    pub shapes: Vec<Sphere>,
+}
 
-    Box::new(move |r: &Ray| -> Vec3 {
+impl Scene {
+    pub fn new() -> Scene {
+        Scene {
+            shapes: vec![
+                Sphere::new(
+                    Vec3::new(0.0, 0.0, -2.0),
+                    1.0,
+                    materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0))),
+                Sphere::new(
+                    Vec3::new(2.0, 0.0, -2.0),
+                    0.5,
+                    materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0))),
+                Sphere::new(
+                    Vec3::new(0.0, 0.0, -1.0),
+                    0.2,
+                    materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0))),
+                Sphere::new(
+                    Vec3::new(1.5, 1.5, -2.0),
+                    0.5,
+                    materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))
+            ]
+        }
+    }
+
+    pub fn ray(&self, ray: &Ray) -> Vec3 {
         let mut hit: Option<&Sphere> = Option::None;
         let mut hit_dist = std::f64::MAX;
-        for shape in &spheres {
-            let dist: f64 = shape.hit(r);
+        for shape in &self.shapes {
+            let dist: f64 = shape.hit(ray);
             if dist > 0.0 && dist < hit_dist {
                 hit = Option::Some(&shape);
                 hit_dist = dist;
@@ -42,17 +50,17 @@ fn make_fn() -> Box<Fn(&Ray) -> Vec3> {
         }
         match hit {
             Some(shape) => {
-                let n = (r.at(hit_dist) - shape.center).unit_vector();
+                let n = (ray.at(hit_dist) - shape.center).unit_vector();
                 (n + Vec3::new(1.0, 1.0, 1.0)) * 0.5
                 //return sphere.material.color();
             }
             None => {
-                let unit_direction: Vec3 = r.direction.unit_vector();
+                let unit_direction: Vec3 = ray.direction.unit_vector();
                 let t: f64 = 0.5 * (1.0 - unit_direction.y());
                 (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0)
             }
         }
-    })
+    }
 }
 
 fn main() {
@@ -67,7 +75,7 @@ fn main() {
     let horizontal: Vec3 = Vec3::new(4.0, 0.0, 0.0);
     let vertical: Vec3 = Vec3::new(0.0, 4.0, 0.0);
     let sample: i64 = 2;
-    let rf = make_fn();
+    let scene = Scene::new();
     let f = |x, y| {
         let u: f64 = x as f64 / width as f64;
         let v: f64 = y as f64 / height as f64;
@@ -77,7 +85,7 @@ fn main() {
             for dx in 0..sample {
                 let dd: Vec3 = ((dx as f64 + 0.5) / sample as f64 - 0.5) / width as f64 * horizontal + ((dy as f64 + 0.5) / sample as f64 - 0.5) / height as f64 * vertical;
                 let r: Ray = Ray::new(origin, d + dd);
-                col = col + rf(&r);
+                col = col + scene.ray(&r);
             }
         }
         col = col / sample.pow(2) as f64;
