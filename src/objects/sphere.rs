@@ -1,15 +1,15 @@
 use super::super::vec3::Vec3;
 use super::super::ray::Ray;
-use super::super::materials::PlainMat;
+use super::super::materials::Material;
 
 pub struct Sphere {
     pub center: Vec3,
     pub radius: f64,
-    pub material: PlainMat,
+    pub material: Box<Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Vec3, radius: f64, material: PlainMat) -> Sphere {
+    pub fn new(center: Vec3, radius: f64, material: Box<Material>) -> Sphere {
         Sphere {center: center, radius: radius, material: material}
     }
 

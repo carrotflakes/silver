@@ -21,19 +21,19 @@ impl Scene {
                 Sphere::new(
                     Vec3::new(0.0, 0.0, -2.0),
                     1.0,
-                    materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0))),
+                    Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))),
                 Sphere::new(
                     Vec3::new(2.0, 0.0, -2.0),
                     0.5,
-                    materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0))),
+                    Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))),
                 Sphere::new(
                     Vec3::new(0.0, 0.0, -1.0),
                     0.2,
-                    materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0))),
+                    Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))),
                 Sphere::new(
                     Vec3::new(1.5, 1.5, -2.0),
                     0.5,
-                    materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))
+                    Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0))))
             ]
         }
     }
@@ -82,9 +82,9 @@ fn main() {
     let width: i64 = 512;
     let height: i64 = 512;
     let origin: Vec3 = Vec3::new(0.0, 0.0, 2.0);
-    let bottom_left: Vec3 = Vec3::new(-2.0, -2.0, -1.0);
-    let horizontal: Vec3 = Vec3::new(4.0, 0.0, 0.0);
-    let vertical: Vec3 = Vec3::new(0.0, 4.0, 0.0);
+    let bottom_left: Vec3 = Vec3::new(-1.0, -1.0, -1.0);
+    let horizontal: Vec3 = Vec3::new(2.0, 0.0, 0.0);
+    let vertical: Vec3 = Vec3::new(0.0, 2.0, 0.0);
     let sample: i64 = 2;
     let scene = Scene::new();
     let f = |x, y| {
