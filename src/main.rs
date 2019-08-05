@@ -74,6 +74,16 @@ impl Scene {
     }
 }
 
+fn linear_to_gamma(v: &Vec3, gamma_factor: f64) -> Vec3 {
+    let f = gamma_factor.recip();
+    Vec3::new(v.x().powf(f), v.y().powf(f), v.z() .powf(f))
+}
+
+#[allow(dead_code)]
+fn gamma_to_linear(v: &Vec3, gamma_factor: f64) -> Vec3 {
+    Vec3::new(v.x().powf(gamma_factor), v.y().powf(gamma_factor), v.z().powf(gamma_factor))
+}
+
 fn main() {
     //let mut args = env::args();
 
@@ -100,6 +110,7 @@ fn main() {
             }
         }
         col = col / sample.pow(2) as f64;
+        col = linear_to_gamma(&col, 2.2);
         image::Rgb([
             (col.r() * 255.99).floor() as u8,
             (col.g() * 255.99).floor() as u8,
