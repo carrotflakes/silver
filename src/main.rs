@@ -21,10 +21,10 @@ impl Scene {
             objects: vec![
                 Object {
                     shape: Box::new(Sphere::new(Vec3::new(0.0, 0.0, -2.0), 1.0)),
-                    material: Box::new(materials::Metal::new(Vec3::new(1.0, 0.0, 0.0)))},
+                    material: Box::new(materials::Metal::new(0.01))},
                 Object {
                     shape: Box::new(Sphere::new(Vec3::new(2.0, 0.0, -2.0), 0.5)),
-                    material: Box::new(materials::Metal::new(Vec3::new(1.0, 0.0, 0.0)))},
+                    material: Box::new(materials::Metal::new(0.05))},
                 Object {
                     shape: Box::new(Sphere::new(Vec3::new(0.51, -1.5, -2.0), 0.5)),
                     material: Box::new(materials::Lambertian::new(Vec3::new(1.0, 0.1, 0.1)))},
@@ -33,7 +33,7 @@ impl Scene {
                     material: Box::new(materials::Lambertian::new(Vec3::new(0.1, 0.1, 1.0)))},
                 Object {
                     shape: Box::new(Sphere::new(Vec3::new(1.5, 1.5, -2.0), 0.5)),
-                    material: Box::new(materials::Metal::new(Vec3::new(1.0, 0.0, 0.0)))}
+                    material: Box::new(materials::Metal::new(0.5))}
             ]
         }
     }
@@ -91,7 +91,7 @@ fn main() {
     let bottom_left: Vec3 = Vec3::new(-1.0, -1.0, -1.0);
     let horizontal: Vec3 = Vec3::new(2.0, 0.0, 0.0);
     let vertical: Vec3 = Vec3::new(0.0, 2.0, 0.0);
-    let sample: i64 = 2;
+    let sample: i64 = 4;
     let scene = Scene::new();
     let f = |x, y| {
         let u: f64 = x as f64 / width as f64;
@@ -112,7 +112,11 @@ fn main() {
             (col.g() * 255.99).floor() as u8,
             (col.b() * 255.99).floor() as u8])
     };
+
+    let start = std::time::Instant::now();
     let img = image::ImageBuffer::from_fn(width as u32, height as u32, f);
+    let end = start.elapsed();
+    println!("{}.{:04} elapsed", end.as_secs(), end.subsec_nanos() / 1_000_000);
 
     img.save(img_path).unwrap();
 
