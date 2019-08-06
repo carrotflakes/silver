@@ -1,12 +1,14 @@
 extern crate image;
 pub mod vec3;
 pub mod ray;
+pub mod camera;
 pub mod materials;
 pub mod shapes;
 pub mod object;
 
 use vec3::Vec3;
 use ray::Ray;
+use camera::Camera;
 use shapes::shape::{HitRec};
 use shapes::sphere::Sphere;
 use object::Object;
@@ -93,21 +95,24 @@ fn main() {
 
     let width: i64 = 512;
     let height: i64 = 512;
-    let origin: Vec3 = Vec3::new(0.0, -0.3, 2.0);
-    let bottom_left: Vec3 = Vec3::new(-1.0, -1.0, -1.0);
-    let horizontal: Vec3 = Vec3::new(2.0, 0.0, 0.0);
-    let vertical: Vec3 = Vec3::new(0.0, 2.0, 0.1);
+    let camera: Camera = Camera::new(
+        &Vec3::new(0.0, -1.0, 2.0),
+        &Vec3::new(0.0, -0.5, 0.0),
+        &Vec3::new(0.0, 1.0, 0.0),
+        60.0f64.to_radians(),
+        width as f64 / height as f64
+    );
     let sample: i64 = 4;
     let scene = Scene::new();
     let f = |x, y| {
         let u: f64 = x as f64 / width as f64;
         let v: f64 = y as f64 / height as f64;
-        let d: Vec3 = bottom_left + u * horizontal + v * vertical;
         let mut col: Vec3 = Vec3::ZERO;
         for dy in 0..sample {
             for dx in 0..sample {
-                let dd: Vec3 = ((dx as f64 + 0.5) / sample as f64 - 0.5) / width as f64 * horizontal + ((dy as f64 + 0.5) / sample as f64 - 0.5) / height as f64 * vertical;
-                let r: Ray = Ray::new(origin, d + dd);
+                let du: f64 = ((dx as f64 + 0.5) / sample as f64 - 0.5) / width as f64;
+                let dv: f64 = ((dy as f64 + 0.5) / sample as f64 - 0.5) / height as f64;
+                let r: Ray = camera.get_ray(u + du, v + dv);
                 col = col + scene.ray(&r);
             }
         }
