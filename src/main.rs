@@ -33,7 +33,10 @@ impl Scene {
                     material: Box::new(materials::Lambertian::new(Vec3::new(0.1, 0.1, 1.0)))},
                 Object {
                     shape: Box::new(Sphere::new(Vec3::new(1.5, 1.5, -2.0), 0.5)),
-                    material: Box::new(materials::Metal::new(0.5))}
+                    material: Box::new(materials::Metal::new(0.5))},
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(0.1, -0.9, -1.0), 0.5)),
+                    material: Box::new(materials::Dielectric::new(1.3))},
             ]
         }
     }
@@ -68,7 +71,7 @@ impl Scene {
     }
 
     pub fn ray(&self, ray: &Ray) -> Vec3 {
-        self.ray_(ray, 10)
+        self.ray_(ray, 50)
     }
 }
 

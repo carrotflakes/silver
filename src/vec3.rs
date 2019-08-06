@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub, Mul, Div};
+use std::ops::{Add, Sub, Mul, Div, Neg};
 use std::f64;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -90,6 +90,14 @@ impl Div<f64> for Vec3 {
             return Vec3 {elements: [f64::MAX, f64::MAX, f64::MAX]};
         }
         Vec3 {elements: [self.x() / rhs, self.y() / rhs, self.z() / rhs]}
+    }
+}
+
+impl Neg for Vec3 {
+    type Output = Vec3;
+
+    fn neg(self) -> Vec3 {
+        Vec3 {elements: [-self.x(), -self.y(), -self.z()]}
     }
 }
 
