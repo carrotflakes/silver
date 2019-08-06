@@ -120,6 +120,22 @@ impl Vec3 {
             self.y() * rhs.y(),
             self.z() * rhs.z())
     }
+
+    pub fn random() -> Vec3 {
+        Vec3::new(
+            rand::random::<f64>(),
+            rand::random::<f64>(),
+            rand::random::<f64>())
+    }
+
+    pub fn random_in_unit_sphere() -> Vec3 {
+        let v = Vec3::random();
+        if v.norm() <= 1.0 {
+            v
+        } else {
+            Vec3::random_in_unit_sphere()
+        }
+    }
 }
 
 #[test]
