@@ -2,38 +2,35 @@ extern crate image;
 pub mod vec3;
 pub mod ray;
 pub mod materials;
-pub mod objects;
+pub mod shapes;
+pub mod object;
 
 use vec3::Vec3;
 use ray::Ray;
-use objects::sphere::Sphere;
-
-//use std::env;
+use shapes::shape::{HitRec};
+use shapes::sphere::Sphere;
+use object::Object;
 
 struct Scene {
-    pub shapes: Vec<Sphere>,
+    pub objects: Vec<Object>,
 }
 
 impl Scene {
     pub fn new() -> Scene {
         Scene {
-            shapes: vec![
-                Sphere::new(
-                    Vec3::new(0.0, 0.0, -2.0),
-                    1.0,
-                    Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))),
-                Sphere::new(
-                    Vec3::new(2.0, 0.0, -2.0),
-                    0.5,
-                    Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))),
-                Sphere::new(
-                    Vec3::new(0.0, 0.0, -1.0),
-                    0.2,
-                    Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))),
-                Sphere::new(
-                    Vec3::new(1.5, 1.5, -2.0),
-                    0.5,
-                    Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0))))
+            objects: vec![
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(0.0, 0.0, -2.0), 1.0)),
+                    material: Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))},
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(2.0, 0.0, -2.0), 0.5)),
+                    material: Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))},
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.2)),
+                    material: Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))},
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(1.5, 1.5, -2.0), 0.5)),
+                    material: Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))}
             ]
         }
     }
@@ -42,21 +39,22 @@ impl Scene {
         if depth == 0 {
             return Vec3::ZERO;
         }
-        let mut hit: Option<&Sphere> = Option::None;
-        let mut hit_dist = std::f64::MAX;
-        for shape in &self.shapes {
-            let dist: f64 = shape.hit(ray);
-            if dist > 0.0 && dist < hit_dist {
-                hit = Option::Some(&shape);
-                hit_dist = dist;
+        let mut hit: Option<(HitRec, &Object)> = Option::None;
+        let mut time: f64 = std::f64::MAX;
+        for object in &self.objects {
+            match object.shape.hit(ray) {
+                Option::Some(hr) =>
+                    if hr.time > 0.0 && hr.time < time {
+                        time = hr.time;
+                        hit = Option::Some((hr, &object));
+                    },
+                Option::None => ()
             }
         }
         match hit {
-            Some(shape) => {
-                let hit_loc: Vec3 = ray.at(hit_dist);
-                let n: Vec3 = (hit_loc - shape.center).unit_vector();
-                let b: Vec3 = -(ray.direction.dot(&n)) * n;
-                let r: Ray = Ray::new(hit_loc, ray.direction + 2.0 * b);
+            Some((HitRec {location, normal, ..}, Object {..})) => {
+                let b: Vec3 = -(ray.direction.dot(&normal)) * normal;
+                let r: Ray = Ray::new(location, ray.direction + 2.0 * b);
                 self.ray_(&r, depth - 1) * 0.8
                 //(n + Vec3::new(1.0, 1.0, 1.0)) * 0.5
                 //return sphere.material.color();
@@ -85,8 +83,6 @@ fn gamma_to_linear(v: &Vec3, gamma_factor: f64) -> Vec3 {
 }
 
 fn main() {
-    //let mut args = env::args();
-
     let img_path = "./image.png";
 
     let width: i64 = 512;
