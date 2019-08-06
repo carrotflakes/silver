@@ -42,6 +42,18 @@ impl Scene {
                 Object {
                     shape: Box::new(Sphere::new(Vec3::new(0.1, -0.5, -1.0), 0.5)),
                     material: Box::new(materials::Dielectric::new(1.06))},
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(-1.3, -0.2, -0.0), 0.2)),
+                    material: Box::new(materials::Lambertian::new(Vec3::new(0.9, 0.9, 0.9)))},
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(-1.3, -0.2, -1.0), 0.2)),
+                    material: Box::new(materials::Lambertian::new(Vec3::new(0.9, 0.9, 0.9)))},
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(-1.3, -0.2, -2.0), 0.2)),
+                    material: Box::new(materials::Lambertian::new(Vec3::new(0.9, 0.9, 0.9)))},
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(-1.3, -0.2, -3.0), 0.2)),
+                    material: Box::new(materials::Lambertian::new(Vec3::new(0.9, 0.9, 0.9)))},
             ]
         }
     }
@@ -100,9 +112,11 @@ fn main() {
         &Vec3::new(0.0, -0.5, 0.0),
         &Vec3::new(0.0, 1.0, 0.0),
         60.0f64.to_radians(),
-        width as f64 / height as f64
+        width as f64 / height as f64,
+        0.03,
+        4.0
     );
-    let sample: i64 = 4;
+    let sample: i64 = 6;
     let scene = Scene::new();
     let f = |x, y| {
         let u: f64 = x as f64 / width as f64;
