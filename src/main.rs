@@ -20,23 +20,26 @@ impl Scene {
         Scene {
             objects: vec![
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(0.0, 0.0, -2.0), 1.0)),
+                    shape: Box::new(Sphere::new(Vec3::new(0.0, 100.0, -2.0), 100.0)),
+                    material: Box::new(materials::Lambertian::new(Vec3::new(0.7, 0.7, 0.7)))},
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(0.0, -5.0, -7.0), 5.0)),
                     material: Box::new(materials::Metal::new(0.01))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(2.0, 0.0, -2.0), 0.5)),
-                    material: Box::new(materials::Metal::new(0.05))},
-                Object {
-                    shape: Box::new(Sphere::new(Vec3::new(0.51, -1.5, -2.0), 0.5)),
-                    material: Box::new(materials::Lambertian::new(Vec3::new(1.0, 0.1, 0.1)))},
-                Object {
-                    shape: Box::new(Sphere::new(Vec3::new(-0.51, -1.5, -2.0), 0.5)),
-                    material: Box::new(materials::Lambertian::new(Vec3::new(0.1, 0.1, 1.0)))},
-                Object {
-                    shape: Box::new(Sphere::new(Vec3::new(1.5, 1.5, -2.0), 0.5)),
+                    shape: Box::new(Sphere::new(Vec3::new(1.3, -0.5, -1.7), 0.5)),
                     material: Box::new(materials::Metal::new(0.5))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(0.1, -0.9, -1.0), 0.5)),
-                    material: Box::new(materials::Dielectric::new(1.3))},
+                    shape: Box::new(Sphere::new(Vec3::new(0.51, -0.5, -2.0), 0.5)),
+                    material: Box::new(materials::Lambertian::new(Vec3::new(1.0, 0.1, 0.1)))},
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(-0.51, -0.5, -2.0), 0.5)),
+                    material: Box::new(materials::Lambertian::new(Vec3::new(0.1, 0.1, 1.0)))},
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(0.0, -0.5, -2.4), 0.5)),
+                    material: Box::new(materials::Lambertian::new(Vec3::new(1.0, 1.0, 0.1)))},
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(0.1, -0.5, -1.0), 0.5)),
+                    material: Box::new(materials::Dielectric::new(1.06))},
             ]
         }
     }
@@ -48,7 +51,7 @@ impl Scene {
         let mut hit: Option<(HitRec, &Object)> = Option::None;
         let mut time: f64 = std::f64::MAX;
         for object in &self.objects {
-            match object.shape.hit(ray) {
+            match object.shape.hit(ray, 0.001, time) {
                 Option::Some(hr) =>
                     if hr.time > 0.0 && hr.time < time {
                         time = hr.time;
@@ -90,10 +93,10 @@ fn main() {
 
     let width: i64 = 512;
     let height: i64 = 512;
-    let origin: Vec3 = Vec3::new(0.0, 0.0, 2.0);
+    let origin: Vec3 = Vec3::new(0.0, -0.3, 2.0);
     let bottom_left: Vec3 = Vec3::new(-1.0, -1.0, -1.0);
     let horizontal: Vec3 = Vec3::new(2.0, 0.0, 0.0);
-    let vertical: Vec3 = Vec3::new(0.0, 2.0, 0.0);
+    let vertical: Vec3 = Vec3::new(0.0, 2.0, 0.1);
     let sample: i64 = 4;
     let scene = Scene::new();
     let f = |x, y| {

@@ -8,5 +8,5 @@ pub struct HitRec {
 }
 
 pub trait Shape {
-    fn hit(&self, ray: &Ray) -> Option<HitRec>;
+    fn hit(&self, ray: &Ray, t0: f64, t1: f64) -> Option<HitRec>;
 }
