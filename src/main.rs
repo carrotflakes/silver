@@ -21,16 +21,16 @@ impl Scene {
             objects: vec![
                 Object {
                     shape: Box::new(Sphere::new(Vec3::new(0.0, 0.0, -2.0), 1.0)),
-                    material: Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))},
+                    material: Box::new(materials::Metal::new(Vec3::new(1.0, 0.0, 0.0)))},
                 Object {
                     shape: Box::new(Sphere::new(Vec3::new(2.0, 0.0, -2.0), 0.5)),
-                    material: Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))},
+                    material: Box::new(materials::Metal::new(Vec3::new(1.0, 0.0, 0.0)))},
                 Object {
                     shape: Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.2)),
-                    material: Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))},
+                    material: Box::new(materials::Metal::new(Vec3::new(1.0, 0.0, 0.0)))},
                 Object {
                     shape: Box::new(Sphere::new(Vec3::new(1.5, 1.5, -2.0), 0.5)),
-                    material: Box::new(materials::PlainMat::new(Vec3::new(1.0, 0.0, 0.0)))}
+                    material: Box::new(materials::Metal::new(Vec3::new(1.0, 0.0, 0.0)))}
             ]
         }
     }
@@ -52,10 +52,9 @@ impl Scene {
             }
         }
         match hit {
-            Some((HitRec {location, normal, ..}, Object {..})) => {
-                let b: Vec3 = -(ray.direction.dot(&normal)) * normal;
-                let r: Ray = Ray::new(location, ray.direction + 2.0 * b);
-                self.ray_(&r, depth - 1) * 0.8
+            Some((HitRec {location, normal, ..}, Object {material, ..})) => {
+                let r: Ray = material.ray(&ray, &location, &normal);
+                material.color(&self.ray_(&r, depth - 1))
                 //(n + Vec3::new(1.0, 1.0, 1.0)) * 0.5
                 //return sphere.material.color();
             }
