@@ -26,3 +26,23 @@ impl Material for Metal {
         *color * 0.8
     }
 }
+
+pub struct Lambertian {
+    albedo: Vec3,
+}
+
+impl Lambertian {
+    pub fn new(albedo: Vec3) -> Lambertian {
+        Lambertian {albedo: albedo}
+    }
+}
+
+impl Material for Lambertian {
+    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &Vec3) -> Ray {
+        Ray::new(*location, *normal)
+    }
+
+    fn color(&self, color: &Vec3) -> Vec3 {
+        color.hadamard(&self.albedo)
+    }
+}

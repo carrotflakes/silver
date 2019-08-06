@@ -26,8 +26,11 @@ impl Scene {
                     shape: Box::new(Sphere::new(Vec3::new(2.0, 0.0, -2.0), 0.5)),
                     material: Box::new(materials::Metal::new(Vec3::new(1.0, 0.0, 0.0)))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.2)),
-                    material: Box::new(materials::Metal::new(Vec3::new(1.0, 0.0, 0.0)))},
+                    shape: Box::new(Sphere::new(Vec3::new(0.51, -1.5, -2.0), 0.5)),
+                    material: Box::new(materials::Lambertian::new(Vec3::new(1.0, 0.1, 0.1)))},
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(-0.51, -1.5, -2.0), 0.5)),
+                    material: Box::new(materials::Lambertian::new(Vec3::new(0.1, 0.1, 1.0)))},
                 Object {
                     shape: Box::new(Sphere::new(Vec3::new(1.5, 1.5, -2.0), 0.5)),
                     material: Box::new(materials::Metal::new(Vec3::new(1.0, 0.0, 0.0)))}
@@ -55,8 +58,6 @@ impl Scene {
             Some((HitRec {location, normal, ..}, Object {material, ..})) => {
                 let r: Ray = material.ray(&ray, &location, &normal);
                 material.color(&self.ray_(&r, depth - 1))
-                //(n + Vec3::new(1.0, 1.0, 1.0)) * 0.5
-                //return sphere.material.color();
             }
             None => {
                 let unit_direction: Vec3 = ray.direction.unit_vector();
