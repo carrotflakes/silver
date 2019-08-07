@@ -56,7 +56,7 @@ impl Scene {
                     material: Box::new(materials::Lambertian::new(Vec3::new(0.9, 0.9, 0.9)))},
                 Object {
                     shape: Box::new(Sphere::new(Vec3::new(-0.8, -0.2, -1.0), 0.2)),
-                    material: Box::new(materials::DiffuseLight::new(Vec3::new(0.9, 0.9, 0.9)))},
+                    material: Box::new(materials::DiffuseLight::new(Vec3::new(3.0, 3.0, 3.0)))},
             ]
         }
     }
@@ -136,9 +136,9 @@ fn main() {
         col = col / sample.pow(2) as f64;
         col = linear_to_gamma(&col, 2.2);
         image::Rgb([
-            (col.r() * 255.99).floor() as u8,
-            (col.g() * 255.99).floor() as u8,
-            (col.b() * 255.99).floor() as u8])
+            ((col.r().min(1.0) * 255.99).floor() as u8),
+            ((col.g().min(1.0) * 255.99).floor() as u8),
+            ((col.b().min(1.0) * 255.99).floor() as u8)])
     };
 
     let start = std::time::Instant::now();
