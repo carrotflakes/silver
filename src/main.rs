@@ -54,6 +54,9 @@ impl Scene {
                 Object {
                     shape: Box::new(Sphere::new(Vec3::new(-1.3, -0.2, -3.0), 0.2)),
                     material: Box::new(materials::Lambertian::new(Vec3::new(0.9, 0.9, 0.9)))},
+                Object {
+                    shape: Box::new(Sphere::new(Vec3::new(-0.8, -0.2, -1.0), 0.2)),
+                    material: Box::new(materials::DiffuseLight::new(Vec3::new(0.9, 0.9, 0.9)))},
             ]
         }
     }

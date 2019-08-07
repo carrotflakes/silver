@@ -99,3 +99,23 @@ fn schlick(cosine: f64, ri: f64) -> f64 {
     let r0 = (1.0 - ri) / (1.0 + ri).powi(2);
     r0 + (1.0 - r0) * (1.0 - cosine).powi(5)
 }
+
+pub struct DiffuseLight {
+    color: Vec3,
+}
+
+impl DiffuseLight {
+    pub fn new(color: Vec3) -> DiffuseLight {
+        DiffuseLight {color: color}
+    }
+}
+
+impl Material for DiffuseLight {
+    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &Vec3) -> Ray {
+        Ray::new(*location, *normal)
+    }
+
+    fn color(&self, _color: &Vec3) -> Vec3 {
+        self.color
+    }
+}
