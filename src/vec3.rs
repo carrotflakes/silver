@@ -1,5 +1,6 @@
 use std::ops::{Add, Sub, Mul, Div, Neg};
 use std::f64;
+use rand::Rng;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vec3(pub f64, pub f64, pub f64);
@@ -128,11 +129,15 @@ impl Vec3 {
     }
 
     pub fn random_in_unit_sphere() -> Vec3 {
-        let v = Vec3::random();
-        if v.norm() <= 1.0 {
-            v
-        } else {
-            Vec3::random_in_unit_sphere()
+        let mut rng = rand::thread_rng();
+        loop {
+            let v = Vec3(
+                rng.gen::<f64>() * 2.0 - 1.0,
+                rng.gen::<f64>() * 2.0 - 1.0,
+                rng.gen::<f64>() * 2.0 - 1.0);
+            if v.dot(&v) < 1.0 {
+                return v;
+            }
         }
     }
 }
