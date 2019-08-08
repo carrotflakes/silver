@@ -1,3 +1,4 @@
+use rand::Rng;
 use super::vec3::Vec3;
 use super::ray::Ray;
 
@@ -39,18 +40,19 @@ impl Camera {
         if self.diaphragm == 0.0 {
             Ray::new(self.origin, self.w + self.u * u + self.v * v - self.origin)
         } else {
-            let [fu, fv] = random_vec2_in_unit_circle();
+            let (fu, fv) = random_vec2_in_unit_circle();
             let origin = self.origin + self.u * (fu * self.diaphragm) + self.v * (fv * self.diaphragm);
             Ray::new(origin, self.w + self.u * u + self.v * v - origin)
         }
     }
 }
 
-fn random_vec2_in_unit_circle() -> [f64; 2] {
-    let v = [rand::random::<f64>(), rand::random::<f64>()];
-    if v[0].powi(2) + v[1].powi(2) <= 1.0 {
-        v
-    } else {
-        random_vec2_in_unit_circle()
+fn random_vec2_in_unit_circle() -> (f64, f64) {
+    let mut rng = rand::thread_rng();
+    loop {
+        let (x, y) = (rng.gen::<f64>() * 2.0 - 1.0, rng.gen::<f64>() * 2.0 - 1.0);
+        if x * x + y * y < 1.0 {
+            return (x, y);
+        }
     }
 }
