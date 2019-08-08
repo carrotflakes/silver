@@ -20,8 +20,6 @@ impl Camera {
         diaphragm: f64,
         dof: f64
     ) -> Camera {
-        assert!(0.001 <= dof);
-
         let half_h = (vfov / 2.0).tan();
         let half_w = aspect * half_h;
         let w = (*origin - *target).unit_vector();
