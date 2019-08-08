@@ -22,41 +22,41 @@ impl Scene {
         Scene {
             objects: vec![
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(0.0, 100.0, -2.0), 100.0)),
-                    material: Box::new(materials::Lambertian::new(Vec3::new(0.7, 0.7, 0.7)))},
+                    shape: Box::new(Sphere::new(Vec3(0.0, 100.0, -2.0), 100.0)),
+                    material: Box::new(materials::Lambertian::new(Vec3(0.7, 0.7, 0.7)))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(0.0, -5.0, -7.0), 5.0)),
+                    shape: Box::new(Sphere::new(Vec3(0.0, -5.0, -7.0), 5.0)),
                     material: Box::new(materials::Metal::new(0.01))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(1.3, -0.5, -1.7), 0.5)),
+                    shape: Box::new(Sphere::new(Vec3(1.3, -0.5, -1.7), 0.5)),
                     material: Box::new(materials::Metal::new(0.5))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(0.51, -0.5, -2.0), 0.5)),
-                    material: Box::new(materials::Lambertian::new(Vec3::new(1.0, 0.1, 0.1)))},
+                    shape: Box::new(Sphere::new(Vec3(0.51, -0.5, -2.0), 0.5)),
+                    material: Box::new(materials::Lambertian::new(Vec3(1.0, 0.1, 0.1)))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(-0.51, -0.5, -2.0), 0.5)),
-                    material: Box::new(materials::Lambertian::new(Vec3::new(0.1, 0.1, 1.0)))},
+                    shape: Box::new(Sphere::new(Vec3(-0.51, -0.5, -2.0), 0.5)),
+                    material: Box::new(materials::Lambertian::new(Vec3(0.1, 0.1, 1.0)))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(0.0, -0.5, -2.4), 0.5)),
-                    material: Box::new(materials::Lambertian::new(Vec3::new(1.0, 1.0, 0.1)))},
+                    shape: Box::new(Sphere::new(Vec3(0.0, -0.5, -2.4), 0.5)),
+                    material: Box::new(materials::Lambertian::new(Vec3(1.0, 1.0, 0.1)))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(0.1, -0.5, -1.0), 0.5)),
+                    shape: Box::new(Sphere::new(Vec3(0.1, -0.5, -1.0), 0.5)),
                     material: Box::new(materials::Dielectric::new(1.06))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(-1.3, -0.2, -0.0), 0.2)),
-                    material: Box::new(materials::Lambertian::new(Vec3::new(0.9, 0.9, 0.9)))},
+                    shape: Box::new(Sphere::new(Vec3(-1.3, -0.2, -0.0), 0.2)),
+                    material: Box::new(materials::Lambertian::new(Vec3(0.9, 0.9, 0.9)))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(-1.3, -0.2, -1.0), 0.2)),
-                    material: Box::new(materials::Lambertian::new(Vec3::new(0.9, 0.9, 0.9)))},
+                    shape: Box::new(Sphere::new(Vec3(-1.3, -0.2, -1.0), 0.2)),
+                    material: Box::new(materials::Lambertian::new(Vec3(0.9, 0.9, 0.9)))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(-1.3, -0.2, -2.0), 0.2)),
-                    material: Box::new(materials::Lambertian::new(Vec3::new(0.9, 0.9, 0.9)))},
+                    shape: Box::new(Sphere::new(Vec3(-1.3, -0.2, -2.0), 0.2)),
+                    material: Box::new(materials::Lambertian::new(Vec3(0.9, 0.9, 0.9)))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(-1.3, -0.2, -3.0), 0.2)),
-                    material: Box::new(materials::Lambertian::new(Vec3::new(0.9, 0.9, 0.9)))},
+                    shape: Box::new(Sphere::new(Vec3(-1.3, -0.2, -3.0), 0.2)),
+                    material: Box::new(materials::Lambertian::new(Vec3(0.9, 0.9, 0.9)))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3::new(-0.8, -0.2, -1.0), 0.2)),
-                    material: Box::new(materials::DiffuseLight::new(Vec3::new(3.0, 3.0, 3.0)))},
+                    shape: Box::new(Sphere::new(Vec3(-0.8, -0.2, -1.0), 0.2)),
+                    material: Box::new(materials::DiffuseLight::new(Vec3(3.0, 3.0, 3.0)))},
             ]
         }
     }
@@ -81,7 +81,7 @@ impl Scene {
             None => {
                 let unit_direction: Vec3 = ray.direction.unit_vector();
                 let t: f64 = 0.5 * (1.0 - unit_direction.y());
-                (1.0 - t) * Vec3::new(1.0, 1.0, 1.0) + t * Vec3::new(0.5, 0.7, 1.0)
+                (1.0 - t) * Vec3(1.0, 1.0, 1.0) + t * Vec3(0.5, 0.7, 1.0)
             }
         }
     }
@@ -93,12 +93,12 @@ impl Scene {
 
 fn linear_to_gamma(v: &Vec3, gamma_factor: f64) -> Vec3 {
     let f = gamma_factor.recip();
-    Vec3::new(v.x().powf(f), v.y().powf(f), v.z() .powf(f))
+    Vec3(v.x().powf(f), v.y().powf(f), v.z() .powf(f))
 }
 
 #[allow(dead_code)]
 fn gamma_to_linear(v: &Vec3, gamma_factor: f64) -> Vec3 {
-    Vec3::new(v.x().powf(gamma_factor), v.y().powf(gamma_factor), v.z().powf(gamma_factor))
+    Vec3(v.x().powf(gamma_factor), v.y().powf(gamma_factor), v.z().powf(gamma_factor))
 }
 
 fn main() {
@@ -107,9 +107,9 @@ fn main() {
     let width: i64 = 512;
     let height: i64 = 512;
     let camera: Camera = Camera::new(
-        &Vec3::new(0.0, -1.0, 2.0),
-        &Vec3::new(0.0, -0.5, 0.0),
-        &Vec3::new(0.0, 1.0, 0.0),
+        &Vec3(0.0, -1.0, 2.0),
+        &Vec3(0.0, -0.5, 0.0),
+        &Vec3(0.0, 1.0, 0.0),
         60.0f64.to_radians(),
         width as f64 / height as f64,
         0.03,

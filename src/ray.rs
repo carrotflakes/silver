@@ -18,6 +18,6 @@ impl Ray {
 
 #[test]
 fn test_at() {
-    let ray: Ray = Ray::new(Vec3::new(0.0, 0.0, 0.0), Vec3::new(1.0, 2.0, 3.0));
-    assert_eq!(ray.at(1.0), Vec3::new(1.0, 2.0, 3.0));
+    let ray: Ray = Ray(Vec3(0.0, 0.0, 0.0), Vec3(1.0, 2.0, 3.0));
+    assert_eq!(ray.at(1.0), Vec3(1.0, 2.0, 3.0));
 }
