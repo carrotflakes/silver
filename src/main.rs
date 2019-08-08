@@ -22,7 +22,7 @@ impl Scene {
         Scene {
             objects: vec![
                 Object {
-                    shape: Box::new(Sphere::new(Vec3(0.0, 100.0, -2.0), 100.0)),
+                    shape: Box::new(Sphere::new(Vec3(0.0, 1000.0, -2.0), 1000.0)),
                     material: Box::new(materials::Lambertian::new(Vec3(0.7, 0.7, 0.7)))},
                 Object {
                     shape: Box::new(Sphere::new(Vec3(0.0, -5.0, -7.0), 5.0)),
@@ -40,8 +40,8 @@ impl Scene {
                     shape: Box::new(Sphere::new(Vec3(0.0, -0.5, -2.4), 0.5)),
                     material: Box::new(materials::Lambertian::new(Vec3(1.0, 1.0, 0.1)))},
                 Object {
-                    shape: Box::new(Sphere::new(Vec3(0.1, -0.5, -1.0), 0.5)),
-                    material: Box::new(materials::Dielectric::new(1.06))},
+                    shape: Box::new(Sphere::new(Vec3(0.0, -0.5, -1.0), 0.5)),
+                    material: Box::new(materials::Dielectric::new(1.1))},
                 Object {
                     shape: Box::new(Sphere::new(Vec3(-1.3, -0.2, -0.0), 0.2)),
                     material: Box::new(materials::Lambertian::new(Vec3(0.9, 0.9, 0.9)))},
@@ -108,14 +108,14 @@ fn main() {
     let height: i64 = 512;
     let camera: Camera = Camera::new(
         &Vec3(0.0, -1.0, 2.0),
-        &Vec3(0.0, -0.5, 0.0),
+        &Vec3(0.0, -0.8, 0.0),
         &Vec3(0.0, 1.0, 0.0),
         60.0f64.to_radians(),
         width as f64 / height as f64,
-        0.03,
-        4.0
+        0.003,
+        3.0
     );
-    let sample: i64 = 6;
+    let sample: i64 = 10;
     let scene = Scene::new();
     let f = |x, y| {
         let u: f64 = x as f64 / width as f64;
