@@ -9,7 +9,7 @@ pub mod object;
 use vec3::Vec3;
 use ray::Ray;
 use camera::Camera;
-use shapes::shape::{HitRec};
+use shapes::shape::HitRec;
 use shapes::sphere::Sphere;
 use object::Object;
 
@@ -65,16 +65,12 @@ impl Scene {
         if depth == 0 {
             return Vec3::ZERO;
         }
-        let mut hit: Option<(HitRec, &Object)> = Option::None;
+        let mut hit: Option<(HitRec, &Object)> = None;
         let mut time: f64 = std::f64::MAX;
         for object in &self.objects {
-            match object.shape.hit(ray, 0.001, time) {
-                Option::Some(hr) =>
-                    if hr.time > 0.0 && hr.time < time {
-                        time = hr.time;
-                        hit = Option::Some((hr, &object));
-                    },
-                Option::None => ()
+            if let Some(hr) = object.shape.hit(ray, 0.001, time) {
+                time = hr.time;
+                hit = Some((hr, &object));
             }
         }
         match hit {
