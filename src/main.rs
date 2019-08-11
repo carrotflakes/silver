@@ -101,6 +101,31 @@ fn gamma_to_linear(v: &Vec3, gamma_factor: f64) -> Vec3 {
     Vec3(v.x().powf(gamma_factor), v.y().powf(gamma_factor), v.z().powf(gamma_factor))
 }
 
+fn render(
+    camera: &Camera,
+    scene: &Scene,
+    width: i64,
+    height: i64,
+    sample: i64) -> Vec<Vec<Vec3>> {
+    (0..height).map(|y| {
+        (0..width).map(|x| {
+            let u: f64 = x as f64 / width as f64;
+            let v: f64 = y as f64 / height as f64;
+            let mut col: Vec3 = Vec3::ZERO;
+            for dy in 0..sample {
+                for dx in 0..sample {
+                    let du: f64 = ((dx as f64 + 0.5) / sample as f64 - 0.5) / width as f64;
+                    let dv: f64 = ((dy as f64 + 0.5) / sample as f64 - 0.5) / height as f64;
+                    let r: Ray = camera.get_ray(u + du, v + dv);
+                    col = col + scene.ray(&r);
+                }
+            }
+            col = col / sample.pow(2) as f64;
+            linear_to_gamma(&col, 2.2)
+        }).collect()
+    }).collect()
+}
+
 fn main() {
     let img_path = "./image.png";
 
@@ -117,31 +142,19 @@ fn main() {
     );
     let sample: i64 = 10;
     let scene = Scene::new();
-    let f = |x, y| {
-        let u: f64 = x as f64 / width as f64;
-        let v: f64 = y as f64 / height as f64;
-        let mut col: Vec3 = Vec3::ZERO;
-        for dy in 0..sample {
-            for dx in 0..sample {
-                let du: f64 = ((dx as f64 + 0.5) / sample as f64 - 0.5) / width as f64;
-                let dv: f64 = ((dy as f64 + 0.5) / sample as f64 - 0.5) / height as f64;
-                let r: Ray = camera.get_ray(u + du, v + dv);
-                col = col + scene.ray(&r);
-            }
-        }
-        col = col / sample.pow(2) as f64;
-        col = linear_to_gamma(&col, 2.2);
+
+    let start = std::time::Instant::now();
+    let pixels = render(&camera, &scene, width, height, sample);
+    let end = start.elapsed();
+    println!("{}.{:04} elapsed", end.as_secs(), end.subsec_nanos() / 1_000_000);
+
+    let img = image::ImageBuffer::from_fn(width as u32, height as u32, |x, y| {
+        let col = pixels[y as usize][x as usize];
         image::Rgb([
             ((col.r().min(1.0) * 255.99).floor() as u8),
             ((col.g().min(1.0) * 255.99).floor() as u8),
             ((col.b().min(1.0) * 255.99).floor() as u8)])
-    };
-
-    let start = std::time::Instant::now();
-    let img = image::ImageBuffer::from_fn(width as u32, height as u32, f);
-    let end = start.elapsed();
-    println!("{}.{:04} elapsed", end.as_secs(), end.subsec_nanos() / 1_000_000);
-
+    });
     img.save(img_path).unwrap();
 
     println!("done!");
