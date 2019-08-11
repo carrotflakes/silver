@@ -6,6 +6,8 @@ pub mod materials;
 pub mod shapes;
 pub mod object;
 
+use itertools::Itertools;
+use rayon::prelude::*;
 use vec3::Vec3;
 use ray::Ray;
 use camera::Camera;
@@ -107,23 +109,26 @@ fn render(
     width: i64,
     height: i64,
     sample: i64) -> Vec<Vec<Vec3>> {
-    (0..height).map(|y| {
-        (0..width).map(|x| {
-            let u: f64 = x as f64 / width as f64;
-            let v: f64 = y as f64 / height as f64;
-            let mut col: Vec3 = Vec3::ZERO;
-            for dy in 0..sample {
-                for dx in 0..sample {
-                    let du: f64 = ((dx as f64 + 0.5) / sample as f64 - 0.5) / width as f64;
-                    let dv: f64 = ((dy as f64 + 0.5) / sample as f64 - 0.5) / height as f64;
-                    let r: Ray = camera.get_ray(u + du, v + dv);
-                    col = col + scene.ray(&r);
-                }
+    let vec = (0..height).cartesian_product(0..width).collect_vec().par_iter().map(|(y, x)| {
+        let u: f64 = *x as f64 / width as f64;
+        let v: f64 = *y as f64 / height as f64;
+        let mut col: Vec3 = Vec3::ZERO;
+        for dy in 0..sample {
+            for dx in 0..sample {
+                let du: f64 = ((dx as f64 + 0.5) / sample as f64 - 0.5) / width as f64;
+                let dv: f64 = ((dy as f64 + 0.5) / sample as f64 - 0.5) / height as f64;
+                let r: Ray = camera.get_ray(u + du, v + dv);
+                col = col + scene.ray(&r);
             }
-            col = col / sample.pow(2) as f64;
-            linear_to_gamma(&col, 2.2)
-        }).collect()
-    }).collect()
+        }
+        col = col / sample.pow(2) as f64;
+        (*y, *x, linear_to_gamma(&col, 2.2))
+    }).collect::<Vec<(i64, i64, Vec3)>>();
+    let mut pixels = vec![vec![Vec3::ZERO; width as usize]; height as usize];
+    for (y, x, col) in &vec {
+        pixels[*y as usize][*x as usize] = *col;
+    }
+    pixels
 }
 
 fn main() {
