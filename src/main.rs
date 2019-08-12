@@ -29,10 +29,10 @@ impl Scene {
                     material: Box::new(Lambertian::new(Vec3(0.7, 0.7, 0.7)))},
                 Object {
                     shape: Box::new(Sphere::new(Vec3(0.0, -5.0, -7.0), 5.0)),
-                    material: Box::new(Metal::new(0.01))},
+                    material: Box::new(Metal::new(Vec3(1.0, 1.0, 1.0), 0.01))},
                 Object {
                     shape: Box::new(Sphere::new(Vec3(1.3, -0.5, -1.7), 0.5)),
-                    material: Box::new(Metal::new(0.5))},
+                    material: Box::new(Metal::new(Vec3(0.2, 1.0, 1.0), 0.5))},
                 Object {
                     shape: Box::new(Sphere::new(Vec3(0.51, -0.5, -2.0), 0.5)),
                     material: Box::new(Lambertian::new(Vec3(1.0, 0.1, 0.1)))},

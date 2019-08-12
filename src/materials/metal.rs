@@ -3,12 +3,13 @@ use super::super::vec3::Vec3;
 use super::super::ray::Ray;
 
 pub struct Metal {
+    albedo: Vec3,
     fuzz: f64,
 }
 
 impl Metal {
-    pub fn new(fuzz: f64) -> Metal {
-        Metal {fuzz: fuzz}
+    pub fn new(albedo: Vec3, fuzz: f64) -> Metal {
+        Metal {albedo: albedo, fuzz: fuzz}
     }
 }
 
@@ -20,6 +21,6 @@ impl Material for Metal {
     }
 
     fn color(&self, color: &Vec3) -> Vec3 {
-        *color
+        color.hadamard(&self.albedo)
     }
 }
