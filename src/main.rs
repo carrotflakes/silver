@@ -55,22 +55,8 @@ fn render(
     pixels
 }
 
-fn main() {
-    let img_path = "./image.png";
-
-    let width: i64 = 512;
-    let height: i64 = 512;
-    let camera: Camera = Camera::new(
-        &Vec3(0.0, -1.0, 2.0),
-        &Vec3(0.0, -0.8, 0.0),
-        &Vec3(0.0, 1.0, 0.0),
-        60.0f64.to_radians(),
-        width as f64 / height as f64,
-        0.003,
-        3.0
-    );
-    let sample: i64 = 10;
-    let scene = Scene {
+fn make_scene_1() -> Scene {
+    Scene {
         objects: vec![
             Object {
                 shape: Box::new(Sphere::new(Vec3(0.0, 1000.0, -2.0), 1000.0)),
@@ -109,7 +95,57 @@ fn main() {
                 shape: Box::new(Sphere::new(Vec3(-0.8, -0.2, -1.0), 0.2)),
                 material: Box::new(DiffuseLight::new(Vec3(3.0, 3.0, 3.0)))},
         ]
-    };
+    }
+}
+
+fn make_scene_2() -> Scene {
+    let mut objects = vec![
+        Object {
+            shape: Box::new(Sphere::new(Vec3(0.0, 1000.0, -2.0), 1000.0)),
+            material: Box::new(Lambertian::new(Vec3(0.7, 0.7, 0.7)))},
+        Object {
+            shape: Box::new(Sphere::new(Vec3(1.0, -0.5, -1.0), 0.5)),
+            material: Box::new(Metal::new(Vec3(1.0, 1.0, 1.0), 0.01))},
+        Object {
+            shape: Box::new(Sphere::new(Vec3(0.4, -0.5, -1.8), 0.5)),
+            material: Box::new(Dielectric::new(1.6))},
+        Object {
+            shape: Box::new(Sphere::new(Vec3(-0.2, -0.5, -2.6), 0.5)),
+            material: Box::new(Lambertian::new(Vec3(1.0, 1.0, 1.0)))},
+        Object {
+            shape: Box::new(Sphere::new(Vec3(0.0, -1.6, -1.8), 0.3)),
+            material: Box::new(DiffuseLight::new(Vec3(3.0, 3.0, 0.0)))},
+    ];
+    for _ in 0..30 {
+        objects.push(
+            Object {
+                shape: Box::new(Sphere::new(
+                    Vec3(
+                        rand::random::<f64>() * 6.0 - 3.0,
+                        -0.2,
+                        rand::random::<f64>() * 6.0 - 4.0),
+                    0.2)),
+                material: Box::new(Lambertian::new(Vec3::random()))});
+    }
+    Scene {objects: objects}
+}
+
+fn main() {
+    let img_path = "./image.png";
+
+    let width: i64 = 640;
+    let height: i64 = 480;
+    let camera: Camera = Camera::new(
+        &Vec3(0.0, -1.0, 2.0),
+        &Vec3(0.0, -0.8, 0.0),
+        &Vec3(0.0, 1.0, 0.0),
+        60.0f64.to_radians(),
+        width as f64 / height as f64,
+        0.01,
+        3.0
+    );
+    let sample: i64 = 20;
+    let scene = make_scene_2();
 
     let start = std::time::Instant::now();
     let pixels = render(&camera, &scene, width, height, sample);
