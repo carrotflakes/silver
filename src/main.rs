@@ -5,94 +5,17 @@ pub mod camera;
 pub mod materials;
 pub mod shapes;
 pub mod object;
+pub mod scene;
 
 use itertools::Itertools;
 use rayon::prelude::*;
 use vec3::Vec3;
 use ray::Ray;
 use camera::Camera;
-use shapes::shape::HitRec;
-use shapes::sphere::Sphere;
-use object::Object;
+use shapes::*;
 use materials::*;
-
-struct Scene {
-    pub objects: Vec<Object>,
-}
-
-impl Scene {
-    pub fn new() -> Scene {
-        Scene {
-            objects: vec![
-                Object {
-                    shape: Box::new(Sphere::new(Vec3(0.0, 1000.0, -2.0), 1000.0)),
-                    material: Box::new(Lambertian::new(Vec3(0.7, 0.7, 0.7)))},
-                Object {
-                    shape: Box::new(Sphere::new(Vec3(0.0, -5.0, -7.0), 5.0)),
-                    material: Box::new(Metal::new(Vec3(1.0, 1.0, 1.0), 0.01))},
-                Object {
-                    shape: Box::new(Sphere::new(Vec3(1.3, -0.5, -1.7), 0.5)),
-                    material: Box::new(Metal::new(Vec3(0.2, 1.0, 1.0), 0.5))},
-                Object {
-                    shape: Box::new(Sphere::new(Vec3(0.51, -0.5, -2.0), 0.5)),
-                    material: Box::new(Lambertian::new(Vec3(1.0, 0.1, 0.1)))},
-                Object {
-                    shape: Box::new(Sphere::new(Vec3(-0.51, -0.5, -2.0), 0.5)),
-                    material: Box::new(Lambertian::new(Vec3(0.1, 0.1, 1.0)))},
-                Object {
-                    shape: Box::new(Sphere::new(Vec3(0.0, -0.5, -2.4), 0.5)),
-                    material: Box::new(Lambertian::new(Vec3(1.0, 1.0, 0.1)))},
-                Object {
-                    shape: Box::new(Sphere::new(Vec3(0.0, -0.5, -1.0), 0.5)),
-                    material: Box::new(Dielectric::new(1.1))},
-                Object {
-                    shape: Box::new(Sphere::new(Vec3(-1.3, -0.2, -0.0), 0.2)),
-                    material: Box::new(Lambertian::new(Vec3(0.9, 0.9, 0.9)))},
-                Object {
-                    shape: Box::new(Sphere::new(Vec3(-1.3, -0.2, -1.0), 0.2)),
-                    material: Box::new(Lambertian::new(Vec3(0.9, 0.9, 0.9)))},
-                Object {
-                    shape: Box::new(Sphere::new(Vec3(-1.3, -0.2, -2.0), 0.2)),
-                    material: Box::new(Lambertian::new(Vec3(0.9, 0.9, 0.9)))},
-                Object {
-                    shape: Box::new(Sphere::new(Vec3(-1.3, -0.2, -3.0), 0.2)),
-                    material: Box::new(Lambertian::new(Vec3(0.9, 0.9, 0.9)))},
-                Object {
-                    shape: Box::new(Sphere::new(Vec3(-0.8, -0.2, -1.0), 0.2)),
-                    material: Box::new(DiffuseLight::new(Vec3(3.0, 3.0, 3.0)))},
-            ]
-        }
-    }
-
-    pub fn ray_(&self, ray: &Ray, depth: u32) -> Vec3 {
-        if depth == 0 {
-            return Vec3::ZERO;
-        }
-        let mut hit: Option<(HitRec, &Object)> = None;
-        let mut time: f64 = std::f64::MAX;
-        for object in &self.objects {
-            if let Some(hr) = object.shape.hit(ray, 0.001, time) {
-                time = hr.time;
-                hit = Some((hr, &object));
-            }
-        }
-        match hit {
-            Some((HitRec {location, normal, ..}, Object {material, ..})) => {
-                let r: Ray = material.ray(&ray, &location, &normal);
-                material.color(&self.ray_(&r, depth - 1))
-            }
-            None => {
-                let unit_direction: Vec3 = ray.direction.unit_vector();
-                let t: f64 = 0.5 * (1.0 - unit_direction.y());
-                (1.0 - t) * Vec3(1.0, 1.0, 1.0) + t * Vec3(0.5, 0.7, 1.0)
-            }
-        }
-    }
-
-    pub fn ray(&self, ray: &Ray) -> Vec3 {
-        self.ray_(ray, 50)
-    }
-}
+use object::Object;
+use scene::Scene;
 
 fn linear_to_gamma(v: &Vec3, gamma_factor: f64) -> Vec3 {
     let f = gamma_factor.recip();
@@ -147,7 +70,46 @@ fn main() {
         3.0
     );
     let sample: i64 = 10;
-    let scene = Scene::new();
+    let scene = Scene {
+        objects: vec![
+            Object {
+                shape: Box::new(Sphere::new(Vec3(0.0, 1000.0, -2.0), 1000.0)),
+                material: Box::new(Lambertian::new(Vec3(0.7, 0.7, 0.7)))},
+            Object {
+                shape: Box::new(Sphere::new(Vec3(0.0, -5.0, -7.0), 5.0)),
+                material: Box::new(Metal::new(Vec3(1.0, 1.0, 1.0), 0.01))},
+            Object {
+                shape: Box::new(Sphere::new(Vec3(1.3, -0.5, -1.7), 0.5)),
+                material: Box::new(Metal::new(Vec3(0.2, 1.0, 1.0), 0.5))},
+            Object {
+                shape: Box::new(Sphere::new(Vec3(0.51, -0.5, -2.0), 0.5)),
+                material: Box::new(Lambertian::new(Vec3(1.0, 0.1, 0.1)))},
+            Object {
+                shape: Box::new(Sphere::new(Vec3(-0.51, -0.5, -2.0), 0.5)),
+                material: Box::new(Lambertian::new(Vec3(0.1, 0.1, 1.0)))},
+            Object {
+                shape: Box::new(Sphere::new(Vec3(0.0, -0.5, -2.4), 0.5)),
+                material: Box::new(Lambertian::new(Vec3(1.0, 1.0, 0.1)))},
+            Object {
+                shape: Box::new(Sphere::new(Vec3(0.0, -0.5, -1.0), 0.5)),
+                material: Box::new(Dielectric::new(1.1))},
+            Object {
+                shape: Box::new(Sphere::new(Vec3(-1.3, -0.2, -0.0), 0.2)),
+                material: Box::new(Lambertian::new(Vec3(0.9, 0.9, 0.9)))},
+            Object {
+                shape: Box::new(Sphere::new(Vec3(-1.3, -0.2, -1.0), 0.2)),
+                material: Box::new(Lambertian::new(Vec3(0.9, 0.9, 0.9)))},
+            Object {
+                shape: Box::new(Sphere::new(Vec3(-1.3, -0.2, -2.0), 0.2)),
+                material: Box::new(Lambertian::new(Vec3(0.9, 0.9, 0.9)))},
+            Object {
+                shape: Box::new(Sphere::new(Vec3(-1.3, -0.2, -3.0), 0.2)),
+                material: Box::new(Lambertian::new(Vec3(0.9, 0.9, 0.9)))},
+            Object {
+                shape: Box::new(Sphere::new(Vec3(-0.8, -0.2, -1.0), 0.2)),
+                material: Box::new(DiffuseLight::new(Vec3(3.0, 3.0, 3.0)))},
+        ]
+    };
 
     let start = std::time::Instant::now();
     let pixels = render(&camera, &scene, width, height, sample);
