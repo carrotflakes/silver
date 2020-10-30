@@ -1,6 +1,6 @@
-use rand::Rng;
-use super::vec3::Vec3;
 use super::ray::Ray;
+use super::vec3::Vec3;
+use rand::Rng;
 
 pub struct Camera {
     origin: Vec3,
@@ -19,7 +19,7 @@ impl Camera {
         vfov: f64,
         aspect: f64,
         diaphragm: f64,
-        dof: f64
+        dof: f64,
     ) -> Camera {
         let half_h = (vfov / 2.0).tan();
         let half_w = aspect * half_h;
@@ -32,7 +32,7 @@ impl Camera {
             v: (2.0 * half_h * v) * dof,
             w: *origin - (half_w * u + half_h * v + w) * dof,
             diaphragm: diaphragm,
-            dof: dof
+            dof: dof,
         }
     }
 
@@ -41,7 +41,8 @@ impl Camera {
             Ray::new(self.origin, self.w + self.u * u + self.v * v - self.origin)
         } else {
             let (fu, fv) = random_vec2_in_unit_circle();
-            let origin = self.origin + self.u * (fu * self.diaphragm) + self.v * (fv * self.diaphragm);
+            let origin =
+                self.origin + self.u * (fu * self.diaphragm) + self.v * (fv * self.diaphragm);
             Ray::new(origin, self.w + self.u * u + self.v * v - origin)
         }
     }

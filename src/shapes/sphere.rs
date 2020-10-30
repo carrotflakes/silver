@@ -1,5 +1,5 @@
-use super::super::vec3::Vec3;
 use super::super::ray::Ray;
+use super::super::vec3::Vec3;
 use super::shape::{HitRec, Shape};
 
 pub struct Sphere {
@@ -9,7 +9,7 @@ pub struct Sphere {
 
 impl Sphere {
     pub fn new(center: Vec3, radius: f64) -> Sphere {
-        Sphere {center: center, radius: radius}
+        Sphere { center, radius }
     }
 }
 
@@ -29,7 +29,7 @@ impl Shape for Sphere {
                     return Option::Some(HitRec {
                         time: time,
                         location: location,
-                        normal: (location - self.center).unit_vector()
+                        normal: (location - self.center).unit_vector(),
                     });
                 }
             }
@@ -40,7 +40,7 @@ impl Shape for Sphere {
                     return Option::Some(HitRec {
                         time: time,
                         location: location,
-                        normal: (location - self.center).unit_vector()
+                        normal: (location - self.center).unit_vector(),
                     });
                 }
             }

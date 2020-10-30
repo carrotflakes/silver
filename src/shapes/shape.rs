@@ -1,5 +1,5 @@
-use super::super::vec3::Vec3;
 use super::super::ray::Ray;
+use super::super::vec3::Vec3;
 
 pub struct HitRec {
     pub time: f64,

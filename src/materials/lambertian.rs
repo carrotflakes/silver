@@ -1,6 +1,6 @@
-use super::material::Material;
-use super::super::vec3::Vec3;
 use super::super::ray::Ray;
+use super::super::vec3::Vec3;
+use super::material::Material;
 
 pub struct Lambertian {
     albedo: Vec3,
@@ -8,7 +8,7 @@ pub struct Lambertian {
 
 impl Lambertian {
     pub fn new(albedo: Vec3) -> Lambertian {
-        Lambertian {albedo: albedo}
+        Lambertian { albedo }
     }
 }
 

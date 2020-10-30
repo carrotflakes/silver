@@ -1,6 +1,6 @@
-use super::material::Material;
-use super::super::vec3::Vec3;
 use super::super::ray::Ray;
+use super::super::vec3::Vec3;
+use super::material::Material;
 
 pub struct DiffuseLight {
     color: Vec3,
@@ -8,7 +8,7 @@ pub struct DiffuseLight {
 
 impl DiffuseLight {
     pub fn new(color: Vec3) -> DiffuseLight {
-        DiffuseLight {color: color}
+        DiffuseLight { color }
     }
 }
 

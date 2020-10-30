@@ -1,6 +1,6 @@
-use super::material::Material;
-use super::super::vec3::Vec3;
 use super::super::ray::Ray;
+use super::super::vec3::Vec3;
+use super::material::Material;
 
 pub struct Metal {
     albedo: Vec3,
@@ -9,7 +9,7 @@ pub struct Metal {
 
 impl Metal {
     pub fn new(albedo: Vec3, fuzz: f64) -> Metal {
-        Metal {albedo: albedo, fuzz: fuzz}
+        Metal { albedo, fuzz }
     }
 }
 

@@ -1,7 +1,7 @@
-use super::vec3::Vec3;
+use super::object::Object;
 use super::ray::Ray;
 use super::shapes::shape::HitRec;
-use super::object::Object;
+use super::vec3::Vec3;
 
 pub struct Scene {
     pub objects: Vec<Object>,
@@ -21,7 +21,12 @@ impl Scene {
             }
         }
         match hit {
-            Some((HitRec {location, normal, ..}, Object {material, ..})) => {
+            Some((
+                HitRec {
+                    location, normal, ..
+                },
+                Object { material, .. },
+            )) => {
                 let r: Ray = material.ray(&ray, &location, &normal);
                 material.color(&self.ray_(&r, depth - 1))
             }

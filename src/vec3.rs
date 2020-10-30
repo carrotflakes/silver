@@ -1,6 +1,6 @@
-use std::ops::{Add, Sub, Mul, Div, Neg};
-use std::f64;
 use rand::Rng;
+use std::f64;
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vec3(pub f64, pub f64, pub f64);
@@ -111,21 +111,20 @@ impl Vec3 {
         Vec3(
             self.y() * rhs.z() - self.z() * rhs.y(),
             self.z() * rhs.x() - self.x() * rhs.z(),
-            self.x() * rhs.y() - self.y() * rhs.x())
+            self.x() * rhs.y() - self.y() * rhs.x(),
+        )
     }
 
     pub fn hadamard(&self, rhs: &Vec3) -> Vec3 {
-        Vec3(
-            self.x() * rhs.x(),
-            self.y() * rhs.y(),
-            self.z() * rhs.z())
+        Vec3(self.x() * rhs.x(), self.y() * rhs.y(), self.z() * rhs.z())
     }
 
     pub fn random() -> Vec3 {
         Vec3(
             rand::random::<f64>(),
             rand::random::<f64>(),
-            rand::random::<f64>())
+            rand::random::<f64>(),
+        )
     }
 
     pub fn random_in_unit_sphere() -> Vec3 {
@@ -134,22 +133,11 @@ impl Vec3 {
             let v = Vec3(
                 rng.gen::<f64>() * 2.0 - 1.0,
                 rng.gen::<f64>() * 2.0 - 1.0,
-                rng.gen::<f64>() * 2.0 - 1.0);
+                rng.gen::<f64>() * 2.0 - 1.0,
+            );
             if v.dot(&v) < 1.0 {
                 return v;
             }
         }
     }
-}
-
-#[test]
-fn test_gen() {
-    let vec: Vec3 = Vec3(0.2, 0.4, 0.8);
-    vec.print();
-}
-
-#[test]
-fn test_norm() {
-    let vec: Vec3 = Vec3(1.0, 2.0, 2.0);
-    assert_eq!(vec.norm(), 3.0);
 }
