@@ -2,6 +2,7 @@ use super::super::ray::Ray;
 use super::super::vec3::Vec3;
 use super::material::Material;
 
+#[derive(Clone)]
 pub struct Lambertian {
     albedo: Vec3,
 }

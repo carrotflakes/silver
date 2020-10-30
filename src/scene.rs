@@ -1,18 +1,20 @@
+use crate::{materials::material::Material, shapes::Shape};
+
 use super::object::Object;
 use super::ray::Ray;
 use super::shapes::shape::HitRec;
 use super::vec3::Vec3;
 
-pub struct Scene {
-    pub objects: Vec<Object>,
+pub struct Scene<S: Shape, M: Material> {
+    pub objects: Vec<Object<S, M>>,
 }
 
-impl Scene {
+impl<S: Shape, M: Material> Scene<S, M> {
     pub fn ray_(&self, ray: &Ray, depth: u32) -> Vec3 {
         if depth == 0 {
             return Vec3::ZERO;
         }
-        let mut hit: Option<(HitRec, &Object)> = None;
+        let mut hit: Option<(HitRec, &Object<S, M>)> = None;
         let mut time: f64 = std::f64::MAX;
         for object in &self.objects {
             if let Some(hr) = object.shape.hit(ray, 0.001, time) {

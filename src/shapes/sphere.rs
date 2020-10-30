@@ -2,6 +2,7 @@ use super::super::ray::Ray;
 use super::super::vec3::Vec3;
 use super::shape::{HitRec, Shape};
 
+#[derive(Clone)]
 pub struct Sphere {
     pub center: Vec3,
     pub radius: f64,
@@ -18,7 +19,7 @@ impl Shape for Sphere {
         let oc = ray.origin - self.center;
         let a = ray.direction.dot(&ray.direction);
         let b = 2.0 * ray.direction.dot(&oc);
-        let c = oc.dot(&oc) - self.radius.powi(2i32);
+        let c = oc.dot(&oc) - self.radius.powi(2);
         let d = b * b - 4.0 * a * c;
         if d > 0.0 {
             let root = d.sqrt();
@@ -26,9 +27,9 @@ impl Shape for Sphere {
                 let time = (-b - root) / (2.0 * a);
                 if time < t1 && time > t0 {
                     let location = ray.at(time);
-                    return Option::Some(HitRec {
-                        time: time,
-                        location: location,
+                    return Some(HitRec {
+                        time,
+                        location,
                         normal: (location - self.center).unit_vector(),
                     });
                 }
@@ -37,14 +38,14 @@ impl Shape for Sphere {
                 let time = (-b + root) / (2.0 * a);
                 if time < t1 && time > t0 {
                     let location = ray.at(time);
-                    return Option::Some(HitRec {
-                        time: time,
-                        location: location,
+                    return Some(HitRec {
+                        time,
+                        location,
                         normal: (location - self.center).unit_vector(),
                     });
                 }
             }
         }
-        Option::None
+        None
     }
 }
