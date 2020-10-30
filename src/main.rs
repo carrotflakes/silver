@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use rayon::prelude::*;
-use silver::camera::Camera;
+use silver::{camera::Camera, shapes::Triangle};
 use silver::materials::{Basic as BasicMaterial, *};
 use silver::object::Object;
 use silver::ray::Ray;
@@ -134,6 +134,10 @@ fn make_scene_2() -> MyScene {
         Object {
             shape: BasicShape::Sphere(Sphere::new(Vec3(0.0, -1.6, -1.8), 0.3)),
             material: BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3(3.0, 3.0, 0.0))),
+        },
+        Object {
+            shape: BasicShape::Triangle(Triangle::new(Vec3(0.0, 0.0, -0.5), Vec3(-0.2, -0.3, -0.5), Vec3(0.2, -0.3, -0.5))),
+            material: BasicMaterial::Lambertian(Lambertian::new(Vec3(1.0, 0.1, 0.1))),
         },
     ];
     for _ in 0..30 {
