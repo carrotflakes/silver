@@ -1,3 +1,4 @@
+pub mod bbox;
 pub mod camera;
 pub mod materials;
 pub mod object;

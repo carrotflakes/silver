@@ -1,6 +1,9 @@
-use super::super::ray::Ray;
-use super::super::vec3::Vec3;
-use super::shape::{HitRec, Shape};
+use crate::{
+    bbox::BBox,
+    ray::Ray,
+    shapes::shape::{HitRec, Shape},
+    vec3::Vec3,
+};
 
 #[derive(Clone)]
 pub struct Sphere {
@@ -47,5 +50,12 @@ impl Shape for Sphere {
             }
         }
         None
+    }
+
+    fn bbox(&self) -> BBox {
+        BBox {
+            min: self.center - Vec3(self.radius, self.radius, self.radius),
+            max: self.center + Vec3(self.radius, self.radius, self.radius),
+        }
     }
 }

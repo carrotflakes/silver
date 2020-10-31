@@ -17,6 +17,9 @@ impl<S: Shape, M: Material> Scene<S, M> {
         let mut hit: Option<(HitRec, &Object<S, M>)> = None;
         let mut time: f64 = std::f64::MAX;
         for object in &self.objects {
+            if !object.bbox.should_hit(ray) {
+                continue;
+            }
             if let Some(hr) = object.shape.hit(ray, 0.001, time) {
                 time = hr.time;
                 hit = Some((hr, &object));

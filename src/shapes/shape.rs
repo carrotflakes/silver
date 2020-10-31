@@ -1,5 +1,6 @@
-use super::super::ray::Ray;
-use super::super::vec3::Vec3;
+use crate::bbox::BBox;
+use crate::ray::Ray;
+use crate::vec3::Vec3;
 
 pub struct HitRec {
     pub time: f64,
@@ -9,4 +10,5 @@ pub struct HitRec {
 
 pub trait Shape {
     fn hit(&self, ray: &Ray, t0: f64, t1: f64) -> Option<HitRec>;
+    fn bbox(&self) -> BBox;
 }

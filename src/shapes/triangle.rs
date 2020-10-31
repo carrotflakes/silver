@@ -1,6 +1,9 @@
-use super::super::ray::Ray;
-use super::super::vec3::Vec3;
-use super::shape::{HitRec, Shape};
+use crate::{
+    bbox::BBox,
+    ray::Ray,
+    shapes::shape::{HitRec, Shape},
+    vec3::Vec3,
+};
 
 #[derive(Clone)]
 pub struct Triangle(Vec3, Vec3, Vec3);
@@ -24,6 +27,13 @@ impl Shape for Triangle {
             }
         }
         None
+    }
+
+    fn bbox(&self) -> BBox {
+        BBox {
+            min: Vec3(self.0.0.min(self.1.0).min(self.2.0), self.0.1.min(self.1.1).min(self.2.1), self.0.2.min(self.1.2).min(self.2.2)),
+            max: Vec3(self.0.0.max(self.1.0).max(self.2.0), self.0.1.max(self.1.1).max(self.2.1), self.0.2.max(self.1.2).max(self.2.2)),
+        }
     }
 }
 

@@ -61,88 +61,88 @@ fn render(
 fn make_scene_1() -> MyScene {
     Scene {
         objects: vec![
-            Object {
-                shape: BasicShape::Sphere(Sphere::new(Vec3(0.0, 1000.0, -2.0), 1000.0)),
-                material: BasicMaterial::Lambertian(Lambertian::new(Vec3(0.7, 0.7, 0.7))),
-            },
-            Object {
-                shape: BasicShape::Sphere(Sphere::new(Vec3(0.0, -5.0, -7.0), 5.0)),
-                material: BasicMaterial::Metal(Metal::new(Vec3(1.0, 1.0, 1.0), 0.01)),
-            },
-            Object {
-                shape: BasicShape::Sphere(Sphere::new(Vec3(1.3, -0.5, -1.7), 0.5)),
-                material: BasicMaterial::Metal(Metal::new(Vec3(0.2, 1.0, 1.0), 0.5)),
-            },
-            Object {
-                shape: BasicShape::Sphere(Sphere::new(Vec3(0.51, -0.5, -2.0), 0.5)),
-                material: BasicMaterial::Lambertian(Lambertian::new(Vec3(1.0, 0.1, 0.1))),
-            },
-            Object {
-                shape: BasicShape::Sphere(Sphere::new(Vec3(-0.51, -0.5, -2.0), 0.5)),
-                material: BasicMaterial::Lambertian(Lambertian::new(Vec3(0.1, 0.1, 1.0))),
-            },
-            Object {
-                shape: BasicShape::Sphere(Sphere::new(Vec3(0.0, -0.5, -2.4), 0.5)),
-                material: BasicMaterial::Lambertian(Lambertian::new(Vec3(1.0, 1.0, 0.1))),
-            },
-            Object {
-                shape: BasicShape::Sphere(Sphere::new(Vec3(0.0, -0.5, -1.0), 0.5)),
-                material: BasicMaterial::Dielectric(Dielectric::new(1.1)),
-            },
-            Object {
-                shape: BasicShape::Sphere(Sphere::new(Vec3(-1.3, -0.2, -0.0), 0.2)),
-                material: BasicMaterial::Lambertian(Lambertian::new(Vec3(0.9, 0.9, 0.9))),
-            },
-            Object {
-                shape: BasicShape::Sphere(Sphere::new(Vec3(-1.3, -0.2, -1.0), 0.2)),
-                material: BasicMaterial::Lambertian(Lambertian::new(Vec3(0.9, 0.9, 0.9))),
-            },
-            Object {
-                shape: BasicShape::Sphere(Sphere::new(Vec3(-1.3, -0.2, -2.0), 0.2)),
-                material: BasicMaterial::Lambertian(Lambertian::new(Vec3(0.9, 0.9, 0.9))),
-            },
-            Object {
-                shape: BasicShape::Sphere(Sphere::new(Vec3(-1.3, -0.2, -3.0), 0.2)),
-                material: BasicMaterial::Lambertian(Lambertian::new(Vec3(0.9, 0.9, 0.9))),
-            },
-            Object {
-                shape: BasicShape::Sphere(Sphere::new(Vec3(-0.8, -0.2, -1.0), 0.2)),
-                material: BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3(3.0, 3.0, 3.0))),
-            },
+            Object::new(
+                BasicShape::Sphere(Sphere::new(Vec3(0.0, 1000.0, -2.0), 1000.0)),
+                BasicMaterial::Lambertian(Lambertian::new(Vec3(0.7, 0.7, 0.7))),
+            ),
+            Object::new(
+                BasicShape::Sphere(Sphere::new(Vec3(0.0, -5.0, -7.0), 5.0)),
+                BasicMaterial::Metal(Metal::new(Vec3(1.0, 1.0, 1.0), 0.01)),
+            ),
+            Object::new(
+                BasicShape::Sphere(Sphere::new(Vec3(1.3, -0.5, -1.7), 0.5)),
+                BasicMaterial::Metal(Metal::new(Vec3(0.2, 1.0, 1.0), 0.5)),
+            ),
+            Object::new(
+                BasicShape::Sphere(Sphere::new(Vec3(0.51, -0.5, -2.0), 0.5)),
+                BasicMaterial::Lambertian(Lambertian::new(Vec3(1.0, 0.1, 0.1))),
+            ),
+            Object::new(
+                BasicShape::Sphere(Sphere::new(Vec3(-0.51, -0.5, -2.0), 0.5)),
+                BasicMaterial::Lambertian(Lambertian::new(Vec3(0.1, 0.1, 1.0))),
+            ),
+            Object::new(
+                BasicShape::Sphere(Sphere::new(Vec3(0.0, -0.5, -2.4), 0.5)),
+                BasicMaterial::Lambertian(Lambertian::new(Vec3(1.0, 1.0, 0.1))),
+            ),
+            Object::new(
+                BasicShape::Sphere(Sphere::new(Vec3(0.0, -0.5, -1.0), 0.5)),
+                BasicMaterial::Dielectric(Dielectric::new(1.1)),
+            ),
+            Object::new(
+                BasicShape::Sphere(Sphere::new(Vec3(-1.3, -0.2, -0.0), 0.2)),
+                BasicMaterial::Lambertian(Lambertian::new(Vec3(0.9, 0.9, 0.9))),
+            ),
+            Object::new(
+                BasicShape::Sphere(Sphere::new(Vec3(-1.3, -0.2, -1.0), 0.2)),
+                BasicMaterial::Lambertian(Lambertian::new(Vec3(0.9, 0.9, 0.9))),
+            ),
+            Object::new(
+                BasicShape::Sphere(Sphere::new(Vec3(-1.3, -0.2, -2.0), 0.2)),
+                BasicMaterial::Lambertian(Lambertian::new(Vec3(0.9, 0.9, 0.9))),
+            ),
+            Object::new(
+                BasicShape::Sphere(Sphere::new(Vec3(-1.3, -0.2, -3.0), 0.2)),
+                BasicMaterial::Lambertian(Lambertian::new(Vec3(0.9, 0.9, 0.9))),
+            ),
+            Object::new(
+                BasicShape::Sphere(Sphere::new(Vec3(-0.8, -0.2, -1.0), 0.2)),
+                BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3(3.0, 3.0, 3.0))),
+            ),
         ],
     }
 }
 
 fn make_scene_2() -> MyScene {
     let mut objects = vec![
-        Object {
-            shape: BasicShape::Sphere(Sphere::new(Vec3(0.0, 1000.0, -2.0), 1000.0)),
-            material: BasicMaterial::Lambertian(Lambertian::new(Vec3(0.7, 0.7, 0.7))),
-        },
-        Object {
-            shape: BasicShape::Sphere(Sphere::new(Vec3(1.0, -0.5, -1.0), 0.5)),
-            material: BasicMaterial::Metal(Metal::new(Vec3(1.0, 1.0, 1.0), 0.01)),
-        },
-        Object {
-            shape: BasicShape::Sphere(Sphere::new(Vec3(0.4, -0.5, -1.8), 0.5)),
-            material: BasicMaterial::Dielectric(Dielectric::new(1.6)),
-        },
-        Object {
-            shape: BasicShape::Sphere(Sphere::new(Vec3(-0.2, -0.5, -2.6), 0.5)),
-            material: BasicMaterial::Lambertian(Lambertian::new(Vec3(1.0, 1.0, 1.0))),
-        },
-        Object {
-            shape: BasicShape::Sphere(Sphere::new(Vec3(0.0, -1.6, -1.8), 0.3)),
-            material: BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3(3.0, 3.0, 0.0))),
-        },
-        Object {
-            shape: BasicShape::Triangle(Triangle::new(Vec3(0.0, 0.0, -0.5), Vec3(-0.2, -0.3, -0.5), Vec3(0.2, -0.3, -0.5))),
-            material: BasicMaterial::Lambertian(Lambertian::new(Vec3(1.0, 0.1, 0.1))),
-        },
+        Object::new(
+            BasicShape::Sphere(Sphere::new(Vec3(0.0, 1000.0, -2.0), 1000.0)),
+            BasicMaterial::Lambertian(Lambertian::new(Vec3(0.7, 0.7, 0.7))),
+        ),
+        Object::new(
+            BasicShape::Sphere(Sphere::new(Vec3(1.0, -0.5, -1.0), 0.5)),
+            BasicMaterial::Metal(Metal::new(Vec3(1.0, 1.0, 1.0), 0.01)),
+        ),
+        Object::new(
+            BasicShape::Sphere(Sphere::new(Vec3(0.4, -0.5, -1.8), 0.5)),
+            BasicMaterial::Dielectric(Dielectric::new(1.6)),
+        ),
+        Object::new(
+            BasicShape::Sphere(Sphere::new(Vec3(-0.2, -0.5, -2.6), 0.5)),
+            BasicMaterial::Lambertian(Lambertian::new(Vec3(1.0, 1.0, 1.0))),
+        ),
+        Object::new(
+            BasicShape::Sphere(Sphere::new(Vec3(0.0, -1.6, -1.8), 0.3)),
+            BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3(3.0, 3.0, 0.0))),
+        ),
+        Object::new(
+            BasicShape::Triangle(Triangle::new(Vec3(0.0, 0.0, -0.5), Vec3(-0.2, -0.3, -0.5), Vec3(0.2, -0.3, -0.5))),
+            BasicMaterial::Lambertian(Lambertian::new(Vec3(1.0, 0.1, 0.1))),
+        ),
     ];
     for _ in 0..30 {
-        objects.push(Object {
-            shape: BasicShape::Sphere(Sphere::new(
+        objects.push(Object::new(
+            BasicShape::Sphere(Sphere::new(
                 Vec3(
                     rand::random::<f64>() * 6.0 - 3.0,
                     -0.2,
@@ -150,8 +150,8 @@ fn make_scene_2() -> MyScene {
                 ),
                 0.2,
             )),
-            material: BasicMaterial::Lambertian(Lambertian::new(Vec3::random())),
-        });
+            BasicMaterial::Lambertian(Lambertian::new(Vec3::random())),
+        ));
     }
     Scene { objects: objects }
 }
