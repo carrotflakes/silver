@@ -36,10 +36,10 @@ fn render(
     let vec = (0..height)
         .cartesian_product(0..width)
         .collect_vec()
-        .par_iter()
+        .into_par_iter()
         .map(|(y, x)| {
-            let u: f64 = *x as f64 / width as f64;
-            let v: f64 = *y as f64 / height as f64;
+            let u: f64 = x as f64 / width as f64;
+            let v: f64 = y as f64 / height as f64;
             let mut col: Vec3 = Vec3::ZERO;
             for dy in 0..sample {
                 for dx in 0..sample {
@@ -50,12 +50,12 @@ fn render(
                 }
             }
             col = col / sample.pow(2) as f64;
-            (*y, *x, linear_to_gamma(&col, 2.2))
+            (y, x, linear_to_gamma(&col, 2.2))
         })
-        .collect::<Vec<(i32, i32, Vec3)>>();
+        .collect::<Vec<_>>();
     let mut pixels = vec![vec![Vec3::ZERO; width as usize]; height as usize];
-    for (y, x, col) in &vec {
-        pixels[*y as usize][*x as usize] = *col;
+    for &(y, x, col) in &vec {
+        pixels[y as usize][x as usize] = col;
     }
     pixels
 }
