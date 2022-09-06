@@ -5,11 +5,12 @@ use super::ray::Ray;
 use super::shapes::shape::HitRec;
 use super::vec3::Vec3;
 
-pub struct Scene<S: Shape, M: Material> {
+pub struct Scene<S: Shape, M: Material, E: Fn(&Ray) -> Vec3> {
     pub objects: Vec<Object<S, M>>,
+    pub env: E,
 }
 
-impl<S: Shape, M: Material> Scene<S, M> {
+impl<S: Shape, M: Material, E: Fn(&Ray) -> Vec3> Scene<S, M, E> {
     pub fn ray_(&self, ray: &Ray, depth: u32) -> Vec3 {
         if depth == 0 {
             return Vec3::ZERO;
@@ -25,21 +26,18 @@ impl<S: Shape, M: Material> Scene<S, M> {
                 hit = Some((hr, &object));
             }
         }
-        match hit {
-            Some((
-                HitRec {
-                    location, normal, ..
-                },
-                Object { material, .. },
-            )) => {
-                let r: Ray = material.ray(&ray, &location, &normal);
-                material.color(&self.ray_(&r, depth - 1))
-            }
-            None => {
-                let unit_direction: Vec3 = ray.direction.unit_vector();
-                let t: f64 = 0.5 * (1.0 - unit_direction.y());
-                (1.0 - t) * Vec3::new([1.0, 1.0, 1.0]) + t * Vec3::new([0.5, 0.7, 1.0])
-            }
+
+        if let Some((
+            HitRec {
+                location, normal, ..
+            },
+            Object { material, .. },
+        )) = hit
+        {
+            let r: Ray = material.ray(&ray, &location, &normal);
+            material.color(&self.ray_(&r, depth - 1))
+        } else {
+            (self.env)(ray)
         }
     }
 

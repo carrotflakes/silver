@@ -10,7 +10,7 @@ use silver::shapes::{Basic as BasicShape, Sphere};
 use silver::vec3::Vec3;
 use silver::{camera::Camera, shapes::Triangle};
 
-type MyScene = Scene<BasicShape, BasicMaterial>;
+type MyScene = Scene<BasicShape, BasicMaterial, fn(&Ray) -> Vec3>;
 
 fn linear_to_gamma(v: &Vec3, gamma_factor: f64) -> Vec3 {
     let f = gamma_factor.recip();
@@ -24,6 +24,12 @@ fn gamma_to_linear(v: &Vec3, gamma_factor: f64) -> Vec3 {
         v.y().powf(gamma_factor),
         v.z().powf(gamma_factor),
     ])
+}
+
+fn default_env(ray: &Ray) -> Vec3 {
+    let unit_direction: Vec3 = ray.direction.unit_vector();
+    let t: f64 = 0.5 * (1.0 - unit_direction.y());
+    (1.0 - t) * Vec3::new([1.0, 1.0, 1.0]) + t * Vec3::new([0.5, 0.7, 1.0])
 }
 
 fn render(
@@ -112,6 +118,7 @@ fn make_scene_1() -> MyScene {
                 BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3::new([3.0, 3.0, 3.0]))),
             ),
         ],
+        env: default_env,
     }
 }
 
@@ -156,7 +163,10 @@ fn make_scene_2() -> MyScene {
             BasicMaterial::Lambertian(Lambertian::new(Vec3::random(&mut rng))),
         ));
     }
-    Scene { objects: objects }
+    Scene {
+        objects: objects,
+        env: default_env,
+    }
 }
 
 fn main() {
