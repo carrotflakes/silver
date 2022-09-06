@@ -11,18 +11,18 @@ impl BBox {
     }
 
     pub fn should_hit(&self, ray: &Ray) -> bool {
-        (if 0.0 <= ray.direction.0 {
-            ray.origin.0 < self.max.0
+        (if 0.0 <= ray.direction.x() {
+            ray.origin.x() < self.max.x()
         } else {
-            self.min.0 < ray.origin.0
-        }) && (if 0.0 <= ray.direction.1 {
-            ray.origin.1 < self.max.1
+            self.min.x() < ray.origin.x()
+        }) && (if 0.0 <= ray.direction.y() {
+            ray.origin.y() < self.max.y()
         } else {
-            self.min.1 < ray.origin.1
-        }) && (if 0.0 <= ray.direction.2 {
-            ray.origin.2 < self.max.2
+            self.min.y() < ray.origin.y()
+        }) && (if 0.0 <= ray.direction.z() {
+            ray.origin.z() < self.max.z()
         } else {
-            self.min.2 < ray.origin.2
+            self.min.z() < ray.origin.z()
         })
     }
 }

@@ -54,8 +54,8 @@ impl Shape for Sphere {
 
     fn bbox(&self) -> BBox {
         BBox::from_min_max(
-            self.center - Vec3(self.radius, self.radius, self.radius),
-            self.center + Vec3(self.radius, self.radius, self.radius),
+            self.center - Vec3::new([self.radius, self.radius, self.radius]),
+            self.center + Vec3::new([self.radius, self.radius, self.radius]),
         )
     }
 }
