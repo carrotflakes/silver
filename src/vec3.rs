@@ -1,4 +1,3 @@
-use rand::Rng;
 use std::f64;
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
@@ -119,16 +118,15 @@ impl Vec3 {
         Vec3(self.x() * rhs.x(), self.y() * rhs.y(), self.z() * rhs.z())
     }
 
-    pub fn random() -> Vec3 {
+    pub fn random(rng: &mut impl rand::Rng) -> Vec3 {
         Vec3(
-            rand::random::<f64>(),
-            rand::random::<f64>(),
-            rand::random::<f64>(),
+            rng.gen_range(0.0..1.0),
+            rng.gen_range(0.0..1.0),
+            rng.gen_range(0.0..1.0),
         )
     }
 
-    pub fn random_in_unit_sphere() -> Vec3 {
-        let mut rng = rand::thread_rng();
+    pub fn random_in_unit_sphere(rng: &mut impl rand::Rng) -> Vec3 {
         loop {
             let v = Vec3(
                 rng.gen::<f64>() * 2.0 - 1.0,

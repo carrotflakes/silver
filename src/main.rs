@@ -1,5 +1,7 @@
 use itertools::Itertools;
 use rayon::prelude::*;
+use rand::Rng;
+
 use silver::{camera::Camera, shapes::Triangle};
 use silver::materials::{Basic as BasicMaterial, *};
 use silver::object::Object;
@@ -114,6 +116,7 @@ fn make_scene_1() -> MyScene {
 }
 
 fn make_scene_2() -> MyScene {
+    let mut rng: rand::rngs::StdRng = rand::SeedableRng::seed_from_u64(13);
     let mut objects = vec![
         Object::new(
             BasicShape::Sphere(Sphere::new(Vec3(0.0, 1000.0, -2.0), 1000.0)),
@@ -144,13 +147,13 @@ fn make_scene_2() -> MyScene {
         objects.push(Object::new(
             BasicShape::Sphere(Sphere::new(
                 Vec3(
-                    rand::random::<f64>() * 6.0 - 3.0,
+                    rng.gen_range(-3.0..3.0),
                     -0.2,
-                    rand::random::<f64>() * 6.0 - 4.0,
+                    rng.gen_range(-4.0..2.0),
                 ),
                 0.2,
             )),
-            BasicMaterial::Lambertian(Lambertian::new(Vec3::random())),
+            BasicMaterial::Lambertian(Lambertian::new(Vec3::random(&mut rng))),
         ));
     }
     Scene { objects: objects }

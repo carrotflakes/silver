@@ -15,7 +15,7 @@ impl Lambertian {
 
 impl Material for Lambertian {
     fn ray(&self, _ray: &Ray, location: &Vec3, normal: &Vec3) -> Ray {
-        Ray::new(*location, *normal + Vec3::random_in_unit_sphere())
+        Ray::new(*location, *normal + Vec3::random_in_unit_sphere(&mut rand::thread_rng()))
     }
 
     fn color(&self, color: &Vec3) -> Vec3 {
