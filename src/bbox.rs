@@ -1,11 +1,15 @@
 use crate::{ray::Ray, vec3::Vec3};
 
 pub struct BBox {
-    pub min: Vec3,
-    pub max: Vec3,
+    min: Vec3,
+    max: Vec3,
 }
 
 impl BBox {
+    pub fn from_min_max(min: Vec3, max: Vec3) -> Self {
+        BBox { min, max }
+    }
+
     pub fn should_hit(&self, ray: &Ray) -> bool {
         (if 0.0 <= ray.direction.0 {
             ray.origin.0 < self.max.0
