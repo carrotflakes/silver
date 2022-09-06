@@ -11,20 +11,25 @@ pub struct Scene<S: Shape, M: Material, E: Fn(&Ray) -> Vec3> {
 }
 
 impl<S: Shape, M: Material, E: Fn(&Ray) -> Vec3> Scene<S, M, E> {
-    pub fn ray_(&self, ray: &Ray, depth: u32) -> Vec3 {
-        if depth == 0 {
-            return Vec3::ZERO;
-        }
+    fn hit(&self, ray: &Ray) -> Option<(HitRec, &Object<S, M>)> {
         let mut hit: Option<(HitRec, &Object<S, M>)> = None;
         let mut time: f64 = std::f64::MAX;
         for object in &self.objects {
             if !object.bbox.should_hit(ray) {
                 continue;
             }
+
             if let Some(hr) = object.shape.hit(ray, 0.001, time) {
                 time = hr.time;
                 hit = Some((hr, &object));
             }
+        }
+        hit
+    }
+
+    fn ray_(&self, ray: &Ray, depth: u32) -> Vec3 {
+        if depth == 0 {
+            return Vec3::ZERO;
         }
 
         if let Some((
@@ -32,9 +37,9 @@ impl<S: Shape, M: Material, E: Fn(&Ray) -> Vec3> Scene<S, M, E> {
                 location, normal, ..
             },
             Object { material, .. },
-        )) = hit
+        )) = self.hit(ray)
         {
-            let r: Ray = material.ray(&ray, &location, &normal);
+            let r = material.ray(&ray, &location, &normal);
             material.color(&self.ray_(&r, depth - 1))
         } else {
             (self.env)(ray)
