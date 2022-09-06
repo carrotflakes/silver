@@ -29,9 +29,9 @@ fn gamma_to_linear(v: &Vec3, gamma_factor: f64) -> Vec3 {
 fn render(
     camera: &Camera,
     scene: &MyScene,
-    width: i64,
-    height: i64,
-    sample: i64,
+    width: i32,
+    height: i32,
+    sample: i32,
 ) -> Vec<Vec<Vec3>> {
     let vec = (0..height)
         .cartesian_product(0..width)
@@ -52,7 +52,7 @@ fn render(
             col = col / sample.pow(2) as f64;
             (*y, *x, linear_to_gamma(&col, 2.2))
         })
-        .collect::<Vec<(i64, i64, Vec3)>>();
+        .collect::<Vec<(i32, i32, Vec3)>>();
     let mut pixels = vec![vec![Vec3::ZERO; width as usize]; height as usize];
     for (y, x, col) in &vec {
         pixels[*y as usize][*x as usize] = *col;
@@ -162,8 +162,8 @@ fn make_scene_2() -> MyScene {
 fn main() {
     let img_path = "./image.png";
 
-    let width: i64 = 640;
-    let height: i64 = 480;
+    let width: i32 = 640;
+    let height: i32 = 480;
     let camera: Camera = Camera::new(
         &Vec3(0.0, -1.0, 2.0),
         &Vec3(0.0, -0.8, 0.0),
@@ -173,7 +173,7 @@ fn main() {
         0.01,
         3.0,
     );
-    let sample: i64 = 20;
+    let sample: i32 = 20;
     let scene = make_scene_2();
 
     let start = std::time::Instant::now();
