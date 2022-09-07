@@ -16,7 +16,9 @@ impl Triangle {
 
 impl Shape for Triangle {
     fn hit(&self, ray: &Ray, t0: f64, t1: f64) -> Option<HitRec> {
-        if let Some((t, _u, _v)) = triangle_intersect(ray, &self.0, &self.1, &self.2) {
+        if let Some((t, _u, _v)) =
+            triangle_intersect(ray, &self.0, &self.1, &self.2, ConstBool::<false>)
+        {
             if t0 < t && t < t1 {
                 let location = ray.direction * t + ray.origin;
                 return Some(HitRec {
@@ -52,7 +54,13 @@ fn triangle_norm(v0: &Vec3, v1: &Vec3, v2: &Vec3) -> Vec3 {
 }
 
 // Tomas Moller
-fn triangle_intersect(ray: &Ray, v0: &Vec3, v1: &Vec3, v2: &Vec3) -> Option<(f64, f64, f64)> {
+fn triangle_intersect<R: Bool>(
+    ray: &Ray,
+    v0: &Vec3,
+    v1: &Vec3,
+    v2: &Vec3,
+    reverse_size: R,
+) -> Option<(f64, f64, f64)> {
     let e1 = *v1 - *v0;
     let e2 = *v2 - *v0;
     let pvec = ray.direction.cross(&e2);
@@ -74,18 +82,21 @@ fn triangle_intersect(ray: &Ray, v0: &Vec3, v1: &Vec3, v2: &Vec3) -> Option<(f64
             return None;
         }
     } else if det < -(1e-3) {
-        // let tvec = ray.origin - *v0;
-        // u = tvec.dot(&pvec);
-        // if u > 0.0 || u < det {
-        //     return None;
-        // }
+        if reverse_size.value() {
+            let tvec = ray.origin - *v0;
+            u = tvec.dot(&pvec);
+            if u > 0.0 || u < det {
+                return None;
+            }
 
-        // qvec = tvec.cross(&e1);
-        // v = ray.direction.dot(&qvec);
-        // if v > 0.0 || u + v < det {
-        //     return None;
-        // }
-        return None;
+            qvec = tvec.cross(&e1);
+            v = ray.direction.dot(&qvec);
+            if v > 0.0 || u + v < det {
+                return None;
+            }
+        } else {
+            return None;
+        }
     } else {
         return None;
     }
@@ -93,4 +104,22 @@ fn triangle_intersect(ray: &Ray, v0: &Vec3, v1: &Vec3, v2: &Vec3) -> Option<(f64
     let inv_det = 1.0 / det;
     let t = e2.dot(&qvec);
     Some((t * inv_det, u * inv_det, v * inv_det))
+}
+
+trait Bool {
+    fn value(&self) -> bool;
+}
+
+impl Bool for bool {
+    fn value(&self) -> bool {
+        *self
+    }
+}
+
+struct ConstBool<const B: bool>;
+
+impl<const B: bool> Bool for ConstBool<B> {
+    fn value(&self) -> bool {
+        B
+    }
 }
