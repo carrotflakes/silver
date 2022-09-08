@@ -1,0 +1,11 @@
+objects:
+- shape: !sphere
+    center: [0, 1000, -2]
+    radius: 1000
+  material: !lambertian
+    color: [0.7, 0.7, 0.7]
+- shape: !sphere
+    center: [0, -105, -2]
+    radius: 100
+  material: !lambertian
+    color: [0.7, 0.0, 0.0]

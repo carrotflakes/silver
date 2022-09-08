@@ -130,6 +130,7 @@ fn main() {
     );
     let sample: i32 = 20;
     let scene = make_scene_2();
+    // let scene = silver::yaml::from_yaml("./scene.yml").unwrap();
 
     let start = std::time::Instant::now();
     let pixels = render(&camera, &scene, width, height, sample);

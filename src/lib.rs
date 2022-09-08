@@ -7,3 +7,4 @@ pub mod render;
 pub mod scene;
 pub mod shapes;
 pub mod vec3;
+pub mod yaml;
