@@ -16,15 +16,20 @@ impl Triangle {
 
 impl Shape for Triangle {
     fn hit(&self, ray: &Ray, t0: f64, t1: f64) -> Option<HitRec> {
-        if let Some((t, _u, _v)) =
-            triangle_intersect(ray, &self.0, &self.1, &self.2, ConstBool::<false>)
+        if let Some((t, _u, _v, positive)) =
+            triangle_intersect(ray, &self.0, &self.1, &self.2, true)
         {
             if t0 < t && t < t1 {
                 let location = ray.direction * t + ray.origin;
+                let normal = if positive {
+                    triangle_norm(&self.0, &self.1, &self.2)
+                } else {
+                    triangle_norm(&self.0, &self.2, &self.1)
+                };
                 return Some(HitRec {
                     time: t,
                     location,
-                    normal: triangle_norm(&self.0, &self.1, &self.2),
+                    normal,
                 });
             }
         }
@@ -54,13 +59,13 @@ fn triangle_norm(v0: &Vec3, v1: &Vec3, v2: &Vec3) -> Vec3 {
 }
 
 // Tomas Moller
-fn triangle_intersect<R: Bool>(
+fn triangle_intersect(
     ray: &Ray,
     v0: &Vec3,
     v1: &Vec3,
     v2: &Vec3,
-    reverse_size: R,
-) -> Option<(f64, f64, f64)> {
+    reverse_side: bool,
+) -> Option<(f64, f64, f64, bool)> {
     let e1 = *v1 - *v0;
     let e2 = *v2 - *v0;
     let pvec = ray.direction.cross(&e2);
@@ -81,45 +86,26 @@ fn triangle_intersect<R: Bool>(
         if v < 0.0 || u + v > det {
             return None;
         }
-    } else if det < -(1e-3) {
-        if reverse_size.value() {
-            let tvec = ray.origin - *v0;
-            u = tvec.dot(&pvec);
-            if u > 0.0 || u < det {
-                return None;
-            }
 
-            qvec = tvec.cross(&e1);
-            v = ray.direction.dot(&qvec);
-            if v > 0.0 || u + v < det {
-                return None;
-            }
-        } else {
+        let inv_det = 1.0 / det;
+        let t = e2.dot(&qvec);
+        return Some((t * inv_det, u * inv_det, v * inv_det, true));
+    } else if reverse_side && det < -(1e-3) {
+        let tvec = ray.origin - *v0;
+        u = tvec.dot(&pvec);
+        if u > 0.0 || u < det {
             return None;
         }
-    } else {
-        return None;
+
+        qvec = tvec.cross(&e1);
+        v = ray.direction.dot(&qvec);
+        if v > 0.0 || u + v < det {
+            return None;
+        }
+
+        let inv_det = 1.0 / det;
+        let t = e2.dot(&qvec);
+        return Some((t * inv_det, u * inv_det, v * inv_det, false));
     }
-
-    let inv_det = 1.0 / det;
-    let t = e2.dot(&qvec);
-    Some((t * inv_det, u * inv_det, v * inv_det))
-}
-
-trait Bool {
-    fn value(&self) -> bool;
-}
-
-impl Bool for bool {
-    fn value(&self) -> bool {
-        *self
-    }
-}
-
-struct ConstBool<const B: bool>;
-
-impl<const B: bool> Bool for ConstBool<B> {
-    fn value(&self) -> bool {
-        B
-    }
+    return None;
 }
