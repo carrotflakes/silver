@@ -6,6 +6,7 @@ pub struct HitRec {
     pub time: f64,
     pub location: Vec3,
     pub normal: Vec3,
+    pub uv: [f64; 2],
 }
 
 pub trait Shape {

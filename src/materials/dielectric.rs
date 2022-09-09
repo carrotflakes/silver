@@ -14,7 +14,7 @@ impl Dielectric {
 }
 
 impl Material for Dielectric {
-    fn ray(&self, ray: &Ray, location: &Vec3, normal: &Vec3) -> Ray {
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &Vec3, _uv: [f64; 2]) -> Ray {
         let b: Vec3 = -(ray.direction.dot(normal)) * *normal;
         let reflected: Vec3 = ray.direction + 2.0 * b;
 
@@ -41,7 +41,7 @@ impl Material for Dielectric {
         Ray::new(*location, v)
     }
 
-    fn color(&self, color: &Vec3) -> Vec3 {
+    fn color(&self, color: &Vec3, _uv: [f64; 2]) -> Vec3 {
         *color
     }
 }

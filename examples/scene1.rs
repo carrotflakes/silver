@@ -1,4 +1,5 @@
 use silver::camera::Camera;
+use silver::materials::checker::Checker;
 use silver::materials::{Basic as BasicMaterial, *};
 use silver::render::{default_env, render};
 use silver::scene::Scene;
@@ -22,7 +23,7 @@ fn main() {
     let sample: i32 = 20;
     let objects = make_scene_1();
     let scene = Scene::new(objects.iter().map(|(s, m)| (s, m)), default_env);
-  
+
     let start = std::time::Instant::now();
     let pixels = render(&camera, |ray| scene.ray(ray), width, height, sample);
     let end = start.elapsed();
@@ -54,6 +55,19 @@ fn make_scene_1() -> Vec<(BasicShape, Basic)> {
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([0.0, -5.0, -7.0]), 5.0)),
             BasicMaterial::Metal(Metal::new(Vec3::new([1.0, 1.0, 1.0]), 0.01)),
+        ),
+        (
+            BasicShape::Sphere(Sphere::new(Vec3::new([1.82, -0.5, -1.4]), 0.5)),
+            BasicMaterial::Checker(Checker::new(
+                Box::new(BasicMaterial::Metal(Metal::new(
+                    Vec3::new([0.2, 1.0, 1.0]),
+                    0.5,
+                ))),
+                Box::new(BasicMaterial::Metal(Metal::new(
+                    Vec3::new([1.0, 1.0, 0.2]),
+                    0.5,
+                ))),
+            )),
         ),
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([1.3, -0.5, -1.7]), 0.5)),

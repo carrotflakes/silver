@@ -14,11 +14,11 @@ impl DiffuseLight {
 }
 
 impl Material for DiffuseLight {
-    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &Vec3) -> Ray {
+    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &Vec3, _uv: [f64; 2]) -> Ray {
         Ray::new(*location, *normal)
     }
 
-    fn color(&self, _color: &Vec3) -> Vec3 {
+    fn color(&self, _color: &Vec3, _uv: [f64; 2]) -> Vec3 {
         self.color
     }
 }

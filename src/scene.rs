@@ -63,13 +63,16 @@ impl<S: Shape, M: Material, DS: Deref<Target = S>, DM: Deref<Target = M>, E: Fn(
 
         if let Some((
             HitRec {
-                location, normal, ..
+                location,
+                normal,
+                uv,
+                ..
             },
             Object { material, .. },
         )) = self.hit(ray)
         {
-            let r = material.ray(&ray, &location, &normal);
-            material.color(&self.ray_(&r, depth - 1))
+            let r = material.ray(&ray, &location, &normal, uv);
+            material.color(&self.ray_(&r, depth - 1), uv)
         } else {
             (self.env)(ray)
         }

@@ -1,5 +1,6 @@
 use rand::Rng;
 
+use silver::materials::checker::Checker;
 use silver::materials::{Basic as BasicMaterial, *};
 use silver::render::{default_env, render};
 use silver::scene::Scene;
@@ -52,7 +53,14 @@ fn make_scene_2() -> Vec<(BasicShape, Basic)> {
     let mut objects = vec![
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([0.0, 1000.0, -2.0]), 1000.0)),
-            BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.7, 0.7, 0.7]))),
+            BasicMaterial::Checker(Checker::new(
+                Box::new(BasicMaterial::Lambertian(Lambertian::new(Vec3::new([
+                    0.7, 0.7, 0.7,
+                ])))),
+                Box::new(BasicMaterial::Lambertian(Lambertian::new(Vec3::new([
+                    0.8, 0.8, 0.8,
+                ])))),
+            )),
         ),
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([1.0, -0.5, -1.0]), 0.5)),

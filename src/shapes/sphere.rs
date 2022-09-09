@@ -30,10 +30,12 @@ impl Shape for Sphere {
                 let time = (-b - root) / (2.0 * a);
                 if time < t1 && time > t0 {
                     let location = ray.at(time);
+                    let normal = (location - self.center).unit_vector();
                     return Some(HitRec {
                         time,
                         location,
-                        normal: (location - self.center).unit_vector(),
+                        normal,
+                        uv: get_sphere_uv(normal),
                     });
                 }
             }
@@ -41,10 +43,12 @@ impl Shape for Sphere {
                 let time = (-b + root) / (2.0 * a);
                 if time < t1 && time > t0 {
                     let location = ray.at(time);
+                    let normal = (location - self.center).unit_vector();
                     return Some(HitRec {
                         time,
                         location,
-                        normal: (location - self.center).unit_vector(),
+                        normal,
+                        uv: get_sphere_uv(normal),
                     });
                 }
             }
@@ -58,4 +62,11 @@ impl Shape for Sphere {
             self.center + Vec3::new([self.radius, self.radius, self.radius]),
         )
     }
+}
+
+fn get_sphere_uv(p: Vec3) -> [f64; 2] {
+    use std::f64::consts::PI;
+    let phi = p.z().atan2(p.x());
+    let theta = p.y().asin();
+    [1.0 - (phi + PI) / (2.0 * PI), (theta + PI / 2.0) / PI]
 }

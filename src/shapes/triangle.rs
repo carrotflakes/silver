@@ -16,8 +16,7 @@ impl Triangle {
 
 impl Shape for Triangle {
     fn hit(&self, ray: &Ray, t0: f64, t1: f64) -> Option<HitRec> {
-        if let Some((t, _u, _v, positive)) =
-            triangle_intersect(ray, &self.0, &self.1, &self.2, true)
+        if let Some((t, u, v, positive)) = triangle_intersect(ray, &self.0, &self.1, &self.2, true)
         {
             if t0 < t && t < t1 {
                 let location = ray.direction * t + ray.origin;
@@ -30,6 +29,7 @@ impl Shape for Triangle {
                     time: t,
                     location,
                     normal,
+                    uv: [u, v],
                 });
             }
         }
