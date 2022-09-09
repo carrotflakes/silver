@@ -18,7 +18,7 @@ fn main() {
         3.0,
     );
     let sample: i32 = 20;
-    let objects = silver::yaml::from_yaml("./scene.yml").unwrap();
+    let objects = silver::formats::yaml::load("./scene.yml").unwrap();
     let scene = Scene::new(objects.iter().map(|(s, m)| (s, m)), default_env);
 
     let start = std::time::Instant::now();

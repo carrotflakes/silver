@@ -2,7 +2,7 @@ use std::{fs, io};
 
 use crate::{materials::Basic as Material, shapes::Basic as Shape, vec3::Vec3};
 
-pub fn from_yaml(file: &str) -> Result<Vec<(Shape, Material)>, String> {
+pub fn load(file: &str) -> Result<Vec<(Shape, Material)>, String> {
     let file = fs::File::open(file).unwrap();
     let reader = io::BufReader::new(file);
     let scene: map::Scene = serde_yaml::from_reader(reader).map_err(|e| e.to_string())?;

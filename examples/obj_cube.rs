@@ -20,7 +20,7 @@ fn main() {
         6.0,
     );
     let sample: i32 = 20;
-    let faces = silver::obj::load("./cube.obj");
+    let faces = silver::formats::obj::load("./cube.obj");
     let shapes: Vec<_> = faces
         .into_iter()
         .map(|f| Triangle::new(transform(f[0]), transform(f[1]), transform(f[2])))

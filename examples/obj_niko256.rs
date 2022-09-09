@@ -19,7 +19,7 @@ fn main() {
         5.0,
     );
     let sample: i32 = 20;
-    let faces = silver::obj::load("./niko256.obj");
+    let faces = silver::formats::obj::load("./niko256.obj");
     let shapes: Vec<_> = faces
         .into_iter()
         .map(|f| Triangle::new(transform(f[0]), transform(f[1]), transform(f[2])))
