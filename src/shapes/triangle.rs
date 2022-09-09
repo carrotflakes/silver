@@ -55,7 +55,7 @@ impl Shape for Triangle {
 fn triangle_norm(v0: &Vec3, v1: &Vec3, v2: &Vec3) -> Vec3 {
     let e1 = *v1 - *v0;
     let e2 = *v2 - *v0;
-    e1.cross(&e2)
+    e1.cross(&e2).unit_vector()
 }
 
 // Tomas Moller
