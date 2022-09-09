@@ -23,7 +23,7 @@ fn main() {
     let faces = silver::formats::obj::load("./cube.obj");
     let shapes: Vec<_> = faces
         .into_iter()
-        .map(|f| Triangle::new(transform(f[0]), transform(f[1]), transform(f[2])))
+        .map(|f| Triangle::new(transform(f[0].0), transform(f[1].0), transform(f[2].0)))
         .collect();
     let material = Lambertian::new(Vec3::new([0.5, 0.5, 0.5]));
     let scene = Scene::new(shapes.iter().map(|s| (s, &material)), default_env);

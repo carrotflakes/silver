@@ -1,5 +1,6 @@
+use image::GenericImageView;
 use silver::camera::Camera;
-use silver::render::{fancy_env, render};
+use silver::render::{default_env, render};
 use silver::scene::Scene;
 use silver::shapes::Triangle;
 use silver::vec3::Vec3;
@@ -10,7 +11,7 @@ fn main() {
     let width: i32 = 640;
     let height: i32 = 480;
     let camera: Camera = Camera::new(
-        &Vec3::new([0.0, -2.0, 8.0]),
+        &Vec3::new([1.0, -2.0, 8.0]),
         &Vec3::new([0.0, 0.0, 0.0]),
         &Vec3::new([0.0, 1.0, 0.0]),
         60.0f64.to_radians(),
@@ -20,13 +21,26 @@ fn main() {
     );
     let sample: i32 = 20;
     let faces = silver::formats::obj::load("./niko256.obj");
-    let shapes: Vec<_> = faces
+
+    let img = image::open("niko256_niko.png").unwrap();
+
+    let image = silver::materials::tex::Image::new(
+        img.width() as usize,
+        img.height() as usize,
+        img.pixels().map(|p| [p.2[0], p.2[1], p.2[2]]).collect(),
+    );
+    let image = unsafe { std::mem::transmute::<_, &'static silver::materials::tex::Image>(&image) };
+    let objects: Vec<_> = faces
         .into_iter()
-        .map(|f| Triangle::new(transform(f[0]), transform(f[1]), transform(f[2])))
+        .map(|f| {
+            (
+                Triangle::new(transform(f[0].0), transform(f[1].0), transform(f[2].0)),
+                silver::materials::tex::Tex::new(image, [f[0].1, f[1].1, f[2].1]),
+            )
+        })
         .collect();
-    // let material = silver::materials::Metal::new(Vec3::new([0.8, 0.8, 0.8]), 0.2);
-    let material = silver::materials::Lambertian::new(Vec3::new([0.8, 0.8, 0.8]));
-    let scene = Scene::new(shapes.iter().map(|s| (s, &material)), fancy_env);
+
+    let scene = Scene::new(objects.iter().map(|(s, m)| (s, m)), default_env);
 
     let start = std::time::Instant::now();
     let pixels = render(&camera, |ray| scene.ray(ray), width, height, sample);

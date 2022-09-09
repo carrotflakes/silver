@@ -4,7 +4,7 @@ use std::{
     io::{BufRead, BufReader},
 };
 
-pub fn load(file: &str) -> Vec<[[f32; 3]; 3]> {
+pub fn load(file: &str) -> Vec<[([f32; 3], [f32; 2]); 3]> {
     let file = File::open(file).unwrap();
     let reader = BufReader::new(file);
 
@@ -17,6 +17,9 @@ pub fn load(file: &str) -> Vec<[[f32; 3]; 3]> {
         let line = line.unwrap();
         let mut tokens = line.split_whitespace();
         match tokens.next() {
+            Some("mtllib") => {
+                // let name = tokens.next().unwrap();
+            }
             Some("v") => {
                 vs.push(
                     tokens
@@ -77,9 +80,9 @@ pub fn load(file: &str) -> Vec<[[f32; 3]; 3]> {
     fs.iter()
         .map(|f| {
             [
-                vs[f[0][0] as usize - 1],
-                vs[f[1][0] as usize - 1],
-                vs[f[2][0] as usize - 1],
+                (vs[f[0][0] as usize - 1], vts[f[0][1] as usize - 1]),
+                (vs[f[1][0] as usize - 1], vts[f[1][1] as usize - 1]),
+                (vs[f[2][0] as usize - 1], vts[f[2][1] as usize - 1]),
             ]
         })
         .collect()
