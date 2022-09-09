@@ -1,18 +1,47 @@
+use std::ops::Deref;
+
 use crate::bbox::BBox;
-use crate::{materials::material::Material, shapes::Shape};
+use crate::materials::material::Material;
+use crate::ray::Ray;
+use crate::shapes::shape::HitRec;
+use crate::shapes::Shape;
+use crate::vec3::Vec3;
 
-use super::ray::Ray;
-use super::shapes::shape::HitRec;
-use super::vec3::Vec3;
-
-pub struct Scene<S: Shape, M: Material, E: Fn(&Ray) -> Vec3> {
-    pub objects: Vec<Object<S, M>>,
-    pub env: E,
+struct Object<S: Shape, M: Material, DS: Deref<Target = S>, DM: Deref<Target = M>> {
+    shape: DS,
+    material: DM,
+    bbox: BBox,
 }
 
-impl<S: Shape, M: Material, E: Fn(&Ray) -> Vec3> Scene<S, M, E> {
-    fn hit(&self, ray: &Ray) -> Option<(HitRec, &Object<S, M>)> {
-        let mut hit: Option<(HitRec, &Object<S, M>)> = None;
+pub struct Scene<
+    S: Shape,
+    M: Material,
+    DS: Deref<Target = S>,
+    DM: Deref<Target = M>,
+    E: Fn(&Ray) -> Vec3,
+> {
+    objects: Vec<Object<S, M, DS, DM>>,
+    env: E,
+}
+
+impl<S: Shape, M: Material, DS: Deref<Target = S>, DM: Deref<Target = M>, E: Fn(&Ray) -> Vec3>
+    Scene<S, M, DS, DM, E>
+{
+    pub fn new(it: impl Iterator<Item = (DS, DM)>, env: E) -> Self {
+        Self {
+            objects: it
+                .map(|(s, m)| Object {
+                    bbox: s.bbox(),
+                    shape: s,
+                    material: m,
+                })
+                .collect(),
+            env,
+        }
+    }
+
+    fn hit(&self, ray: &Ray) -> Option<(HitRec, &Object<S, M, DS, DM>)> {
+        let mut hit: Option<(HitRec, &Object<S, M, DS, DM>)> = None;
         let mut time: f64 = std::f64::MAX;
         for object in &self.objects {
             if !object.bbox.should_hit(ray) {
@@ -48,21 +77,5 @@ impl<S: Shape, M: Material, E: Fn(&Ray) -> Vec3> Scene<S, M, E> {
 
     pub fn ray(&self, ray: &Ray) -> Vec3 {
         self.ray_(ray, 50)
-    }
-}
-
-pub struct Object<S: Shape, M: Material> {
-    pub shape: S,
-    pub material: M,
-    pub bbox: BBox,
-}
-
-impl<S: Shape, M: Material> Object<S, M> {
-    pub fn new(shape: S, material: M) -> Self {
-        Object {
-            bbox: shape.bbox(),
-            shape,
-            material,
-        }
     }
 }

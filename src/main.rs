@@ -1,96 +1,89 @@
 use rand::Rng;
 
 use silver::materials::{Basic as BasicMaterial, *};
-use silver::ray::Ray;
 use silver::render::{default_env, render};
-use silver::scene::Object;
 use silver::scene::Scene;
 use silver::shapes::{Basic as BasicShape, Sphere};
 use silver::vec3::Vec3;
 use silver::{camera::Camera, shapes::Triangle};
 
-type MyScene = Scene<BasicShape, BasicMaterial, fn(&Ray) -> Vec3>;
-
-fn make_scene_1() -> MyScene {
-    Scene {
-        objects: vec![
-            Object::new(
-                BasicShape::Sphere(Sphere::new(Vec3::new([0.0, 1000.0, -2.0]), 1000.0)),
-                BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.7, 0.7, 0.7]))),
-            ),
-            Object::new(
-                BasicShape::Sphere(Sphere::new(Vec3::new([0.0, -5.0, -7.0]), 5.0)),
-                BasicMaterial::Metal(Metal::new(Vec3::new([1.0, 1.0, 1.0]), 0.01)),
-            ),
-            Object::new(
-                BasicShape::Sphere(Sphere::new(Vec3::new([1.3, -0.5, -1.7]), 0.5)),
-                BasicMaterial::Metal(Metal::new(Vec3::new([0.2, 1.0, 1.0]), 0.5)),
-            ),
-            Object::new(
-                BasicShape::Sphere(Sphere::new(Vec3::new([0.51, -0.5, -2.0]), 0.5)),
-                BasicMaterial::Lambertian(Lambertian::new(Vec3::new([1.0, 0.1, 0.1]))),
-            ),
-            Object::new(
-                BasicShape::Sphere(Sphere::new(Vec3::new([-0.51, -0.5, -2.0]), 0.5)),
-                BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.1, 0.1, 1.0]))),
-            ),
-            Object::new(
-                BasicShape::Sphere(Sphere::new(Vec3::new([0.0, -0.5, -2.4]), 0.5)),
-                BasicMaterial::Lambertian(Lambertian::new(Vec3::new([1.0, 1.0, 0.1]))),
-            ),
-            Object::new(
-                BasicShape::Sphere(Sphere::new(Vec3::new([0.0, -0.5, -1.0]), 0.5)),
-                BasicMaterial::Dielectric(Dielectric::new(1.1)),
-            ),
-            Object::new(
-                BasicShape::Sphere(Sphere::new(Vec3::new([-1.3, -0.2, -0.0]), 0.2)),
-                BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.9, 0.9, 0.9]))),
-            ),
-            Object::new(
-                BasicShape::Sphere(Sphere::new(Vec3::new([-1.3, -0.2, -1.0]), 0.2)),
-                BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.9, 0.9, 0.9]))),
-            ),
-            Object::new(
-                BasicShape::Sphere(Sphere::new(Vec3::new([-1.3, -0.2, -2.0]), 0.2)),
-                BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.9, 0.9, 0.9]))),
-            ),
-            Object::new(
-                BasicShape::Sphere(Sphere::new(Vec3::new([-1.3, -0.2, -3.0]), 0.2)),
-                BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.9, 0.9, 0.9]))),
-            ),
-            Object::new(
-                BasicShape::Sphere(Sphere::new(Vec3::new([-0.8, -0.2, -1.0]), 0.2)),
-                BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3::new([3.0, 3.0, 3.0]))),
-            ),
-        ],
-        env: default_env,
-    }
-}
-
-fn make_scene_2() -> MyScene {
-    let mut rng: rand::rngs::StdRng = rand::SeedableRng::seed_from_u64(13);
-    let mut objects = vec![
-        Object::new(
+fn make_scene_1() -> Vec<(BasicShape, Basic)> {
+    vec![
+        (
             BasicShape::Sphere(Sphere::new(Vec3::new([0.0, 1000.0, -2.0]), 1000.0)),
             BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.7, 0.7, 0.7]))),
         ),
-        Object::new(
+        (
+            BasicShape::Sphere(Sphere::new(Vec3::new([0.0, -5.0, -7.0]), 5.0)),
+            BasicMaterial::Metal(Metal::new(Vec3::new([1.0, 1.0, 1.0]), 0.01)),
+        ),
+        (
+            BasicShape::Sphere(Sphere::new(Vec3::new([1.3, -0.5, -1.7]), 0.5)),
+            BasicMaterial::Metal(Metal::new(Vec3::new([0.2, 1.0, 1.0]), 0.5)),
+        ),
+        (
+            BasicShape::Sphere(Sphere::new(Vec3::new([0.51, -0.5, -2.0]), 0.5)),
+            BasicMaterial::Lambertian(Lambertian::new(Vec3::new([1.0, 0.1, 0.1]))),
+        ),
+        (
+            BasicShape::Sphere(Sphere::new(Vec3::new([-0.51, -0.5, -2.0]), 0.5)),
+            BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.1, 0.1, 1.0]))),
+        ),
+        (
+            BasicShape::Sphere(Sphere::new(Vec3::new([0.0, -0.5, -2.4]), 0.5)),
+            BasicMaterial::Lambertian(Lambertian::new(Vec3::new([1.0, 1.0, 0.1]))),
+        ),
+        (
+            BasicShape::Sphere(Sphere::new(Vec3::new([0.0, -0.5, -1.0]), 0.5)),
+            BasicMaterial::Dielectric(Dielectric::new(1.1)),
+        ),
+        (
+            BasicShape::Sphere(Sphere::new(Vec3::new([-1.3, -0.2, -0.0]), 0.2)),
+            BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.9, 0.9, 0.9]))),
+        ),
+        (
+            BasicShape::Sphere(Sphere::new(Vec3::new([-1.3, -0.2, -1.0]), 0.2)),
+            BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.9, 0.9, 0.9]))),
+        ),
+        (
+            BasicShape::Sphere(Sphere::new(Vec3::new([-1.3, -0.2, -2.0]), 0.2)),
+            BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.9, 0.9, 0.9]))),
+        ),
+        (
+            BasicShape::Sphere(Sphere::new(Vec3::new([-1.3, -0.2, -3.0]), 0.2)),
+            BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.9, 0.9, 0.9]))),
+        ),
+        (
+            BasicShape::Sphere(Sphere::new(Vec3::new([-0.8, -0.2, -1.0]), 0.2)),
+            BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3::new([3.0, 3.0, 3.0]))),
+        ),
+    ]
+}
+
+fn make_scene_2() -> Vec<(BasicShape, Basic)> {
+    let mut rng: rand::rngs::StdRng = rand::SeedableRng::seed_from_u64(13);
+    let mut objects = vec![
+        (
+            BasicShape::Sphere(Sphere::new(Vec3::new([0.0, 1000.0, -2.0]), 1000.0)),
+            BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.7, 0.7, 0.7]))),
+        ),
+        (
             BasicShape::Sphere(Sphere::new(Vec3::new([1.0, -0.5, -1.0]), 0.5)),
             BasicMaterial::Metal(Metal::new(Vec3::new([1.0, 1.0, 1.0]), 0.01)),
         ),
-        Object::new(
+        (
             BasicShape::Sphere(Sphere::new(Vec3::new([0.4, -0.5, -1.8]), 0.5)),
             BasicMaterial::Dielectric(Dielectric::new(1.6)),
         ),
-        Object::new(
+        (
             BasicShape::Sphere(Sphere::new(Vec3::new([-0.2, -0.5, -2.6]), 0.5)),
             BasicMaterial::Lambertian(Lambertian::new(Vec3::new([1.0, 1.0, 1.0]))),
         ),
-        Object::new(
+        (
             BasicShape::Sphere(Sphere::new(Vec3::new([0.0, -1.6, -1.8]), 0.3)),
             BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3::new([3.0, 3.0, 0.0]))),
         ),
-        Object::new(
+        (
             BasicShape::Triangle(Triangle::new(
                 Vec3::new([0.0, 0.0, -0.5]),
                 Vec3::new([-0.2, -0.3, -0.5]),
@@ -100,7 +93,7 @@ fn make_scene_2() -> MyScene {
         ),
     ];
     for _ in 0..30 {
-        objects.push(Object::new(
+        objects.push((
             BasicShape::Sphere(Sphere::new(
                 Vec3::new([rng.gen_range(-3.0..3.0), -0.2, rng.gen_range(-4.0..2.0)]),
                 0.2,
@@ -108,10 +101,7 @@ fn make_scene_2() -> MyScene {
             BasicMaterial::Lambertian(Lambertian::new(Vec3::random(&mut rng))),
         ));
     }
-    Scene {
-        objects: objects,
-        env: default_env,
-    }
+    objects
 }
 
 fn main() {
@@ -129,7 +119,8 @@ fn main() {
         3.0,
     );
     let sample: i32 = 20;
-    let scene = make_scene_2();
+    let objects = make_scene_2();
+    let scene = Scene::new(objects.iter().map(|(s, m)| (s, m)), default_env);
     // let scene = silver::yaml::from_yaml("./scene.yml").unwrap();
 
     let start = std::time::Instant::now();

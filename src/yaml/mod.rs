@@ -1,15 +1,17 @@
 use std::{fs, io};
 
-use crate::{
-    materials::Basic as Material, ray::Ray, render::default_env, scene::Scene,
-    shapes::Basic as Shape, vec3::Vec3,
-};
+use crate::{materials::Basic as Material, shapes::Basic as Shape, vec3::Vec3};
 
-pub fn from_yaml(file: &str) -> Result<Scene<Shape, Material, fn(&Ray) -> Vec3>, String> {
+pub fn from_yaml(file: &str) -> Result<Vec<(Shape, Material)>, String> {
     let file = fs::File::open(file).unwrap();
     let reader = io::BufReader::new(file);
     let scene: map::Scene = serde_yaml::from_reader(reader).map_err(|e| e.to_string())?;
-    Ok(scene.into())
+
+    Ok(scene
+        .objects
+        .into_iter()
+        .map(|object| object.into())
+        .collect())
 }
 
 mod map {
@@ -39,22 +41,9 @@ mod map {
     }
 }
 
-impl Into<Scene<Shape, Material, fn(&Ray) -> Vec3>> for map::Scene {
-    fn into(self) -> Scene<Shape, Material, fn(&Ray) -> Vec3> {
-        Scene {
-            objects: self
-                .objects
-                .into_iter()
-                .map(|object| object.into())
-                .collect(),
-            env: default_env,
-        }
-    }
-}
-
-impl Into<crate::scene::Object<Shape, Material>> for map::Object {
-    fn into(self) -> crate::scene::Object<Shape, Material> {
-        crate::scene::Object::new(self.shape.into(), self.material.into())
+impl Into<(Shape, Material)> for map::Object {
+    fn into(self) -> (Shape, Material) {
+        (self.shape.into(), self.material.into())
     }
 }
 
