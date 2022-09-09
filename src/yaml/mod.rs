@@ -52,9 +52,9 @@ impl Into<Scene<Shape, Material, fn(&Ray) -> Vec3>> for map::Scene {
     }
 }
 
-impl Into<crate::object::Object<Shape, Material>> for map::Object {
-    fn into(self) -> crate::object::Object<Shape, Material> {
-        crate::object::Object::new(self.shape.into(), self.material.into())
+impl Into<crate::scene::Object<Shape, Material>> for map::Object {
+    fn into(self) -> crate::scene::Object<Shape, Material> {
+        crate::scene::Object::new(self.shape.into(), self.material.into())
     }
 }
 

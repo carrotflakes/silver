@@ -1,6 +1,6 @@
+use crate::bbox::BBox;
 use crate::{materials::material::Material, shapes::Shape};
 
-use super::object::Object;
 use super::ray::Ray;
 use super::shapes::shape::HitRec;
 use super::vec3::Vec3;
@@ -48,5 +48,21 @@ impl<S: Shape, M: Material, E: Fn(&Ray) -> Vec3> Scene<S, M, E> {
 
     pub fn ray(&self, ray: &Ray) -> Vec3 {
         self.ray_(ray, 50)
+    }
+}
+
+pub struct Object<S: Shape, M: Material> {
+    pub shape: S,
+    pub material: M,
+    pub bbox: BBox,
+}
+
+impl<S: Shape, M: Material> Object<S, M> {
+    pub fn new(shape: S, material: M) -> Self {
+        Object {
+            bbox: shape.bbox(),
+            shape,
+            material,
+        }
     }
 }

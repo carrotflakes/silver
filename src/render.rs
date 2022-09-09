@@ -1,20 +1,14 @@
 use itertools::Itertools;
 use rayon::prelude::*;
 
-use crate::{
-    camera::Camera, materials::Material, ray::Ray, scene::Scene, shapes::Shape, vec3::Vec3,
-};
+use crate::{camera::Camera, ray::Ray, vec3::Vec3};
 
-pub fn render<
-    S: Shape + Send + Sync,
-    M: Material + Send + Sync,
-    E: Fn(&Ray) -> Vec3 + Send + Sync,
->(
+pub fn render(
     camera: &Camera,
-    scene: &Scene<S, M, E>,
+    sample: impl (Fn(&Ray) -> Vec3) + Send + Sync,
     width: i32,
     height: i32,
-    sample: i32,
+    sample_per_pixel: i32,
 ) -> Vec<Vec<Vec3>> {
     let vec = (0..height)
         .cartesian_product(0..width)
@@ -24,15 +18,17 @@ pub fn render<
             let u: f64 = x as f64 / width as f64;
             let v: f64 = y as f64 / height as f64;
             let mut col: Vec3 = Vec3::ZERO;
-            for dy in 0..sample {
-                for dx in 0..sample {
-                    let du: f64 = ((dx as f64 + 0.5) / sample as f64 - 0.5) / width as f64;
-                    let dv: f64 = ((dy as f64 + 0.5) / sample as f64 - 0.5) / height as f64;
+            for dy in 0..sample_per_pixel {
+                for dx in 0..sample_per_pixel {
+                    let du: f64 =
+                        ((dx as f64 + 0.5) / sample_per_pixel as f64 - 0.5) / width as f64;
+                    let dv: f64 =
+                        ((dy as f64 + 0.5) / sample_per_pixel as f64 - 0.5) / height as f64;
                     let r: Ray = camera.get_ray(u + du, v + dv);
-                    col = col + scene.ray(&r);
+                    col = col + sample(&r);
                 }
             }
-            col = col / sample.pow(2) as f64;
+            col = col / sample_per_pixel.pow(2) as f64;
             (y, x, linear_to_gamma(&col, 2.2))
         })
         .collect::<Vec<_>>();

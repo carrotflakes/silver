@@ -1,9 +1,9 @@
 use rand::Rng;
 
 use silver::materials::{Basic as BasicMaterial, *};
-use silver::object::Object;
 use silver::ray::Ray;
 use silver::render::{default_env, render};
+use silver::scene::Object;
 use silver::scene::Scene;
 use silver::shapes::{Basic as BasicShape, Sphere};
 use silver::vec3::Vec3;
@@ -133,7 +133,7 @@ fn main() {
     // let scene = silver::yaml::from_yaml("./scene.yml").unwrap();
 
     let start = std::time::Instant::now();
-    let pixels = render(&camera, &scene, width, height, sample);
+    let pixels = render(&camera, |ray| scene.ray(ray), width, height, sample);
     let end = start.elapsed();
     println!(
         "{}.{:04} elapsed",
