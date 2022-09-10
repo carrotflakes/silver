@@ -47,6 +47,9 @@ impl<S: Shape, M: Material, DS: Deref<Target = S>, DM: Deref<Target = M>, E: Fn(
             if !object.bbox.should_hit(ray) {
                 continue;
             }
+            // if !object.bbox.hit_with_time(ray, 0.001, time) {
+            //     continue;
+            // }
 
             if let Some(hr) = object.shape.hit(ray, 0.001, time) {
                 time = hr.time;

@@ -1,5 +1,5 @@
 use std::f64;
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::ops::{Add, Deref, Div, Index, Mul, Neg, Sub};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Vec3([f64; 3]);
@@ -40,6 +40,14 @@ impl Vec3 {
     #[inline]
     pub fn b(&self) -> f64 {
         self.0[2]
+    }
+}
+
+impl Index<usize> for Vec3 {
+    type Output = f64;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.0[index]
     }
 }
 
@@ -154,7 +162,7 @@ impl Vec3 {
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct NormVec3(Vec3);
 
-impl std::ops::Deref for NormVec3 {
+impl Deref for NormVec3 {
     type Target = Vec3;
 
     fn deref(&self) -> &Self::Target {

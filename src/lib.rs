@@ -1,4 +1,5 @@
 pub mod bbox;
+pub mod bvh;
 pub mod camera;
 pub mod formats;
 pub mod materials;

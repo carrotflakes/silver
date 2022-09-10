@@ -2,13 +2,30 @@ use crate::{ray::Ray, vec3::Vec3};
 
 #[derive(Clone)]
 pub struct BBox {
-    min: Vec3,
-    max: Vec3,
+    pub min: Vec3,
+    pub max: Vec3,
 }
 
 impl BBox {
     pub fn from_min_max(min: Vec3, max: Vec3) -> Self {
+        // Extend a bit
+        // let max = max + Vec3::new([0.00001, 0.00001, 0.00001]);
         BBox { min, max }
+    }
+
+    pub fn merge(&self, other: &Self) -> Self {
+        BBox {
+            min: Vec3::new([
+                self.min[0].min(other.min[0]),
+                self.min[1].min(other.min[1]),
+                self.min[2].min(other.min[2]),
+            ]),
+            max: Vec3::new([
+                self.max[0].max(other.max[0]),
+                self.max[1].max(other.max[1]),
+                self.max[2].max(other.max[2]),
+            ]),
+        }
     }
 
     pub fn should_hit(&self, ray: &Ray) -> bool {
@@ -58,6 +75,29 @@ impl BBox {
                 self.max.x()
             },
         )
+    }
+
+    pub fn hit_with_time(&self, ray: &Ray, tmin: f64, tmax: f64) -> bool {
+        for i in 0..3 {
+            let inv_d = 1.0 / ray.direction[i];
+            let mut t0 = (self.min[i] - ray.origin[i]) * inv_d;
+            let mut t1 = (self.max[i] - ray.origin[i]) * inv_d;
+            if inv_d < 0.0 {
+                std::mem::swap(&mut t0, &mut t1);
+            }
+
+            let tmin = if t0 > tmin { t0 } else { tmin };
+            let tmax = if t1 < tmax { t1 } else { tmax };
+            // The following is slow. but why?
+            // let tmin = t0.max(tmin);
+            // let tmax = t1.min(tmax);
+
+            // original: tmax <= tmin
+            if tmax < tmin {
+                return false;
+            }
+        }
+        true
     }
 }
 
