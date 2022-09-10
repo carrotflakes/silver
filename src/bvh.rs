@@ -7,7 +7,6 @@ use crate::materials::material::Material;
 use crate::ray::Ray;
 use crate::shapes::shape::HitRec;
 use crate::shapes::Shape;
-use crate::vec3::Vec3;
 
 pub struct Object<S: Clone, M: Clone> {
     shape: S,
@@ -84,7 +83,13 @@ impl<S: Shape, M: Material, DS: Deref<Target = S> + Clone, DM: Deref<Target = M>
         }
     }
 
-    fn hit(&self, ray: &Ray, tmax: f64, res: &mut Option<(HitRec, DM)>) {
+    pub fn hit(&self, ray: &Ray) -> Option<(HitRec, DM)> {
+        let mut res = None;
+        self.hit_(ray, std::f64::MAX, &mut res);
+        res
+    }
+
+    fn hit_(&self, ray: &Ray, tmax: f64, res: &mut Option<(HitRec, DM)>) {
         let tmin = 0.001;
         match self {
             BVH::Object(o) => {
@@ -99,35 +104,9 @@ impl<S: Shape, M: Material, DS: Deref<Target = S> + Clone, DM: Deref<Target = M>
                 if !bbox.hit_with_time(ray, tmin, tmax) {
                     return;
                 }
-                left.hit(ray, tmax, res);
-                right.hit(ray, res.as_ref().map(|r| r.0.time).unwrap_or(tmax), res);
+                left.hit_(ray, tmax, res);
+                right.hit_(ray, res.as_ref().map(|r| r.0.time).unwrap_or(tmax), res);
             }
-        }
-    }
-
-    pub fn sample(&self, ray: &Ray, cutoff: i32, env: impl Fn(&Ray) -> Vec3) -> Vec3 {
-        if cutoff == 0 {
-            return Vec3::ZERO;
-        }
-
-        let mut res = None;
-        self.hit(ray, std::f64::MAX, &mut res);
-
-        if let Some((
-            HitRec {
-                location,
-                normal,
-                uv,
-                ..
-            },
-            material,
-        )) = res
-        {
-            let r = material.ray(&ray, &location, &normal, uv);
-            let color = self.sample(&r, cutoff - 1, env);
-            material.color(&color, uv)
-        } else {
-            env(ray)
         }
     }
 }

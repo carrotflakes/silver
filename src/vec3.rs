@@ -46,6 +46,7 @@ impl Vec3 {
 impl Index<usize> for Vec3 {
     type Output = f64;
 
+    #[inline]
     fn index(&self, index: usize) -> &Self::Output {
         &self.0[index]
     }

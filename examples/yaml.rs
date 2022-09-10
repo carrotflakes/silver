@@ -1,6 +1,6 @@
 use silver::camera::Camera;
+use silver::linear_search::LinearSearch;
 use silver::render::{default_env, render};
-use silver::scene::Scene;
 use silver::vec3::Vec3;
 
 fn main() {
@@ -19,10 +19,16 @@ fn main() {
     );
     let sample: i32 = 20;
     let objects = silver::formats::yaml::load("./scene.yml").unwrap();
-    let scene = Scene::new(objects.iter().map(|(s, m)| (s, m)));
+    let scene = LinearSearch::new(objects.iter().map(|(s, m)| (s, m)));
 
     let start = std::time::Instant::now();
-    let pixels = render(&camera, |ray| scene.sample(ray, 50, default_env), width, height, sample);
+    let pixels = render(
+        &camera,
+        |ray| silver::sample::sample(|r| scene.hit(r), default_env, ray, 50),
+        width,
+        height,
+        sample,
+    );
     let end = start.elapsed();
     println!(
         "{}.{:04} elapsed",
