@@ -40,8 +40,8 @@ impl<S: Shape, M: Material, DS: Deref<Target = S>, DM: Deref<Target = M>, E: Fn(
         }
     }
 
-    fn hit(&self, ray: &Ray) -> Option<(HitRec, &Object<S, M, DS, DM>)> {
-        let mut hit: Option<(HitRec, &Object<S, M, DS, DM>)> = None;
+    fn hit(&self, ray: &Ray) -> Option<(HitRec, &DM)> {
+        let mut hit: Option<(HitRec, &DM)> = None;
         let mut time: f64 = std::f64::MAX;
         for object in &self.objects {
             if !object.bbox.should_hit(ray) {
@@ -50,14 +50,14 @@ impl<S: Shape, M: Material, DS: Deref<Target = S>, DM: Deref<Target = M>, E: Fn(
 
             if let Some(hr) = object.shape.hit(ray, 0.001, time) {
                 time = hr.time;
-                hit = Some((hr, &object));
+                hit = Some((hr, &object.material));
             }
         }
         hit
     }
 
-    fn ray_(&self, ray: &Ray, depth: u32) -> Vec3 {
-        if depth == 0 {
+    pub fn sample(&self, ray: &Ray, cutoff: i32) -> Vec3 {
+        if cutoff == 0 {
             return Vec3::ZERO;
         }
 
@@ -68,17 +68,14 @@ impl<S: Shape, M: Material, DS: Deref<Target = S>, DM: Deref<Target = M>, E: Fn(
                 uv,
                 ..
             },
-            Object { material, .. },
+            material,
         )) = self.hit(ray)
         {
             let r = material.ray(&ray, &location, &normal, uv);
-            material.color(&self.ray_(&r, depth - 1), uv)
+            let color = self.sample(&r, cutoff - 1);
+            material.color(&color, uv)
         } else {
             (self.env)(ray)
         }
-    }
-
-    pub fn ray(&self, ray: &Ray) -> Vec3 {
-        self.ray_(ray, 50)
     }
 }
