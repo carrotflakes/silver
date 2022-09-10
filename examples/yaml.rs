@@ -29,12 +29,7 @@ fn main() {
         height,
         sample,
     );
-    let end = start.elapsed();
-    println!(
-        "{}.{:04} elapsed",
-        end.as_secs(),
-        end.subsec_nanos() / 1_000_000
-    );
+    println!("{:?} elapsed", start.elapsed());
 
     let img = image::ImageBuffer::from_fn(width as u32, height as u32, |x, y| {
         let col = pixels[y as usize][x as usize];
