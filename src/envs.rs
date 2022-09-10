@@ -17,3 +17,7 @@ pub fn fancy_env(ray: &Ray) -> Vec3 {
             + 1.0)
             * Vec3::new([0.0, 0.0, 0.5])
 }
+
+pub fn dark_env(_: &Ray) -> Vec3 {
+    Vec3::ZERO
+}
