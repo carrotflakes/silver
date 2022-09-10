@@ -24,4 +24,8 @@ impl Material for DiffuseLight {
     fn color(&self, _color: &Vec3, _uv: [f64; 2]) -> Vec3 {
         self.color
     }
+
+    fn scatter(&self) -> bool {
+        false
+    }
 }

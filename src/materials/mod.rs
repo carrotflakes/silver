@@ -18,6 +18,9 @@ use crate::{
 pub trait Material {
     fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, uv: [f64; 2]) -> Ray;
     fn color(&self, color: &Vec3, uv: [f64; 2]) -> Vec3;
+    fn scatter(&self) -> bool {
+        true
+    }
 }
 
 #[derive(Clone)]
@@ -47,6 +50,16 @@ impl Material for Basic {
             Basic::Lambertian(lambertian) => lambertian.color(color, uv),
             Basic::Metal(metal) => metal.color(color, uv),
             Basic::Checker(checker) => checker.color(color, uv),
+        }
+    }
+
+    fn scatter(&self) -> bool {
+        match self {
+            Basic::Dielectric(dielectric) => dielectric.scatter(),
+            Basic::DiffuseLight(diffuse_light) => diffuse_light.scatter(),
+            Basic::Lambertian(lambertian) => lambertian.scatter(),
+            Basic::Metal(metal) => metal.scatter(),
+            Basic::Checker(checker) => checker.scatter(),
         }
     }
 }

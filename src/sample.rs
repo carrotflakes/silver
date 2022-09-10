@@ -26,7 +26,11 @@ pub fn sample<M: Material, DM: Deref<Target = M>>(
     )) = hit(ray)
     {
         let r = material.ray(&ray, &location, &normal, uv);
-        let color = sample(hit, env, &r, cutoff - 1);
+        let color = if material.scatter() {
+            sample(hit, env, &r, cutoff - 1)
+        } else {
+            Vec3::ZERO
+        };
         material.color(&color, uv)
     } else {
         env(ray)
