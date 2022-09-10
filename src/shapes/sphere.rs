@@ -30,12 +30,12 @@ impl Shape for Sphere {
                 let time = (-b - root) / (2.0 * a);
                 if time < t1 && time > t0 {
                     let location = ray.at(time);
-                    let normal = (location - self.center).unit_vector();
+                    let normal = (location - self.center).normalize();
                     return Some(HitRec {
                         time,
                         location,
                         normal,
-                        uv: get_sphere_uv(normal),
+                        uv: get_sphere_uv(*normal),
                     });
                 }
             }
@@ -43,12 +43,12 @@ impl Shape for Sphere {
                 let time = (-b + root) / (2.0 * a);
                 if time < t1 && time > t0 {
                     let location = ray.at(time);
-                    let normal = (location - self.center).unit_vector();
+                    let normal = (location - self.center).normalize();
                     return Some(HitRec {
                         time,
                         location,
                         normal,
-                        uv: get_sphere_uv(normal),
+                        uv: get_sphere_uv(*normal),
                     });
                 }
             }

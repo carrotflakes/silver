@@ -1,6 +1,9 @@
-use super::super::ray::Ray;
-use super::super::vec3::Vec3;
-use super::material::Material;
+use crate::{
+    ray::Ray,
+    vec3::{NormVec3, Vec3},
+};
+
+use super::Material;
 
 #[derive(Clone)]
 pub struct Checker<T: Material> {
@@ -15,7 +18,7 @@ impl<T: Material> Checker<T> {
 }
 
 impl<T: Material> Material for Checker<T> {
-    fn ray(&self, ray: &Ray, location: &Vec3, normal: &Vec3, uv: [f64; 2]) -> Ray {
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, uv: [f64; 2]) -> Ray {
         let [u, v] = uv;
         if ((u * 10.0).floor() as i32 + (v * 10.0).floor() as i32) % 2 == 0 {
             self.even.ray(ray, location, normal, uv)

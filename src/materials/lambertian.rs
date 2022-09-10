@@ -1,6 +1,9 @@
-use super::super::ray::Ray;
-use super::super::vec3::Vec3;
-use super::material::Material;
+use crate::{
+    ray::Ray,
+    vec3::{NormVec3, Vec3},
+};
+
+use super::Material;
 
 #[derive(Clone)]
 pub struct Lambertian {
@@ -14,8 +17,8 @@ impl Lambertian {
 }
 
 impl Material for Lambertian {
-    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &Vec3, _uv: [f64; 2]) -> Ray {
-        Ray::new(*location, *normal + Vec3::random_in_unit_sphere(&mut rand::thread_rng()))
+    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> Ray {
+        Ray::new(*location, **normal + Vec3::random_in_unit_sphere(&mut rand::thread_rng()))
     }
 
     fn color(&self, color: &Vec3, _uv: [f64; 2]) -> Vec3 {

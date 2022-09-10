@@ -108,9 +108,9 @@ impl Vec3 {
         (self.x().powi(2i32) + self.y().powi(2i32) + self.z().powi(2i32)).sqrt()
     }
 
-    pub fn unit_vector(&self) -> Vec3 {
+    pub fn normalize(&self) -> NormVec3 {
         let norm = self.norm();
-        Vec3([self.x() / norm, self.y() / norm, self.z() / norm]) // panicable!
+        NormVec3(Vec3([self.x() / norm, self.y() / norm, self.z() / norm])) // panicable!
     }
 
     pub fn dot(&self, rhs: &Vec3) -> f64 {
@@ -148,5 +148,16 @@ impl Vec3 {
                 return v;
             }
         }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct NormVec3(Vec3);
+
+impl std::ops::Deref for NormVec3 {
+    type Target = Vec3;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }

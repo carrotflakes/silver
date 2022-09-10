@@ -1,6 +1,9 @@
-use crate::materials::material::Material;
-use crate::ray::Ray;
-use crate::vec3::Vec3;
+use crate::{
+    ray::Ray,
+    vec3::{NormVec3, Vec3},
+};
+
+use super::Material;
 
 pub struct Image {
     width: usize,
@@ -46,10 +49,10 @@ impl Tex {
 }
 
 impl Material for Tex {
-    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &Vec3, _uv: [f64; 2]) -> Ray {
+    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> Ray {
         Ray::new(
             *location,
-            *normal + Vec3::random_in_unit_sphere(&mut rand::thread_rng()),
+            **normal + Vec3::random_in_unit_sphere(&mut rand::thread_rng()),
         )
     }
 

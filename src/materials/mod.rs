@@ -12,7 +12,10 @@ pub use lambertian::Lambertian;
 pub use material::Material;
 pub use metal::Metal;
 
-use crate::{ray::Ray, vec3::Vec3};
+use crate::{
+    ray::Ray,
+    vec3::{NormVec3, Vec3},
+};
 
 #[derive(Clone)]
 pub enum Basic {
@@ -24,7 +27,7 @@ pub enum Basic {
 }
 
 impl material::Material for Basic {
-    fn ray(&self, ray: &Ray, location: &Vec3, normal: &Vec3, uv: [f64; 2]) -> Ray {
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, uv: [f64; 2]) -> Ray {
         match self {
             Basic::Dielectric(dielectric) => dielectric.ray(ray, location, normal, uv),
             Basic::DiffuseLight(diffuse_light) => diffuse_light.ray(ray, location, normal, uv),

@@ -22,8 +22,8 @@ impl Camera {
     ) -> Camera {
         let half_h = (vfov / 2.0).tan();
         let half_w = aspect * half_h;
-        let w = (*origin - *target).unit_vector();
-        let u = (vup.cross(&w)).unit_vector();
+        let w = *(*origin - *target).normalize();
+        let u = *(vup.cross(&w)).normalize();
         let v = w.cross(&u);
         Camera {
             origin: *origin,

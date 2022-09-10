@@ -1,6 +1,9 @@
-use super::super::ray::Ray;
-use super::super::vec3::Vec3;
-use super::material::Material;
+use crate::{
+    ray::Ray,
+    vec3::{NormVec3, Vec3},
+};
+
+use super::Material;
 
 #[derive(Clone)]
 pub struct Dielectric {
@@ -14,19 +17,19 @@ impl Dielectric {
 }
 
 impl Material for Dielectric {
-    fn ray(&self, ray: &Ray, location: &Vec3, normal: &Vec3, _uv: [f64; 2]) -> Ray {
-        let b: Vec3 = -(ray.direction.dot(normal)) * *normal;
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> Ray {
+        let b: Vec3 = -(ray.direction.dot(normal)) * **normal;
         let reflected: Vec3 = ray.direction + 2.0 * b;
 
         let (outward_normal, ni_over_nt, cosine) = if ray.direction.dot(normal) > 0.0 {
             (
-                -*normal,
+                -**normal,
                 self.ri,
                 self.ri * ray.direction.dot(normal) / ray.direction.norm(),
             )
         } else {
             (
-                *normal,
+                **normal,
                 self.ri.recip(),
                 -ray.direction.dot(normal) / ray.direction.norm(),
             )
@@ -47,7 +50,7 @@ impl Material for Dielectric {
 }
 
 fn refract(v: &Vec3, n: &Vec3, ni_over_nt: f64) -> Option<Vec3> {
-    let uv = v.unit_vector();
+    let uv = *v.normalize();
     let dt = uv.dot(n);
     let d = 1.0 - ni_over_nt.powi(2) * (1.0 - dt.powi(2));
     if d > 0.0 {

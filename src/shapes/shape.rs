@@ -1,11 +1,11 @@
 use crate::bbox::BBox;
 use crate::ray::Ray;
-use crate::vec3::Vec3;
+use crate::vec3::{NormVec3, Vec3};
 
 pub struct HitRec {
     pub time: f64,
     pub location: Vec3,
-    pub normal: Vec3,
+    pub normal: NormVec3,
     pub uv: [f64; 2],
 }
 

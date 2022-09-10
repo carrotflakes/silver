@@ -2,7 +2,7 @@ use crate::{
     bbox::BBox,
     ray::Ray,
     shapes::shape::{HitRec, Shape},
-    vec3::Vec3,
+    vec3::{Vec3, NormVec3},
 };
 
 #[derive(Clone)]
@@ -52,10 +52,10 @@ impl Shape for Triangle {
     }
 }
 
-fn triangle_norm(v0: &Vec3, v1: &Vec3, v2: &Vec3) -> Vec3 {
+fn triangle_norm(v0: &Vec3, v1: &Vec3, v2: &Vec3) -> NormVec3 {
     let e1 = *v1 - *v0;
     let e2 = *v2 - *v0;
-    e1.cross(&e2).unit_vector()
+    e1.cross(&e2).normalize()
 }
 
 // Tomas Moller

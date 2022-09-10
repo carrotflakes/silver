@@ -1,6 +1,9 @@
-use super::super::ray::Ray;
-use super::super::vec3::Vec3;
-use super::material::Material;
+use crate::{
+    ray::Ray,
+    vec3::{NormVec3, Vec3},
+};
+
+use super::Material;
 
 #[derive(Clone)]
 pub struct Metal {
@@ -15,8 +18,8 @@ impl Metal {
 }
 
 impl Material for Metal {
-    fn ray(&self, ray: &Ray, location: &Vec3, normal: &Vec3, _uv: [f64; 2]) -> Ray {
-        let b: Vec3 = -(ray.direction.dot(normal)) * *normal;
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> Ray {
+        let b: Vec3 = -(ray.direction.dot(normal)) * **normal;
         let f: Vec3 = self.fuzz * Vec3::random_in_unit_sphere(&mut rand::thread_rng());
         Ray::new(*location, ray.direction + 2.0 * b + f)
     }
