@@ -30,6 +30,7 @@ impl Shape for Triangle {
                     location,
                     normal,
                     uv: [u, v],
+                    front: positive,
                 });
             }
         }

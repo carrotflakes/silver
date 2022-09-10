@@ -5,6 +5,7 @@ pub mod envs;
 pub mod formats;
 pub mod linear_search;
 pub mod materials;
+pub mod primitives;
 pub mod ray;
 pub mod render;
 pub mod sample;

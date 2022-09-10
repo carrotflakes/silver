@@ -15,6 +15,7 @@ pub struct HitRec {
     pub location: Vec3,
     pub normal: NormVec3,
     pub uv: [f64; 2],
+    pub front: bool,
 }
 
 pub trait Shape {

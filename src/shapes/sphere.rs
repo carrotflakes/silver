@@ -36,6 +36,7 @@ impl Shape for Sphere {
                         location,
                         normal,
                         uv: get_sphere_uv(*normal),
+                        front: true,
                     });
                 }
             }
@@ -49,6 +50,7 @@ impl Shape for Sphere {
                         location,
                         normal,
                         uv: get_sphere_uv(*normal),
+                        front: false,
                     });
                 }
             }

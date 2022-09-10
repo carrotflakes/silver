@@ -17,7 +17,7 @@ fn main() {
         &Vec3::new([0.0, 1.0, 0.0]),
         60.0f64.to_radians(),
         width as f64 / height as f64,
-        0.01,
+        0.001,
         3.0,
     );
     let sample: i32 = 20;
@@ -27,7 +27,7 @@ fn main() {
     let start = std::time::Instant::now();
     let pixels = render(
         &camera,
-        |ray| silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 50),
+        |ray| silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 20),
         width,
         height,
         sample,
@@ -48,7 +48,7 @@ fn main() {
 }
 
 fn make_scene_1() -> Vec<(BasicShape, Basic)> {
-    vec![
+    let mut v = vec![
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([0.0, 1000.0, -2.0]), 1000.0)),
             BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.7, 0.7, 0.7]))),
@@ -110,5 +110,39 @@ fn make_scene_1() -> Vec<(BasicShape, Basic)> {
             BasicShape::Sphere(Sphere::new(Vec3::new([-0.8, -0.2, -1.0]), 0.2)),
             BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3::new([3.0, 3.0, 3.0]))),
         ),
-    ]
+    ];
+
+    v.extend(
+        silver::primitives::tetrahedron(Vec3::new([-2.0, -1.3, -2.]), 0.6)
+            .into_iter()
+            .enumerate()
+            .map(|(i, t)| {
+                (
+                    BasicShape::Triangle(t),
+                    BasicMaterial::Lambertian(Lambertian::new(Vec3::new([
+                        i as f64 * 0.3,
+                        1.0 - i as f64 * 0.3,
+                        0.0,
+                    ]))),
+                )
+            }),
+    );
+
+    v.extend(
+        silver::primitives::cube(Vec3::new([1.0, -0.3, 0.0]), Vec3::new([0.2, 0.2, 0.2]))
+            .into_iter()
+            .enumerate()
+            .map(|(i, t)| {
+                (
+                    BasicShape::Triangle(t),
+                    BasicMaterial::Lambertian(Lambertian::new(Vec3::new([
+                        i as f64 * 0.05,
+                        1.0 - i as f64 * 0.05,
+                        (i % 2) as f64 * 0.5,
+                    ]))),
+                )
+            }),
+    );
+
+    v
 }
