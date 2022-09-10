@@ -8,7 +8,6 @@ pub struct Camera {
     v: Vec3,
     w: Vec3,
     diaphragm: f64,
-    dof: f64,
 }
 
 impl Camera {
@@ -31,8 +30,7 @@ impl Camera {
             u: (2.0 * half_w * u) * dof,
             v: (2.0 * half_h * v) * dof,
             w: *origin - (half_w * u + half_h * v + w) * dof,
-            diaphragm: diaphragm,
-            dof: dof,
+            diaphragm,
         }
     }
 
