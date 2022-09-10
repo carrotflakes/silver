@@ -3,7 +3,6 @@ use std::ops::Deref;
 use rand::Rng;
 
 use crate::bbox::BBox;
-use crate::materials::material::Material;
 use crate::ray::Ray;
 use crate::shapes::shape::HitRec;
 use crate::shapes::Shape;
@@ -33,10 +32,8 @@ pub enum BVH<S: Clone, M: Clone> {
     },
 }
 
-impl<S: Shape, M: Material, DS: Deref<Target = S> + Clone, DM: Deref<Target = M> + Clone>
-    BVH<DS, DM>
-{
-    pub fn new(it: impl Iterator<Item = (DS, DM)>) -> Self {
+impl<S: Shape, DS: Deref<Target = S> + Clone, M: Clone> BVH<DS, M> {
+    pub fn new(it: impl Iterator<Item = (DS, M)>) -> Self {
         let mut objs: Vec<_> = it
             .map(|(s, m)| Object {
                 bbox: s.bbox(),
@@ -57,7 +54,7 @@ impl<S: Shape, M: Material, DS: Deref<Target = S> + Clone, DM: Deref<Target = M>
         a
     }
 
-    fn build(objs: &mut [Object<DS, DM>], rng: &mut impl Rng) -> Self {
+    fn build(objs: &mut [Object<DS, M>], rng: &mut impl Rng) -> Self {
         match objs.len() {
             0 => panic!(),
             1 => Self::Object(objs[0].clone()),
@@ -83,13 +80,13 @@ impl<S: Shape, M: Material, DS: Deref<Target = S> + Clone, DM: Deref<Target = M>
         }
     }
 
-    pub fn hit(&self, ray: &Ray) -> Option<(HitRec, DM)> {
+    pub fn hit(&self, ray: &Ray) -> Option<(HitRec, M)> {
         let mut res = None;
         self.hit_(ray, std::f64::MAX, &mut res);
         res
     }
 
-    fn hit_(&self, ray: &Ray, tmax: f64, res: &mut Option<(HitRec, DM)>) {
+    fn hit_(&self, ray: &Ray, tmax: f64, res: &mut Option<(HitRec, M)>) {
         let tmin = 0.001;
         match self {
             BVH::Object(o) => {

@@ -1,25 +1,22 @@
 use std::ops::Deref;
 
 use crate::bbox::BBox;
-use crate::materials::material::Material;
 use crate::ray::Ray;
 use crate::shapes::shape::HitRec;
 use crate::shapes::Shape;
 
-struct Object<S: Shape, M: Material, DS: Deref<Target = S>, DM: Deref<Target = M>> {
+struct Object<S: Shape, DS: Deref<Target = S>, M> {
     shape: DS,
-    material: DM,
+    material: M,
     bbox: BBox,
 }
 
-pub struct LinearSearch<S: Shape, M: Material, DS: Deref<Target = S>, DM: Deref<Target = M>> {
-    objects: Vec<Object<S, M, DS, DM>>,
+pub struct LinearSearch<S: Shape, DS: Deref<Target = S>, M: Clone> {
+    objects: Vec<Object<S, DS, M>>,
 }
 
-impl<S: Shape, M: Material, DS: Deref<Target = S>, DM: Deref<Target = M> + Clone>
-    LinearSearch<S, M, DS, DM>
-{
-    pub fn new(it: impl Iterator<Item = (DS, DM)>) -> Self {
+impl<S: Shape, DS: Deref<Target = S>, M: Clone> LinearSearch<S, DS, M> {
+    pub fn new(it: impl Iterator<Item = (DS, M)>) -> Self {
         Self {
             objects: it
                 .map(|(s, m)| Object {
@@ -31,8 +28,8 @@ impl<S: Shape, M: Material, DS: Deref<Target = S>, DM: Deref<Target = M> + Clone
         }
     }
 
-    pub fn hit(&self, ray: &Ray) -> Option<(HitRec, DM)> {
-        let mut hit: Option<(HitRec, DM)> = None;
+    pub fn hit(&self, ray: &Ray) -> Option<(HitRec, M)> {
+        let mut hit: Option<(HitRec, M)> = None;
         let mut time: f64 = std::f64::MAX;
         for object in &self.objects {
             if !object.bbox.should_hit(ray) {
