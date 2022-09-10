@@ -26,10 +26,10 @@ fn main() {
         .map(|f| Triangle::new(transform(f[0].0), transform(f[1].0), transform(f[2].0)))
         .collect();
     let material = Lambertian::new(Vec3::new([0.5, 0.5, 0.5]));
-    let scene = Scene::new(shapes.iter().map(|s| (s, &material)), default_env);
+    let scene = Scene::new(shapes.iter().map(|s| (s, &material)));
 
     let start = std::time::Instant::now();
-    let pixels = render(&camera, |ray| scene.sample(ray, 50), width, height, sample);
+    let pixels = render(&camera, |ray| scene.sample(ray, 50, default_env), width, height, sample);
     let end = start.elapsed();
     println!(
         "{}.{:04} elapsed",

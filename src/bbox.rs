@@ -1,6 +1,6 @@
 use crate::{ray::Ray, vec3::Vec3};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct BBox {
     pub min: Vec3,
     pub max: Vec3,

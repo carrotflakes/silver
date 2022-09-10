@@ -45,18 +45,28 @@ impl<S: Shape, M: Material, DS: Deref<Target = S> + Clone, DM: Deref<Target = M>
                 material: m,
             })
             .collect();
-        Self::build(&mut objs)
+        let mut rng: rand::rngs::StdRng = rand::SeedableRng::seed_from_u64(0);
+        let a = Self::build(&mut objs, &mut rng);
+        // match &a {
+        //     BVH::Object(_) => todo!(),
+        //     BVH::Pair { bbox, left, right } => {
+        //         dbg!(bbox);
+        //         dbg!(left.bbox());
+        //         dbg!(right.bbox());
+        //     },
+        // }
+        a
     }
 
-    fn build(objs: &mut [Object<DS, DM>]) -> Self {
+    fn build(objs: &mut [Object<DS, DM>], rng: &mut impl Rng) -> Self {
         match objs.len() {
             0 => panic!(),
             1 => Self::Object(objs[0].clone()),
             n => {
-                let axis = rand::thread_rng().gen_range(0..3);
+                let axis = rng.gen_range(0..3);
                 objs.sort_unstable_by(|a, b| a.bbox.min[axis].total_cmp(&b.bbox.min[axis]));
-                let left = Self::build(&mut objs[0..n / 2]);
-                let right = Self::build(&mut objs[n / 2..n]);
+                let left = Self::build(&mut objs[0..n / 2], rng);
+                let right = Self::build(&mut objs[n / 2..n], rng);
                 let bbox = left.bbox().merge(&right.bbox());
                 Self::Pair {
                     bbox,

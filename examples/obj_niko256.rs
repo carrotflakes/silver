@@ -40,10 +40,10 @@ fn main() {
         })
         .collect();
 
-    let scene = Scene::new(objects.iter().map(|(s, m)| (s, m)), default_env);
+    let scene = Scene::new(objects.iter().map(|(s, m)| (s, m)));
 
     let start = std::time::Instant::now();
-    let pixels = render(&camera, |ray| scene.sample(ray, 50), width, height, sample);
+    let pixels = render(&camera, |ray| scene.sample(ray, 50, default_env), width, height, sample);
     let end = start.elapsed();
     println!(
         "{}.{:04} elapsed",
