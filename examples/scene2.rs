@@ -1,9 +1,9 @@
 use rand::Rng;
 
+use silver::linear_search::LinearSearch;
 use silver::materials::checker::Checker;
 use silver::materials::{Basic as BasicMaterial, *};
-use silver::render::{default_env, render};
-use silver::linear_search::LinearSearch;
+use silver::render::render;
 use silver::shapes::{Basic as BasicShape, Sphere};
 use silver::vec3::Vec3;
 use silver::{camera::Camera, shapes::Triangle};
@@ -29,7 +29,7 @@ fn main() {
     let start = std::time::Instant::now();
     let pixels = render(
         &camera,
-        |ray| silver::sample::sample(|r| scene.hit(r), default_env, ray, 50),
+        |ray| silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 50),
         width,
         height,
         sample,

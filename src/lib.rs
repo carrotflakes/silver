@@ -1,6 +1,7 @@
 pub mod bbox;
 pub mod bvh;
 pub mod camera;
+pub mod envs;
 pub mod formats;
 pub mod linear_search;
 pub mod materials;

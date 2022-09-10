@@ -1,7 +1,7 @@
 use image::GenericImageView;
 use silver::camera::Camera;
-use silver::render::{default_env, render};
 use silver::linear_search::LinearSearch;
+use silver::render::render;
 use silver::shapes::Triangle;
 use silver::vec3::Vec3;
 
@@ -19,7 +19,7 @@ fn main() {
         0.001,
         5.0,
     );
-    let sample: i32 = 20;
+    let sample: i32 = 4;
     let faces = silver::formats::obj::load("./niko256.obj");
 
     let img = image::open("niko256_niko.png").unwrap();
@@ -45,7 +45,7 @@ fn main() {
     let start = std::time::Instant::now();
     let pixels = render(
         &camera,
-        |ray| silver::sample::sample(|r| scene.hit(r), default_env, ray, 50),
+        |ray| silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 50),
         width,
         height,
         sample,

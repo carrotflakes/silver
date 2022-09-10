@@ -1,7 +1,7 @@
 use silver::camera::Camera;
 use silver::linear_search::LinearSearch;
 use silver::materials::Lambertian;
-use silver::render::{default_env, render};
+use silver::render::render;
 use silver::shapes::Triangle;
 use silver::vec3::Vec3;
 
@@ -31,7 +31,7 @@ fn main() {
     let start = std::time::Instant::now();
     let pixels = render(
         &camera,
-        |ray| silver::sample::sample(|r| scene.hit(r), default_env, ray, 50),
+        |ray| silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 50),
         width,
         height,
         sample,
