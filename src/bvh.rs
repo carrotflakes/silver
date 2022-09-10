@@ -4,7 +4,7 @@ use rand::Rng;
 
 use crate::bbox::BBox;
 use crate::ray::Ray;
-use crate::shapes::shape::HitRec;
+use crate::shapes::HitRec;
 use crate::shapes::Shape;
 
 pub struct Object<S: Clone, M: Clone> {

@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use crate::materials::Material;
 use crate::ray::Ray;
-use crate::shapes::shape::HitRec;
+use crate::shapes::HitRec;
 use crate::vec3::Vec3;
 
 pub fn sample<M: Material, DM: Deref<Target = M>>(

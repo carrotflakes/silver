@@ -1,7 +1,7 @@
 use crate::{
     bbox::BBox,
     ray::Ray,
-    shapes::shape::{HitRec, Shape},
+    shapes::{HitRec, Shape},
     vec3::Vec3,
 };
 

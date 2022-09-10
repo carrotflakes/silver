@@ -2,20 +2,23 @@ pub mod checker;
 pub mod dielectric;
 pub mod diffuse_light;
 pub mod lambertian;
-pub mod material;
 pub mod metal;
 pub mod tex;
 
 pub use dielectric::Dielectric;
 pub use diffuse_light::DiffuseLight;
 pub use lambertian::Lambertian;
-pub use material::Material;
 pub use metal::Metal;
 
 use crate::{
     ray::Ray,
     vec3::{NormVec3, Vec3},
 };
+
+pub trait Material {
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, uv: [f64; 2]) -> Ray;
+    fn color(&self, color: &Vec3, uv: [f64; 2]) -> Vec3;
+}
 
 #[derive(Clone)]
 pub enum Basic {
@@ -26,7 +29,7 @@ pub enum Basic {
     Checker(checker::Checker<Basic>),
 }
 
-impl material::Material for Basic {
+impl Material for Basic {
     fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, uv: [f64; 2]) -> Ray {
         match self {
             Basic::Dielectric(dielectric) => dielectric.ray(ray, location, normal, uv),

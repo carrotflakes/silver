@@ -1,8 +1,8 @@
 use crate::{
     bbox::BBox,
     ray::Ray,
-    shapes::shape::{HitRec, Shape},
-    vec3::{Vec3, NormVec3},
+    shapes::{HitRec, Shape},
+    vec3::{NormVec3, Vec3},
 };
 
 #[derive(Clone)]
