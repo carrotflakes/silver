@@ -29,7 +29,15 @@ fn main() {
         &camera,
         |ray| {
             silver::rng::reseed(silver::vec3_to_u64(&ray.direction));
-            silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 20)
+            // silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 20)
+
+            silver::sample::sample_with_volume(
+                |r| scene.hit(r),
+                silver::envs::fancy_env,
+                ray,
+                20,
+                None,
+            )
         },
         width,
         height,
@@ -86,6 +94,13 @@ fn make_scene_1() -> Vec<(BasicShape, Basic)> {
             BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.1, 0.1, 1.0]))),
         ),
         (
+            BasicShape::Sphere(Sphere::new(Vec3::new([1.3, -1.3, -1.0]), 0.6)),
+            BasicMaterial::ConstantMedium(constant_medium::ConstantMedium::new(
+                2.0,
+                Vec3::new([0.95, 0.95, 0.95]),
+            )),
+        ),
+        (
             BasicShape::Sphere(Sphere::new(Vec3::new([0.0, -0.5, -2.4]), 0.5)),
             BasicMaterial::Lambertian(Lambertian::new(Vec3::new([1.0, 1.0, 0.1]))),
         ),
@@ -116,7 +131,7 @@ fn make_scene_1() -> Vec<(BasicShape, Basic)> {
     ];
 
     v.extend(
-        silver::primitives::tetrahedron(Vec3::new([-2.0, -1.3, -2.]), 0.6)
+        silver::primitives::tetrahedron(Vec3::new([-2.0, -1.3, -2.]), 0.4)
             .into_iter()
             .enumerate()
             .map(|(i, t)| {
