@@ -1,5 +1,6 @@
 pub mod sphere;
 pub mod triangle;
+pub mod triangle_with_normals;
 
 pub use sphere::Sphere;
 pub use triangle::Triangle;

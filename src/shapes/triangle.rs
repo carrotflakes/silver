@@ -53,14 +53,14 @@ impl Shape for Triangle {
     }
 }
 
-fn triangle_norm(v0: &Vec3, v1: &Vec3, v2: &Vec3) -> NormVec3 {
+pub fn triangle_norm(v0: &Vec3, v1: &Vec3, v2: &Vec3) -> NormVec3 {
     let e1 = *v1 - *v0;
     let e2 = *v2 - *v0;
     e1.cross(&e2).normalize()
 }
 
 // Tomas Moller
-fn triangle_intersect(
+pub fn triangle_intersect(
     ray: &Ray,
     v0: &Vec3,
     v1: &Vec3,

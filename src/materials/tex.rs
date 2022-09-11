@@ -61,11 +61,11 @@ impl Material for Tex {
         color.hadamard(&crate::render::gamma_to_linear(
             &self.image.get([
                 self.poses[0][0] * (1.0 - (u + v) as f32)
-                    + self.poses[2][0] * v as f32
-                    + self.poses[1][0] * u as f32,
+                    + self.poses[1][0] * u as f32
+                    + self.poses[2][0] * v as f32,
                 self.poses[0][1] * (1.0 - (u + v) as f32)
-                    + self.poses[2][1] * v as f32
-                    + self.poses[1][1] * u as f32,
+                    + self.poses[1][1] * u as f32
+                    + self.poses[2][1] * v as f32,
             ]),
             2.2,
         ))
