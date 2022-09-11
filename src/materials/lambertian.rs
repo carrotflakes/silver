@@ -1,5 +1,6 @@
 use crate::{
     ray::Ray,
+    rng,
     vec3::{NormVec3, Vec3},
 };
 
@@ -18,7 +19,10 @@ impl Lambertian {
 
 impl Material for Lambertian {
     fn ray(&self, _ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> Ray {
-        Ray::new(*location, **normal + Vec3::random_in_unit_sphere(&mut rand::thread_rng()))
+        Ray::new(
+            *location,
+            **normal + rng::with(|rng| Vec3::random_in_unit_sphere(rng)),
+        )
     }
 
     fn color(&self, color: &Vec3, _uv: [f64; 2]) -> Vec3 {

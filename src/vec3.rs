@@ -140,12 +140,13 @@ impl Vec3 {
 
     pub fn random(rng: &mut impl rand::Rng) -> Vec3 {
         Vec3([
-            rng.gen_range(0.0..1.0),
-            rng.gen_range(0.0..1.0),
-            rng.gen_range(0.0..1.0),
+            rng.gen::<f64>(),
+            rng.gen::<f64>(),
+            rng.gen::<f64>(),
         ])
     }
 
+    #[inline]
     pub fn random_in_unit_sphere(rng: &mut impl rand::Rng) -> Vec3 {
         loop {
             let v = Vec3([

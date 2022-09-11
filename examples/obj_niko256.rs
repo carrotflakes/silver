@@ -19,7 +19,7 @@ fn main() {
         0.001,
         5.0,
     );
-    let sample: i32 = 4;
+    let sample: i32 = 10;
     let faces = silver::formats::obj::load("./niko256.obj");
 
     let img = image::open("niko256_niko.png").unwrap();
@@ -45,7 +45,10 @@ fn main() {
     let start = std::time::Instant::now();
     let pixels = render(
         &camera,
-        |ray| silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 50),
+        |ray| {
+            silver::rng::reseed(silver::vec3_to_u64(&ray.direction));
+            silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 50)
+        },
         width,
         height,
         sample,

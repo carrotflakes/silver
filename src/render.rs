@@ -18,13 +18,14 @@ pub fn render(
             let u: f64 = x as f64 / width as f64;
             let v: f64 = y as f64 / height as f64;
             let mut col: Vec3 = Vec3::ZERO;
+            let mut rng: rand::rngs::StdRng = rand::SeedableRng::seed_from_u64((x ^ y) as u64);
             for dy in 0..sample_per_pixel {
                 for dx in 0..sample_per_pixel {
                     let du: f64 =
                         ((dx as f64 + 0.5) / sample_per_pixel as f64 - 0.5) / width as f64;
                     let dv: f64 =
                         ((dy as f64 + 0.5) / sample_per_pixel as f64 - 0.5) / height as f64;
-                    let r: Ray = camera.get_ray(u + du, v + dv);
+                    let r: Ray = camera.get_ray(u + du, v + dv, &mut rng);
                     col = col + sample(&r);
                 }
             }

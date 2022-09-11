@@ -1,5 +1,8 @@
+use rand::Rng;
+
 use crate::{
     ray::Ray,
+    rng,
     vec3::{NormVec3, Vec3},
 };
 
@@ -36,7 +39,9 @@ impl Material for Dielectric {
         };
 
         let v = match refract(&-ray.direction, &outward_normal, ni_over_nt) {
-            Option::Some(ref refracted) if rand::random::<f64>() >= schlick(cosine, self.ri) => {
+            Option::Some(ref refracted)
+                if rng::with(|rng| rng.gen_range(0.0..1.0)) >= schlick(cosine, self.ri) =>
+            {
                 *refracted
             }
             _ => reflected,

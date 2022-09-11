@@ -27,7 +27,10 @@ fn main() {
     let start = std::time::Instant::now();
     let pixels = render(
         &camera,
-        |ray| silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 20),
+        |ray| {
+            silver::rng::reseed(silver::vec3_to_u64(&ray.direction));
+            silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 20)
+        },
         width,
         height,
         sample,

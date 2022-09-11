@@ -1,5 +1,6 @@
 use crate::{
     ray::Ray,
+    rng,
     vec3::{NormVec3, Vec3},
 };
 
@@ -52,7 +53,7 @@ impl Material for Tex {
     fn ray(&self, _ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> Ray {
         Ray::new(
             *location,
-            **normal + Vec3::random_in_unit_sphere(&mut rand::thread_rng()),
+            **normal + rng::with(|rng| Vec3::random_in_unit_sphere(rng)),
         )
     }
 
