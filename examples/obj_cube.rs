@@ -1,5 +1,5 @@
 use silver::camera::Camera;
-use silver::linear_search::LinearSearch;
+use silver::resolvers::linear_search::LinearSearch;
 use silver::materials::Lambertian;
 use silver::render::render;
 use silver::shapes::Triangle;

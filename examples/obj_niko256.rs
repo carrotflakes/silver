@@ -1,6 +1,6 @@
 use image::GenericImageView;
 use silver::camera::Camera;
-use silver::linear_search::LinearSearch;
+use silver::resolvers::linear_search::LinearSearch;
 use silver::render::render;
 use silver::shapes::Triangle;
 use silver::vec3::Vec3;

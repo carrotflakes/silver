@@ -1,6 +1,6 @@
 use silver::camera::Camera;
 use silver::envs::dark_env as env;
-use silver::linear_search::LinearSearch as Resolver;
+use silver::resolvers::linear_search::LinearSearch as Resolver;
 use silver::materials::{Basic as BasicMaterial, *};
 use silver::render::render;
 use silver::shapes::{Basic as BasicShape, Sphere};

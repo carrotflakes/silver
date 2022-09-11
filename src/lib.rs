@@ -1,13 +1,12 @@
 pub mod bbox;
-pub mod bvh;
 pub mod camera;
 pub mod envs;
 pub mod formats;
-pub mod linear_search;
 pub mod materials;
 pub mod primitives;
 pub mod ray;
 pub mod render;
+pub mod resolvers;
 pub mod rng;
 pub mod sample;
 pub mod shapes;

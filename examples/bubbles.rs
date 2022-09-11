@@ -1,5 +1,5 @@
 use rand::Rng;
-use silver::bvh::BVH as Resolver;
+use silver::resolvers::bvh::BVH as Resolver;
 use silver::camera::Camera;
 use silver::envs::default_env as env;
 use silver::materials::{Basic as BasicMaterial, *};

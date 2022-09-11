@@ -1,5 +1,5 @@
 use silver::camera::Camera;
-use silver::linear_search::LinearSearch;
+use silver::resolvers::linear_search::LinearSearch;
 use silver::materials::checker::Checker;
 use silver::materials::{Basic as BasicMaterial, *};
 use silver::render::render;
