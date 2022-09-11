@@ -1,7 +1,3 @@
-use std::ops::Deref;
-
-use rand::Rng;
-
 use crate::bbox::BBox;
 use crate::ray::Ray;
 use crate::shapes::HitRec;
@@ -32,7 +28,7 @@ pub enum BVH<S: Clone, M: Clone> {
     },
 }
 
-impl<S: Shape, DS: Deref<Target = S> + Clone, M: Clone> BVH<DS, M> {
+impl<S: Shape, DS: std::ops::Deref<Target = S> + Clone, M: Clone> BVH<DS, M> {
     pub fn new(it: impl Iterator<Item = (DS, M)>) -> Self {
         let mut objs: Vec<_> = it
             .map(|(s, m)| Object {
@@ -41,8 +37,7 @@ impl<S: Shape, DS: Deref<Target = S> + Clone, M: Clone> BVH<DS, M> {
                 material: m,
             })
             .collect();
-        let mut rng: rand::rngs::StdRng = rand::SeedableRng::seed_from_u64(0);
-        let a = Self::build(&mut objs, &mut rng);
+        let a = Self::build(&mut objs, 0);
         // match &a {
         //     BVH::Object(_) => todo!(),
         //     BVH::Pair { bbox, left, right } => {
@@ -54,15 +49,14 @@ impl<S: Shape, DS: Deref<Target = S> + Clone, M: Clone> BVH<DS, M> {
         a
     }
 
-    fn build(objs: &mut [Object<DS, M>], rng: &mut impl Rng) -> Self {
+    fn build(objs: &mut [Object<DS, M>], axis: usize) -> Self {
         match objs.len() {
             0 => panic!(),
             1 => Self::Object(objs[0].clone()),
             n => {
-                let axis = rng.gen_range(0..3);
                 objs.sort_unstable_by(|a, b| a.bbox.min[axis].total_cmp(&b.bbox.min[axis]));
-                let left = Self::build(&mut objs[0..n / 2], rng);
-                let right = Self::build(&mut objs[n / 2..n], rng);
+                let left = Self::build(&mut objs[0..n / 2], (axis + 1) % 3);
+                let right = Self::build(&mut objs[n / 2..n], (axis + 1) % 3);
                 let bbox = left.bbox().merge(&right.bbox());
                 Self::Pair {
                     bbox,
