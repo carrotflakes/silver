@@ -1,4 +1,5 @@
 pub mod checker;
+pub mod constant_medium;
 pub mod dielectric;
 pub mod diffuse_light;
 pub mod lambertian;
@@ -21,6 +22,9 @@ pub trait Material {
     fn scatter(&self) -> bool {
         true
     }
+    fn volume(&self) -> Option<(f64, Vec3)> {
+        None
+    }
 }
 
 #[derive(Clone)]
@@ -30,6 +34,7 @@ pub enum Basic {
     Lambertian(Lambertian),
     Metal(Metal),
     Checker(checker::Checker<Basic>),
+    ConstantMedium(constant_medium::ConstantMedium),
 }
 
 impl Material for Basic {
@@ -40,6 +45,9 @@ impl Material for Basic {
             Basic::Lambertian(lambertian) => lambertian.ray(ray, location, normal, uv),
             Basic::Metal(metal) => metal.ray(ray, location, normal, uv),
             Basic::Checker(checker) => checker.ray(ray, location, normal, uv),
+            Basic::ConstantMedium(constant_medium) => {
+                constant_medium.ray(ray, location, normal, uv)
+            }
         }
     }
 
@@ -50,6 +58,7 @@ impl Material for Basic {
             Basic::Lambertian(lambertian) => lambertian.color(color, uv),
             Basic::Metal(metal) => metal.color(color, uv),
             Basic::Checker(checker) => checker.color(color, uv),
+            Basic::ConstantMedium(constant_medium) => constant_medium.color(color, uv),
         }
     }
 
@@ -60,6 +69,18 @@ impl Material for Basic {
             Basic::Lambertian(lambertian) => lambertian.scatter(),
             Basic::Metal(metal) => metal.scatter(),
             Basic::Checker(checker) => checker.scatter(),
+            Basic::ConstantMedium(constant_medium) => constant_medium.scatter(),
+        }
+    }
+
+    fn volume(&self) -> Option<(f64, Vec3)> {
+        match self {
+            Basic::Dielectric(dielectric) => dielectric.volume(),
+            Basic::DiffuseLight(diffuse_light) => diffuse_light.volume(),
+            Basic::Lambertian(lambertian) => lambertian.volume(),
+            Basic::Metal(metal) => metal.volume(),
+            Basic::Checker(checker) => checker.volume(),
+            Basic::ConstantMedium(constant_medium) => constant_medium.volume(),
         }
     }
 }

@@ -39,7 +39,7 @@ impl<S: Shape, DS: Deref<Target = S>, M: Clone> LinearSearch<S, DS, M> {
             //     continue;
             // }
 
-            if let Some(hr) = object.shape.hit(ray, 0.001, time) {
+            if let Some(hr) = object.shape.hit(ray, 1e-6, time) {
                 time = hr.time;
                 hit = Some((hr, object.material.clone()));
             }

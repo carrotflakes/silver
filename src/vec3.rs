@@ -118,8 +118,12 @@ impl Vec3 {
     }
 
     pub fn normalize(&self) -> NormVec3 {
-        let norm = self.norm();
-        NormVec3(Vec3([self.x() / norm, self.y() / norm, self.z() / norm])) // panicable!
+        let inv_norm = 1.0 / self.norm(); // panicable!
+        NormVec3(Vec3([
+            self.x() * inv_norm,
+            self.y() * inv_norm,
+            self.z() * inv_norm,
+        ]))
     }
 
     pub fn dot(&self, rhs: &Vec3) -> f64 {
@@ -139,11 +143,7 @@ impl Vec3 {
     }
 
     pub fn random(rng: &mut impl rand::Rng) -> Vec3 {
-        Vec3([
-            rng.gen::<f64>(),
-            rng.gen::<f64>(),
-            rng.gen::<f64>(),
-        ])
+        Vec3([rng.gen(), rng.gen(), rng.gen()])
     }
 
     #[inline]

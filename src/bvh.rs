@@ -81,7 +81,7 @@ impl<S: Shape, DS: std::ops::Deref<Target = S> + Clone, M: Clone> BVH<DS, M> {
     }
 
     fn hit_(&self, ray: &Ray, tmax: f64, res: &mut Option<(HitRec, M)>) {
-        let tmin = 0.001;
+        let tmin = 1e-6;
         match self {
             BVH::Object(o) => {
                 if !o.bbox.hit_with_time(ray, tmin, tmax) {
