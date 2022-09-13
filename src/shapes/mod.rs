@@ -1,3 +1,4 @@
+pub mod edge;
 pub mod sphere;
 pub mod triangle;
 pub mod triangle_with_normals;
@@ -28,6 +29,7 @@ pub trait Shape {
 pub enum Basic {
     Sphere(Sphere),
     Triangle(Triangle),
+    Edge(edge::Edge),
 }
 
 impl Shape for Basic {
@@ -35,6 +37,7 @@ impl Shape for Basic {
         match self {
             Basic::Sphere(sphere) => sphere.hit(ray, t0, t1),
             Basic::Triangle(triangle) => triangle.hit(ray, t0, t1),
+            Basic::Edge(edge) => edge.hit(ray, t0, t1),
         }
     }
 
@@ -42,6 +45,7 @@ impl Shape for Basic {
         match self {
             Basic::Sphere(sphere) => sphere.bbox(),
             Basic::Triangle(triangle) => triangle.bbox(),
+            Basic::Edge(edge) => edge.bbox(),
         }
     }
 }
