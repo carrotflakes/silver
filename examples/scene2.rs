@@ -1,9 +1,9 @@
 use rand::Rng;
 
-use silver::resolvers::linear_search::LinearSearch;
 use silver::materials::checker::Checker;
 use silver::materials::{Basic as BasicMaterial, *};
 use silver::render::render;
+use silver::resolvers::linear_search::LinearSearch;
 use silver::shapes::{Basic as BasicShape, Sphere};
 use silver::vec3::Vec3;
 use silver::{camera::Camera, shapes::Triangle};
@@ -31,7 +31,7 @@ fn main() {
         &camera,
         |ray| {
             silver::rng::reseed(silver::vec3_to_u64(&ray.direction));
-            silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 50)
+            silver::sample::sample(&scene, silver::envs::default_env, ray, 50)
         },
         width,
         height,

@@ -1,47 +1,49 @@
-use std::ops::Deref;
-
 use crate::bbox::BBox;
-use crate::ray::Ray;
+use crate::resolvers::Hit;
 use crate::shapes::HitRec;
 use crate::shapes::Shape;
 
-struct Object<S: Shape, DS: Deref<Target = S>, M> {
-    shape: DS,
-    material: M,
-    bbox: BBox,
+use super::object::Object;
+
+pub struct LinearSearch<M: Clone, O: Hit<M>> {
+    objects: Vec<O>,
+    _m: std::marker::PhantomData<M>,
 }
 
-pub struct LinearSearch<S: Shape, DS: Deref<Target = S>, M: Clone> {
-    objects: Vec<Object<S, DS, M>>,
-}
-
-impl<S: Shape, DS: Deref<Target = S>, M: Clone> LinearSearch<S, DS, M> {
+impl<S: Shape, DS: std::ops::Deref<Target = S> + Clone, M: Clone> LinearSearch<M, Object<DS, M>> {
     pub fn new(it: impl Iterator<Item = (DS, M)>) -> Self {
         Self {
             objects: it
-                .map(|(s, m)| Object {
-                    bbox: s.bbox(),
-                    shape: s,
-                    material: m,
+                .map(|(s, m)| {
+                    let bbox = s.bbox();
+                    Object::new(s, m, bbox)
                 })
                 .collect(),
+            _m: Default::default(),
         }
     }
+}
 
-    pub fn hit(&self, ray: &Ray) -> Option<(HitRec, M)> {
+impl<M: Clone, O: Hit<M> + AsRef<BBox>> Hit<M> for LinearSearch<M, O> {
+    #[inline]
+    fn hit_with_range(
+        &self,
+        ray: &crate::ray::Ray,
+        tmin: f64,
+        mut tmax: f64,
+    ) -> Option<(HitRec, M)> {
         let mut hit: Option<(HitRec, M)> = None;
-        let mut time: f64 = std::f64::MAX;
         for object in &self.objects {
-            if !object.bbox.should_hit(ray) {
+            if !object.as_ref().should_hit(ray) {
                 continue;
             }
-            // if !object.bbox.hit_with_time(ray, 0.001, time) {
+            // if !object.bbox.hit_with_time(ray, tmin, tmax) {
             //     continue;
             // }
 
-            if let Some(hr) = object.shape.hit(ray, 1e-6, time) {
-                time = hr.time;
-                hit = Some((hr, object.material.clone()));
+            if let Some(hr) = object.hit_with_range(ray, tmin, tmax) {
+                tmax = hr.0.time;
+                hit = Some(hr);
             }
         }
         hit

@@ -4,12 +4,13 @@ use rand::Rng;
 
 use crate::materials::Material;
 use crate::ray::Ray;
+use crate::resolvers::Hit;
 use crate::rng;
 use crate::shapes::HitRec;
 use crate::vec3::Vec3;
 
 pub fn sample<M: Material, DM: Deref<Target = M>>(
-    hit: impl Fn(&Ray) -> Option<(HitRec, DM)>,
+    hit: impl Hit<DM>,
     env: impl Fn(&Ray) -> Vec3,
     ray: &Ray,
     cutoff: i32,
@@ -26,7 +27,7 @@ pub fn sample<M: Material, DM: Deref<Target = M>>(
             ..
         },
         material,
-    )) = hit(ray)
+    )) = hit.hit(ray)
     {
         let r = material.ray(&ray, &location, &normal, uv);
         let color = if material.scatter() {
@@ -41,7 +42,7 @@ pub fn sample<M: Material, DM: Deref<Target = M>>(
 }
 
 pub fn sample_with_volume<M: Material, DM: Deref<Target = M>>(
-    resolver: impl Fn(&Ray) -> Option<(HitRec, DM)>,
+    hit: impl Hit<DM>,
     env: impl Fn(&Ray) -> Vec3,
     ray: &Ray,
     cutoff: i32,
@@ -61,7 +62,7 @@ pub fn sample_with_volume<M: Material, DM: Deref<Target = M>>(
             ..
         },
         material,
-    )) = resolver(ray)
+    )) = hit.hit(ray)
     {
         if let Some((scatter_distance, neg_inv_density, color)) = volume {
             if scatter_distance < time * ray.direction.norm() {
@@ -71,7 +72,7 @@ pub fn sample_with_volume<M: Material, DM: Deref<Target = M>>(
                     rng::with(|rng| Vec3::random_in_unit_sphere(rng)),
                 );
                 return sample_with_volume(
-                    resolver,
+                    hit,
                     env,
                     &ray,
                     cutoff - 1,
@@ -88,7 +89,7 @@ pub fn sample_with_volume<M: Material, DM: Deref<Target = M>>(
                 // into the volume face
                 let ray = Ray::new(location, ray.direction);
                 sample_with_volume(
-                    resolver,
+                    hit,
                     env,
                     &ray,
                     cutoff,
@@ -100,19 +101,13 @@ pub fn sample_with_volume<M: Material, DM: Deref<Target = M>>(
                 )
             } else {
                 // out of the volume face
-                sample_with_volume(
-                    resolver,
-                    env,
-                    &Ray::new(location, ray.direction),
-                    cutoff,
-                    None,
-                )
+                sample_with_volume(hit, env, &Ray::new(location, ray.direction), cutoff, None)
             }
         } else {
             let r = material.ray(&ray, &location, &normal, uv);
             let color = if material.scatter() {
                 let volume = volume.map(|(d, n, c)| (d - time * ray.direction.norm(), n, c));
-                sample_with_volume(resolver, env, &r, cutoff - 1, volume)
+                sample_with_volume(hit, env, &r, cutoff - 1, volume)
             } else {
                 Vec3::ZERO
             };
@@ -126,7 +121,7 @@ pub fn sample_with_volume<M: Material, DM: Deref<Target = M>>(
                 rng::with(|rng| Vec3::random_in_unit_sphere(rng)),
             );
             return sample_with_volume(
-                resolver,
+                hit,
                 env,
                 &ray,
                 cutoff - 1,

@@ -33,7 +33,7 @@ fn main() {
         &camera,
         |ray| {
             silver::rng::reseed(silver::vec3_to_u64(&ray.direction));
-            silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 50)
+            silver::sample::sample(&scene, silver::envs::default_env, ray, 50)
         },
         width,
         height,

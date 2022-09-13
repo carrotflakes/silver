@@ -1,9 +1,9 @@
 use silver::camera::Camera;
-use silver::resolvers::linear_search::LinearSearch;
 use silver::materials::checker::Checker;
 use silver::materials::{Basic as BasicMaterial, *};
 use silver::render::render;
-use silver::shapes::{Basic as BasicShape, Sphere};
+use silver::resolvers::linear_search::LinearSearch;
+use silver::shapes::{edge, Basic as BasicShape, Sphere};
 use silver::vec3::Vec3;
 
 fn main() {
@@ -29,10 +29,10 @@ fn main() {
         &camera,
         |ray| {
             silver::rng::reseed(silver::vec3_to_u64(&ray.direction));
-            // silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 20)
+            // silver::sample::sample(scene, silver::envs::default_env, ray, 20)
 
             silver::sample::sample_with_volume(
-                |r| scene.hit(r),
+                &scene,
                 silver::envs::fancy_env,
                 ray,
                 20,
@@ -127,6 +127,22 @@ fn make_scene_1() -> Vec<(BasicShape, Basic)> {
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([-0.8, -0.2, -1.0]), 0.2)),
             BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3::new([3.0, 3.0, 3.0]))),
+        ),
+        (
+            BasicShape::Edge(edge::Edge::new(
+                [Vec3::new([-0.2, -0.2, 0.2]), Vec3::new([0.2, -0.2, 0.5])],
+                [0.05, 0.1],
+            )),
+            // BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.5, 0.5, 0.5]))),
+            BasicMaterial::Metal(Metal::new(Vec3::new([0.95, 0.95, 0.95]), 0.95)),
+        ),
+        (
+            BasicShape::Edge(edge::Edge::new(
+                [Vec3::new([-0.2, -0.2, 0.2]), Vec3::new([0.2, -0.2, 0.5])],
+                [0.1, 0.2],
+            )),
+            // BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.5, 0.5, 0.5]))),
+            BasicMaterial::Metal(Metal::new(Vec3::new([1.0, 1.0, 1.0]), 0.95)),
         ),
     ];
 

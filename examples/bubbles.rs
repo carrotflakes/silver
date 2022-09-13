@@ -1,9 +1,9 @@
 use rand::Rng;
-use silver::resolvers::bvh::BVH as Resolver;
 use silver::camera::Camera;
 use silver::envs::default_env as env;
 use silver::materials::{Basic as BasicMaterial, *};
 use silver::render::render;
+use silver::resolvers::bvh::BVH as Resolver;
 use silver::shapes::{Basic as BasicShape, Sphere};
 use silver::vec3::Vec3;
 
@@ -31,7 +31,7 @@ fn main() {
         &camera,
         |ray| {
             silver::rng::reseed(silver::vec3_to_u64(&ray.direction));
-            silver::sample::sample(|r| scene.hit(r), env, ray, cutoff)
+            silver::sample::sample(&scene, env, ray, cutoff)
         },
         width,
         height,

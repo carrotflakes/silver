@@ -1,8 +1,7 @@
 use image::GenericImageView;
 use silver::camera::Camera;
-use silver::resolvers::linear_search::LinearSearch;
 use silver::render::render;
-use silver::shapes::Triangle;
+use silver::resolvers::linear_search::LinearSearch;
 use silver::vec3::Vec3;
 
 fn main() {
@@ -34,7 +33,11 @@ fn main() {
         .into_iter()
         .map(|f| {
             (
-                Triangle::new(transform(f[0].0), transform(f[1].0), transform(f[2].0)),
+                // silver::shapes::Triangle::new(transform(f[0].0), transform(f[1].0), transform(f[2].0)),
+                silver::shapes::triangle_with_normals::TriangleWithNormals::new(
+                    [transform(f[0].0), transform(f[1].0), transform(f[2].0)],
+                    [transform(f[0].2), transform(f[1].2), transform(f[2].2)],
+                ),
                 silver::materials::tex::Tex::new(image, [f[0].1, f[1].1, f[2].1]),
             )
         })
@@ -47,7 +50,7 @@ fn main() {
         &camera,
         |ray| {
             silver::rng::reseed(silver::vec3_to_u64(&ray.direction));
-            silver::sample::sample(|r| scene.hit(r), silver::envs::default_env, ray, 50)
+            silver::sample::sample(&scene, silver::envs::default_env, ray, 50)
         },
         width,
         height,

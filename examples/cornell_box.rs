@@ -30,8 +30,8 @@ fn main() {
         &camera,
         |ray| {
             silver::rng::reseed(silver::vec3_to_u64(&ray.direction));
-            silver::sample::sample(|r| scene.hit(r), env, ray, cutoff)
-            // silver::sample::sample_with_volume(|r| scene.hit(r), env, ray, cutoff, None)
+            silver::sample::sample(&scene, env, ray, cutoff)
+            // silver::sample::sample_with_volume(scene, env, ray, cutoff, None)
         },
         width,
         height,
