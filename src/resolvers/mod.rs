@@ -1,6 +1,7 @@
 pub mod bvh;
 pub mod linear_search;
 pub mod object;
+pub mod transformed;
 
 use crate::{ray::Ray, shapes::HitRec};
 

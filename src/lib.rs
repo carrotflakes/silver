@@ -3,6 +3,7 @@ pub mod camera;
 pub mod envs;
 pub mod formats;
 pub mod materials;
+pub mod matrix;
 pub mod primitives;
 pub mod ray;
 pub mod render;

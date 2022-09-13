@@ -7,6 +7,13 @@ pub struct BBox {
 }
 
 impl BBox {
+    pub fn zero() -> Self {
+        BBox {
+            min: Vec3::ZERO,
+            max: Vec3::ZERO,
+        }
+    }
+
     pub fn from_min_max(min: Vec3, max: Vec3) -> Self {
         // Extend a bit
         // let max = max + Vec3::new([0.00001, 0.00001, 0.00001]);

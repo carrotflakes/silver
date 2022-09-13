@@ -7,18 +7,38 @@ use super::object::Object;
 
 pub struct LinearSearch<M: Clone, O: Hit<M>> {
     objects: Vec<O>,
+    bbox: BBox,
     _m: std::marker::PhantomData<M>,
 }
 
 impl<S: Shape, DS: std::ops::Deref<Target = S> + Clone, M: Clone> LinearSearch<M, Object<DS, M>> {
     pub fn new(it: impl Iterator<Item = (DS, M)>) -> Self {
+        let objects: Vec<_> = it
+            .map(|(s, m)| {
+                let bbox = s.bbox();
+                Object::new(s, m, bbox)
+            })
+            .collect();
+        let bbox = objects
+            .iter()
+            .fold(BBox::zero(), |bbox, o| bbox.merge(o.as_ref()));
         Self {
-            objects: it
-                .map(|(s, m)| {
-                    let bbox = s.bbox();
-                    Object::new(s, m, bbox)
-                })
-                .collect(),
+            objects,
+            bbox,
+            _m: Default::default(),
+        }
+    }
+}
+
+impl<M: Clone, O: Hit<M> + AsRef<BBox>> LinearSearch<M, O> {
+    pub fn from_iter(it: impl Iterator<Item = O>) -> Self {
+        let objects: Vec<_> = it.collect();
+        let bbox = objects
+            .iter()
+            .fold(BBox::zero(), |bbox, o| bbox.merge(o.as_ref()));
+        Self {
+            objects,
+            bbox,
             _m: Default::default(),
         }
     }
@@ -47,5 +67,12 @@ impl<M: Clone, O: Hit<M> + AsRef<BBox>> Hit<M> for LinearSearch<M, O> {
             }
         }
         hit
+    }
+}
+
+impl<M: Clone, O: Hit<M> + AsRef<BBox>> AsRef<BBox> for LinearSearch<M, O> {
+    #[inline]
+    fn as_ref(&self) -> &BBox {
+        &self.bbox
     }
 }
