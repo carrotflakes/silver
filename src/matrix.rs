@@ -36,7 +36,6 @@ impl Matrix {
         ])
     }
 
-    /// Create new Matrix rotated with specified angle from myself.
     pub fn rotate_x(&self, rad: f64) -> Self {
         let s = &self.0;
         let (sin, cos) = rad.sin_cos();
@@ -52,6 +51,44 @@ impl Matrix {
             s[8],
             s[9] * cos + s[10] * sin,
             -s[9] * sin + s[10] * cos,
+            s[11],
+        ])
+    }
+
+    pub fn rotate_y(&self, rad: f64) -> Self {
+        let s = &self.0;
+        let (sin, cos) = rad.sin_cos();
+        Matrix([
+            s[0] * cos + s[2] * sin,
+            s[1],
+            -s[0] * sin + s[2] * cos,
+            s[3],
+            s[4] * cos + s[6] * sin,
+            s[5],
+            -s[4] * sin + s[6] * cos,
+            s[7],
+            s[8] * cos + s[10] * sin,
+            s[9],
+            -s[8] * sin + s[10] * cos,
+            s[11],
+        ])
+    }
+
+    pub fn rotate_z(&self, rad: f64) -> Self {
+        let s = &self.0;
+        let (sin, cos) = rad.sin_cos();
+        Matrix([
+            s[0] * cos + s[1] * sin,
+            -s[0] * sin + s[1] * cos,
+            s[2],
+            s[3],
+            s[4] * cos + s[5] * sin,
+            -s[4] * sin + s[5] * cos,
+            s[6],
+            s[7],
+            s[8] * cos + s[9] * sin,
+            -s[8] * sin + s[9] * cos,
+            s[10],
             s[11],
         ])
     }
@@ -183,7 +220,8 @@ fn test() {
     // let m = Matrix::new().translate(&Vec3::new([1., 2., 3.])).scale(&Vec3::new([2., 2., 2.])).rotate_x(0.1);
     dbg!(&m);
     dbg!(m.inverse().inverse());
-    Matrix::new().rotate_x(60.0f64.to_radians());
+    dbg!(Matrix::new().rotate_x(10.0f64.to_radians()).scale(&Vec3::new([1.0, 2.0, 3.0])));
+    dbg!(Matrix::new().rotate_x(10.0f64.to_radians()).then(&Matrix::new().scale(&Vec3::new([1.0, 2.0, 3.0]))));
     // let am = Matrix::new()
     //     .translate(1.0, 2.0)
     //     .rotate(1.0)
