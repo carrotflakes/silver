@@ -159,6 +159,17 @@ impl Vec3 {
             }
         }
     }
+
+    #[inline]
+    pub fn random_on_unit_sphere(rng: &mut impl rand::Rng) -> NormVec3 {
+        use std::f64::consts::TAU;
+        let r1 = rng.gen::<f64>();
+        let r2 = rng.gen::<f64>();
+        let x = (TAU * r1).cos() * 2.0 * r2 * (1.0 - r2).sqrt();
+        let y = (TAU * r1).sin() * 2.0 * (r2 * (1.0 - r2)).sqrt();
+        let z = 1.0 - 2.0 * r2;
+        NormVec3(Vec3([x, y, z]))
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -167,6 +178,7 @@ pub struct NormVec3(Vec3);
 impl Deref for NormVec3 {
     type Target = Vec3;
 
+    #[inline]
     fn deref(&self) -> &Self::Target {
         &self.0
     }

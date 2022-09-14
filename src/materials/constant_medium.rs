@@ -23,7 +23,10 @@ impl ConstantMedium {
 
 impl Material for ConstantMedium {
     fn ray(&self, _ray: &Ray, location: &Vec3, _normal: &NormVec3, _uv: [f64; 2]) -> Ray {
-        Ray::new(*location, rng::with(|rng| Vec3::random_in_unit_sphere(rng)))
+        Ray::new(
+            *location,
+            *rng::with(|rng| Vec3::random_on_unit_sphere(rng)),
+        )
     }
 
     fn color(&self, color: &Vec3, _uv: [f64; 2]) -> Vec3 {

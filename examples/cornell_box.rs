@@ -31,7 +31,17 @@ fn main() {
         |ray| {
             silver::rng::reseed(silver::util::vec3_to_u64(&ray.direction));
             silver::sample::sample(&scene, env, ray, cutoff)
-            // silver::sample::sample_with_volume(scene, env, ray, cutoff, None)
+            // silver::sample::sample_with_volume(
+            //     &scene,
+            //     env,
+            //     ray,
+            //     cutoff,
+            //     Some((
+            //         silver::sample::make_scatter_distance(5.0),
+            //         5.0,
+            //         Vec3::new([0.9, 0.9, 0.9]),
+            //     )),
+            // )
         },
         width,
         height,

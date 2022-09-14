@@ -69,7 +69,7 @@ pub fn sample_with_volume<M: Material, DM: Deref<Target = M>>(
                 // subsurface scattering
                 let ray = Ray::new(
                     ray.origin + *ray.direction.normalize() * scatter_distance,
-                    rng::with(|rng| Vec3::random_in_unit_sphere(rng)),
+                    rng::with(|rng| *Vec3::random_on_unit_sphere(rng)),
                 );
                 return sample_with_volume(
                     hit,
@@ -118,7 +118,7 @@ pub fn sample_with_volume<M: Material, DM: Deref<Target = M>>(
             // subsurface scattering
             let ray = Ray::new(
                 ray.origin + *ray.direction.normalize() * scatter_distance,
-                rng::with(|rng| Vec3::random_in_unit_sphere(rng)),
+                rng::with(|rng| *Vec3::random_on_unit_sphere(rng)),
             );
             return sample_with_volume(
                 hit,
