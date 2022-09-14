@@ -19,9 +19,7 @@ impl<S: Shape, DS: std::ops::Deref<Target = S> + Clone, M: Clone> LinearSearch<M
                 Object::new(s, m, bbox)
             })
             .collect();
-        let bbox = objects
-            .iter()
-            .fold(BBox::zero(), |bbox, o| bbox.merge(o.as_ref()));
+        let bbox = BBox::from_bboxes(objects.iter()).unwrap();
         Self {
             objects,
             bbox,
@@ -33,9 +31,7 @@ impl<S: Shape, DS: std::ops::Deref<Target = S> + Clone, M: Clone> LinearSearch<M
 impl<M: Clone, O: Hit<M> + AsRef<BBox>> LinearSearch<M, O> {
     pub fn from_iter(it: impl Iterator<Item = O>) -> Self {
         let objects: Vec<_> = it.collect();
-        let bbox = objects
-            .iter()
-            .fold(BBox::zero(), |bbox, o| bbox.merge(o.as_ref()));
+        let bbox = BBox::from_bboxes(objects.iter()).unwrap();
         Self {
             objects,
             bbox,
