@@ -7,10 +7,10 @@ use silver::vec3::Vec3;
 fn main() {
     let img_path = "./niko256.obj.png";
 
-    let width: i32 = 640;
-    let height: i32 = 480;
-    let camera: Camera = Camera::new(
-        &Vec3::new([1.0, -2.0, 8.0]),
+    let width = 640;
+    let height = 480;
+    let camera = Camera::new(
+        &Vec3::new([1.0, 2.0, 8.0]),
         &Vec3::new([0.0, 0.0, 0.0]),
         &Vec3::new([0.0, 1.0, 0.0]),
         60.0f64.to_radians(),
@@ -18,7 +18,7 @@ fn main() {
         0.001,
         5.0,
     );
-    let sample: i32 = 10;
+    let sample = 10;
     let faces = silver::formats::obj::load("./niko256.obj");
 
     let img = image::open("niko256_niko.png").unwrap();
@@ -35,10 +35,10 @@ fn main() {
             (
                 // silver::shapes::Triangle::new(transform(f[0].0), transform(f[1].0), transform(f[2].0)),
                 silver::shapes::triangle_with_normals::TriangleWithNormals::new(
-                    [transform(f[0].0), transform(f[1].0), transform(f[2].0)],
-                    [transform(f[0].2), transform(f[1].2), transform(f[2].2)],
+                    [transform(f[0].0), transform(f[2].0), transform(f[1].0)],
+                    [transform(f[0].2), transform(f[2].2), transform(f[1].2)],
                 ),
-                silver::materials::tex::Tex::new(image, [f[0].1, f[1].1, f[2].1]),
+                silver::materials::tex::Tex::new(image, [f[0].1, f[2].1, f[1].1]),
             )
         })
         .collect();
@@ -49,7 +49,7 @@ fn main() {
     let pixels = render(
         &camera,
         |ray| {
-            silver::rng::reseed(silver::vec3_to_u64(&ray.direction));
+            silver::rng::reseed(silver::util::vec3_to_u64(&ray.direction));
             silver::sample::sample(&scene, silver::envs::default_env, ray, 50)
         },
         width,
@@ -59,7 +59,7 @@ fn main() {
     println!("{:?} elapsed", start.elapsed());
 
     let img = image::ImageBuffer::from_fn(width as u32, height as u32, |x, y| {
-        let col = pixels[y as usize][x as usize];
+        let col = silver::util::linear_to_gamma(&pixels[y as usize][x as usize], 2.2);
         image::Rgb([
             ((col.r().min(1.0) * 255.99).floor() as u8),
             ((col.g().min(1.0) * 255.99).floor() as u8),
@@ -72,5 +72,5 @@ fn main() {
 }
 
 fn transform(a: [f32; 3]) -> Vec3 {
-    Vec3::new([a[0] as f64, -a[1] as f64, a[2] as f64])
+    Vec3::new([a[0] as f64, a[1] as f64, a[2] as f64])
 }

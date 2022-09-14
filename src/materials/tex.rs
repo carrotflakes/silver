@@ -58,7 +58,7 @@ impl Material for Tex {
     }
 
     fn color(&self, color: &Vec3, [u, v]: [f64; 2]) -> Vec3 {
-        color.hadamard(&crate::render::gamma_to_linear(
+        color.hadamard(&crate::util::gamma_to_linear(
             &self.image.get([
                 self.poses[0][0] * (1.0 - (u + v) as f32)
                     + self.poses[1][0] * u as f32

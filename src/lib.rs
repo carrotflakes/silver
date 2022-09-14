@@ -11,14 +11,5 @@ pub mod resolvers;
 pub mod rng;
 pub mod sample;
 pub mod shapes;
+pub mod util;
 pub mod vec3;
-
-#[inline]
-pub fn vec3_to_u64(v: &vec3::Vec3) -> u64 {
-    use std::mem::transmute;
-    unsafe {
-        transmute::<f64, u64>(v[0])
-            ^ (transmute::<f64, u64>(v[1]) << 1)
-            ^ (transmute::<f64, u64>(v[2]) << 2)
-    }
-}
