@@ -104,6 +104,10 @@ impl BBox {
         }
         true
     }
+
+    pub fn size(&self) -> Vec3 {
+        self.max - self.min
+    }
 }
 
 const EPS: f64 = 1e-8;

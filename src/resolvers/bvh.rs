@@ -26,13 +26,15 @@ impl<S: Shape, DS: std::ops::Deref<Target = S> + Clone, M: Clone> BVH<M, Object<
                 Object::new(s, m, bbox)
             })
             .collect();
-        let a = Self::build(&mut objs, 0);
+        let a = Self::build(&mut objs);
         // match &a {
-        //     BVH::Object(_) => todo!(),
+        //     BVH::Object {..} => todo!(),
         //     BVH::Pair { bbox, left, right } => {
         //         dbg!(bbox);
-        //         dbg!(left.bbox());
-        //         dbg!(right.bbox());
+        //         let l: &BBox = left.as_ref().as_ref();
+        //         let r: &BBox = right.as_ref().as_ref();
+        //         dbg!(l);
+        //         dbg!(r);
         //     },
         // }
         a
@@ -42,10 +44,10 @@ impl<S: Shape, DS: std::ops::Deref<Target = S> + Clone, M: Clone> BVH<M, Object<
 impl<M: Clone, O: Hit<M> + AsRef<BBox> + Clone> BVH<M, O> {
     pub fn from_iter(objs: impl Iterator<Item = O>) -> Self {
         let mut objs: Vec<_> = objs.collect();
-        Self::build(&mut objs, 0)
+        Self::build(&mut objs)
     }
 
-    fn build(objs: &mut [O], axis: usize) -> Self {
+    fn build(objs: &mut [O]) -> Self {
         match objs.len() {
             0 => panic!(),
             1 => Self::Object {
@@ -53,9 +55,31 @@ impl<M: Clone, O: Hit<M> + AsRef<BBox> + Clone> BVH<M, O> {
                 _m: Default::default(),
             },
             n => {
-                objs.sort_unstable_by(|a, b| a.as_ref().min[axis].total_cmp(&b.as_ref().min[axis]));
-                let left = Self::build(&mut objs[0..n / 2], (axis + 1) % 3);
-                let right = Self::build(&mut objs[n / 2..n], (axis + 1) % 3);
+                let mut best = (0, f64::MAX);
+                for i in 0..3 {
+                    objs.sort_unstable_by(|a, b| a.as_ref().min[i].total_cmp(&b.as_ref().min[i]));
+
+                    let bbox1 = BBox::from_bboxes(objs[0..n / 2].iter()).unwrap();
+                    let bbox2 = BBox::from_bboxes(objs[n / 2..n].iter()).unwrap();
+                    let s1 = bbox1.size();
+                    let s2 = bbox2.size();
+                    let s = s1[0] * s1[1]
+                        + s1[0] * s1[2]
+                        + s1[1] * s1[2]
+                        + s2[0] * s2[1]
+                        + s2[0] * s2[2]
+                        + s2[1] * s2[2];
+
+                    if s < best.1 {
+                        best = (i, s);
+                    }
+                }
+                objs.sort_unstable_by(|a, b| {
+                    a.as_ref().min[best.0].total_cmp(&b.as_ref().min[best.0])
+                });
+
+                let left = Self::build(&mut objs[0..n / 2]);
+                let right = Self::build(&mut objs[n / 2..n]);
                 let bbox = left.as_ref().merge(right.as_ref());
                 Self::Pair {
                     bbox,
