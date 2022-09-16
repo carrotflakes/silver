@@ -3,7 +3,7 @@ use crate::{
     vec3::{NormVec3, Vec3},
 };
 
-use super::Material;
+use super::{Material, RayResult};
 
 #[derive(Clone)]
 pub struct Checker<T: Material> {
@@ -18,21 +18,12 @@ impl<T: Material> Checker<T> {
 }
 
 impl<T: Material> Material for Checker<T> {
-    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, uv: [f64; 2]) -> Ray {
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, uv: [f64; 2]) -> RayResult {
         let [u, v] = uv;
         if ((u * 10.0).floor() as i32 + (v * 10.0).floor() as i32) % 2 == 0 {
             self.even.ray(ray, location, normal, uv)
         } else {
             self.odd.ray(ray, location, normal, uv)
-        }
-    }
-
-    fn color(&self, color: &Vec3, uv: [f64; 2]) -> Vec3 {
-        let [u, v] = uv;
-        if ((u * 10.0).floor() as i32 + (v * 10.0).floor() as i32) % 2 == 0 {
-            self.even.color(color, uv)
-        } else {
-            self.odd.color(color, uv)
         }
     }
 }

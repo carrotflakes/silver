@@ -6,7 +6,7 @@ use crate::{
     vec3::{NormVec3, Vec3},
 };
 
-use super::Material;
+use super::{Material, RayResult};
 
 #[derive(Clone)]
 pub struct Dielectric {
@@ -20,7 +20,7 @@ impl Dielectric {
 }
 
 impl Material for Dielectric {
-    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> Ray {
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> RayResult {
         let b: Vec3 = -(ray.direction.dot(normal)) * **normal;
         let reflected: Vec3 = ray.direction + 2.0 * b;
 
@@ -46,11 +46,11 @@ impl Material for Dielectric {
             }
             _ => reflected,
         };
-        Ray::new(*location, v)
-    }
-
-    fn color(&self, color: &Vec3, _uv: [f64; 2]) -> Vec3 {
-        *color
+        RayResult {
+            emit: Vec3::ZERO,
+            albedo: Vec3::new([1.0; 3]),
+            ray: Some(Ray::new(*location, v)),
+        }
     }
 }
 

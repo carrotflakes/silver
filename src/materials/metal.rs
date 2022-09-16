@@ -4,7 +4,7 @@ use crate::{
     vec3::{NormVec3, Vec3},
 };
 
-use super::Material;
+use super::{Material, RayResult};
 
 #[derive(Clone)]
 pub struct Metal {
@@ -19,13 +19,13 @@ impl Metal {
 }
 
 impl Material for Metal {
-    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> Ray {
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> RayResult {
         let b: Vec3 = -(ray.direction.dot(normal)) * **normal;
         let f: Vec3 = self.fuzz * rng::with(|rng| Vec3::random_in_unit_sphere(rng));
-        Ray::new(*location, ray.direction + 2.0 * b + f)
-    }
-
-    fn color(&self, color: &Vec3, _uv: [f64; 2]) -> Vec3 {
-        color.hadamard(&self.albedo)
+        RayResult {
+            emit: Vec3::ZERO,
+            albedo: self.albedo,
+            ray: Some(Ray::new(*location, ray.direction + 2.0 * b + f)),
+        }
     }
 }

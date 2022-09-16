@@ -4,7 +4,7 @@ use crate::{
     vec3::{NormVec3, Vec3},
 };
 
-use super::Material;
+use super::{Material, RayResult};
 
 pub struct Image {
     width: usize,
@@ -50,24 +50,24 @@ impl Tex {
 }
 
 impl Material for Tex {
-    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> Ray {
-        Ray::new(
-            *location,
-            **normal + rng::with(|rng| Vec3::random_in_unit_sphere(rng)),
-        )
-    }
-
-    fn color(&self, color: &Vec3, [u, v]: [f64; 2]) -> Vec3 {
-        color.hadamard(&crate::util::gamma_to_linear(
-            &self.image.get([
-                self.poses[0][0] * (1.0 - (u + v) as f32)
-                    + self.poses[1][0] * u as f32
-                    + self.poses[2][0] * v as f32,
-                self.poses[0][1] * (1.0 - (u + v) as f32)
-                    + self.poses[1][1] * u as f32
-                    + self.poses[2][1] * v as f32,
-            ]),
-            2.2,
-        ))
+    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &NormVec3, [u, v]: [f64; 2]) -> RayResult {
+        RayResult {
+            emit: Vec3::ZERO,
+            albedo: crate::util::gamma_to_linear(
+                &self.image.get([
+                    self.poses[0][0] * (1.0 - (u + v) as f32)
+                        + self.poses[1][0] * u as f32
+                        + self.poses[2][0] * v as f32,
+                    self.poses[0][1] * (1.0 - (u + v) as f32)
+                        + self.poses[1][1] * u as f32
+                        + self.poses[2][1] * v as f32,
+                ]),
+                2.2,
+            ),
+            ray: Some(Ray::new(
+                *location,
+                **normal + rng::with(|rng| Vec3::random_in_unit_sphere(rng)),
+            )),
+        }
     }
 }

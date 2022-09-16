@@ -30,12 +30,11 @@ pub fn sample<M: Material, DM: Deref<Target = M>>(
     )) = hit.hit(ray)
     {
         let r = material.ray(&ray, &location, &normal, uv);
-        let color = if material.scatter() {
-            sample(hit, env, &r, cutoff - 1)
+        if let Some(scattered) = &r.ray {
+            r.emit + r.albedo * sample(hit, env, scattered, cutoff - 1)
         } else {
-            Vec3::ZERO
-        };
-        material.color(&color, uv)
+            r.emit
+        }
     } else {
         env(ray)
     }
@@ -105,13 +104,12 @@ pub fn sample_with_volume<M: Material, DM: Deref<Target = M>>(
             }
         } else {
             let r = material.ray(&ray, &location, &normal, uv);
-            let color = if material.scatter() {
+            if let Some(scattered) = &r.ray {
                 let volume = volume.map(|(d, n, c)| (d - time * ray.direction.norm(), n, c));
-                sample_with_volume(hit, env, &r, cutoff - 1, volume)
+                r.emit + r.albedo * sample_with_volume(hit, env, scattered, cutoff - 1, volume)
             } else {
-                Vec3::ZERO
-            };
-            material.color(&color, uv)
+                r.emit
+            }
         }
     } else {
         if let Some((scatter_distance, neg_inv_density, color)) = volume {
