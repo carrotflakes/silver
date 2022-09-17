@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use rayon::prelude::*;
 
-use crate::{camera::Camera, ray::Ray, vec3::Vec3};
+use crate::{camera::Camera, ray::Ray, rng::MainRng, vec3::Vec3};
 
 pub fn render(
     camera: &Camera,
@@ -18,7 +18,7 @@ pub fn render(
             let u = x as f64 / width as f64;
             let v = y as f64 / height as f64;
             let mut col: Vec3 = Vec3::ZERO;
-            let mut rng: rand::rngs::StdRng = rand::SeedableRng::seed_from_u64((x ^ y) as u64);
+            let mut rng: MainRng = rand::SeedableRng::seed_from_u64((x ^ y) as u64);
             for dy in 0..sample_per_pixel {
                 for dx in 0..sample_per_pixel {
                     let du = ((dx as f64 + 0.5) / sample_per_pixel as f64 - 0.5) / width as f64;

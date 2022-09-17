@@ -1,16 +1,19 @@
 use std::cell::UnsafeCell;
 
-use rand::{rngs::StdRng, SeedableRng};
+use rand::SeedableRng;
+use rand_pcg::Lcg128Xsl64;
+
+pub type MainRng = Lcg128Xsl64;
 
 thread_local!(
-    pub static  THREAD_RNG_KEY: UnsafeCell<StdRng> = {
+    pub static THREAD_RNG_KEY: UnsafeCell<MainRng> = {
         let rng = SeedableRng::seed_from_u64(0);
         UnsafeCell::new(rng)
     }
 );
 
 #[inline]
-pub fn with<F: FnOnce(&mut StdRng) -> R, R>(f: F) -> R {
+pub fn with<F: FnOnce(&mut MainRng) -> R, R>(f: F) -> R {
     THREAD_RNG_KEY.with(|rng| f(unsafe { &mut *rng.get() }))
 }
 
