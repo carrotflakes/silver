@@ -19,7 +19,7 @@ fn main() {
         5.0,
     );
     let sample = 10;
-    let faces = silver::formats::obj::load("./niko256.obj");
+    let (faces, _) = silver::formats::obj::load("./niko256.obj");
 
     let img = image::open("niko256_niko.png").unwrap();
 
@@ -35,10 +35,18 @@ fn main() {
             (
                 // silver::shapes::Triangle::new(transform(f[0].0), transform(f[1].0), transform(f[2].0)),
                 silver::shapes::triangle_with_normals::TriangleWithNormals::new(
-                    [transform(f[0].0), transform(f[2].0), transform(f[1].0)],
-                    [transform(f[0].2), transform(f[2].2), transform(f[1].2)],
+                    [
+                        transform(f.0[0].0),
+                        transform(f.0[2].0),
+                        transform(f.0[1].0),
+                    ],
+                    [
+                        transform(f.0[0].2),
+                        transform(f.0[2].2),
+                        transform(f.0[1].2),
+                    ],
                 ),
-                silver::materials::tex::Tex::new(image, [f[0].1, f[2].1, f[1].1]),
+                silver::materials::tex::Tex::new(image, [f.0[0].1, f.0[2].1, f.0[1].1]),
             )
         })
         .collect();

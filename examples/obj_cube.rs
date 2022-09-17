@@ -20,10 +20,16 @@ fn main() {
         6.0,
     );
     let sample = 20;
-    let faces = silver::formats::obj::load("./cube.obj");
+    let (faces, _) = silver::formats::obj::load("./cube.obj");
     let shapes: Vec<_> = faces
         .into_iter()
-        .map(|f| Triangle::new(transform(f[0].0), transform(f[2].0), transform(f[1].0)))
+        .map(|f| {
+            Triangle::new(
+                transform(f.0[0].0),
+                transform(f.0[2].0),
+                transform(f.0[1].0),
+            )
+        })
         .collect();
     let material = Lambertian::new(Vec3::new([0.5, 0.5, 0.5]));
     let scene = LinearSearch::new(shapes.iter().map(|s| (s, &material)));
