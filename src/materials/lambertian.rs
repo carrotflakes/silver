@@ -24,7 +24,7 @@ impl Material for Lambertian {
             albedo: self.albedo,
             ray: Some(Ray::new(
                 *location,
-                **normal + rng::with(|rng| Vec3::random_in_unit_sphere(rng)),
+                **normal + rng::with(|rng| *Vec3::random_unit_vector(rng)),
             )),
         }
     }

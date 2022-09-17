@@ -161,7 +161,7 @@ impl Vec3 {
     }
 
     #[inline]
-    pub fn random_on_unit_sphere(rng: &mut impl rand::Rng) -> NormVec3 {
+    pub fn random_unit_vector(rng: &mut impl rand::Rng) -> NormVec3 {
         use std::f64::consts::TAU;
         let a = TAU * rng.gen::<f64>();
         let z = 1.0 - 2.0 * rng.gen::<f64>();

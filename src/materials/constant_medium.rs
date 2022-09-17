@@ -28,7 +28,7 @@ impl Material for ConstantMedium {
             albedo: self.color.clone(),
             ray: Some(Ray::new(
                 *location,
-                *rng::with(|rng| Vec3::random_on_unit_sphere(rng)),
+                *rng::with(|rng| Vec3::random_unit_vector(rng)),
             )),
         }
     }
