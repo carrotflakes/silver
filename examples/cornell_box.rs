@@ -70,7 +70,7 @@ pub fn make_cornell_box() -> Vec<(BasicShape, BasicMaterial)> {
         ),
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([0.5, -0.5, 0.0]), 0.4)),
-            BasicMaterial::Dielectric(Dielectric::new(1.1)),
+            BasicMaterial::Dielectric(Dielectric::new(1.5)),
             // BasicMaterial::ConstantMedium(silver::materials::constant_medium::ConstantMedium::new(4.0, Vec3::new([0.0, 0.0, 1.0]))),
         ),
         (
