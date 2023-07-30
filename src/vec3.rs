@@ -114,7 +114,7 @@ impl Neg for Vec3 {
 
 impl Vec3 {
     pub fn norm(&self) -> f64 {
-        (self.x().powi(2i32) + self.y().powi(2i32) + self.z().powi(2i32)).sqrt()
+        (self.x().powi(2) + self.y().powi(2) + self.z().powi(2)).sqrt()
     }
 
     pub fn normalize(&self) -> NormVec3 {
@@ -139,7 +139,7 @@ impl Vec3 {
     }
 
     pub fn hadamard(&self, rhs: &Vec3) -> Vec3 {
-        Vec3([self.x() * rhs.x(), self.y() * rhs.y(), self.z() * rhs.z()])
+        *self * *rhs
     }
 
     pub fn random(rng: &mut impl rand::Rng) -> Vec3 {
@@ -170,6 +170,18 @@ impl Vec3 {
         let y = a.sin() * r;
         NormVec3(Vec3([x, y, z]))
     }
+
+    #[inline]
+    pub fn random_cosine_direction(rng: &mut impl rand::Rng) -> NormVec3 {
+        use std::f64::consts::TAU;
+        let a = TAU * rng.gen::<f64>();
+        let r = rng.gen::<f64>();
+        let z = (1.0 - r).sqrt();
+        let r = r.sqrt();
+        let x = a.cos() * r;
+        let y = a.sin() * r;
+        NormVec3(Vec3([x, y, z]))
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -181,5 +193,14 @@ impl Deref for NormVec3 {
     #[inline]
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+impl Neg for NormVec3 {
+    type Output = NormVec3;
+
+    #[inline]
+    fn neg(self) -> NormVec3 {
+        NormVec3(-*self)
     }
 }
