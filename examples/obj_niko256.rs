@@ -18,7 +18,7 @@ fn main() {
         0.001,
         5.0,
     );
-    let sample = 10;
+    let sample_per_pixel = 100;
     let (faces, _) = silver::formats::obj::load("./niko256.obj");
 
     let img = image::open("niko256_niko.png").unwrap();
@@ -62,7 +62,7 @@ fn main() {
         },
         width,
         height,
-        sample,
+        sample_per_pixel,
     );
     println!("{:?} elapsed", start.elapsed());
 

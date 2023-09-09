@@ -20,7 +20,7 @@ fn main() {
         0.001,
         4.0,
     );
-    let sample_per_pixel = 25;
+    let sample_per_pixel = 25 * 25;
     let cutoff = 10;
     let objects = make_cornell_box();
     let scene = Resolver::new(objects.iter().map(|(s, m)| (s, m)));

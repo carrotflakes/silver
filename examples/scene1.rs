@@ -20,7 +20,7 @@ fn main() {
         0.001,
         3.0,
     );
-    let sample = 20;
+    let sample_per_pixel = 400;
     let objects = make_scene();
     let scene = LinearSearch::new(objects.iter().map(|(s, m)| (s, m)));
 
@@ -35,7 +35,7 @@ fn main() {
         },
         width,
         height,
-        sample,
+        sample_per_pixel,
     );
     println!("{:?} elapsed", start.elapsed());
 
@@ -90,8 +90,8 @@ fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([1.3, 1.3, -1.0]), 0.6)),
             BasicMaterial::ConstantMedium(constant_medium::ConstantMedium::new(
-                2.0,
-                Vec3::new([0.95, 0.95, 0.95]),
+                20.0,
+                Vec3::new([0.995, 0.5, 0.5]),
             )),
         ),
         (

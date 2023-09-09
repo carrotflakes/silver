@@ -1,3 +1,4 @@
+use rand::Rng;
 use rayon::prelude::*;
 
 use crate::{camera::Camera, ray::Ray, rng::MainRng, vec3::Vec3};
@@ -18,15 +19,15 @@ pub fn render(
             let v = y as f64 / height as f64;
             let mut color = Vec3::ZERO;
             let mut rng: MainRng = rand::SeedableRng::seed_from_u64((x ^ y) as u64);
-            for dy in 0..sample_per_pixel {
-                for dx in 0..sample_per_pixel {
-                    let du = ((dx as f64 + 0.5) / sample_per_pixel as f64 - 0.5) / width as f64;
-                    let dv = ((dy as f64 + 0.5) / sample_per_pixel as f64 - 0.5) / height as f64;
-                    let r = camera.get_ray(u + du, 1.0 - (v + dv), &mut rng);
-                    color = color + sample(&r);
-                }
+            for _ in 0..sample_per_pixel {
+                let dx = rng.gen::<f64>();
+                let dy = rng.gen::<f64>();
+                let du = (dx - 0.5) / width as f64;
+                let dv = (dy - 0.5) / height as f64;
+                let r = camera.get_ray(u + du, 1.0 - (v + dv), &mut rng);
+                color = color + sample(&r);
             }
-            color = color / sample_per_pixel.pow(2) as f64;
+            color = color / sample_per_pixel as f64;
             (y, x, color)
         })
         .collect::<Vec<_>>();

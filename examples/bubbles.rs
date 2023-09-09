@@ -21,7 +21,7 @@ fn main() {
         0.001,
         1.0,
     );
-    let sample_per_pixel = 10;
+    let sample_per_pixel = 100;
     let cutoff = 20;
     let objects = make_scene();
     let scene = Resolver::new(objects.iter().map(|(s, m)| (s, m)));

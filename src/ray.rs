@@ -11,6 +11,7 @@ impl Ray {
         Ray { origin, direction }
     }
 
+    /// Note: The distance is affected by the length of the direction vector.
     pub fn at(&self, t: f64) -> Vec3 {
         self.origin + t * self.direction
     }
