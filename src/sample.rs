@@ -83,9 +83,9 @@ pub fn sample_weighted<M: Material, DM: Deref<Target = M>>(
     }
 }
 
-pub fn sample_with_volume<M: Material, DM: Deref<Target = M>>(
-    hit: impl Hit<DM>,
-    env: impl Fn(&Ray) -> Vec3,
+pub fn sample_with_volume<M: Material, DM: Deref<Target = M>, H: Hit<DM>, E: Fn(&Ray) -> Vec3>(
+    hit: H,
+    env: E,
     ray: &Ray,
     cutoff: i32,
     volume: Option<(f64, f64, Vec3)>,
@@ -106,24 +106,10 @@ pub fn sample_with_volume<M: Material, DM: Deref<Target = M>>(
         material,
     )) = hit.hit(ray)
     {
-        if let Some((scatter_distance, neg_inv_density, color)) = volume {
+        if let Some(volume) = volume {
+            let scatter_distance = volume.0;
             if scatter_distance < time * ray.direction.norm() {
-                // subsurface scattering
-                let ray = Ray::new(
-                    ray.origin + *ray.direction.normalize() * scatter_distance,
-                    rng::with(|rng| *Vec3::random_unit_vector(rng)),
-                );
-                return sample_with_volume(
-                    hit,
-                    env,
-                    &ray,
-                    cutoff - 1,
-                    Some((
-                        make_scatter_distance(neg_inv_density),
-                        neg_inv_density,
-                        color,
-                    )),
-                ) * color;
+                return subsurface_scattering(volume, ray, hit, env, cutoff);
             }
         }
         if let Some((neg_inv_density, color)) = material.volume() {
@@ -155,27 +141,37 @@ pub fn sample_with_volume<M: Material, DM: Deref<Target = M>>(
             }
         }
     } else {
-        if let Some((scatter_distance, neg_inv_density, color)) = volume {
-            // subsurface scattering
-            let ray = Ray::new(
-                ray.origin + *ray.direction.normalize() * scatter_distance,
-                rng::with(|rng| *Vec3::random_unit_vector(rng)),
-            );
-            return sample_with_volume(
-                hit,
-                env,
-                &ray,
-                cutoff - 1,
-                Some((
-                    make_scatter_distance(neg_inv_density),
-                    neg_inv_density,
-                    color,
-                )),
-            ) * color;
+        if let Some(volume) = volume {
+            return subsurface_scattering(volume, ray, hit, env, cutoff);
         }
 
         env(ray)
     }
+}
+
+fn subsurface_scattering<M: Material, DM: Deref<Target = M>, H: Hit<DM>, E: Fn(&Ray) -> Vec3>(
+    volume: (f64, f64, Vec3),
+    ray: &Ray,
+    hit: H,
+    env: E,
+    cutoff: i32,
+) -> Vec3 {
+    let (scatter_distance, neg_inv_density, color) = volume;
+    let ray = Ray::new(
+        ray.origin + *ray.direction.normalize() * scatter_distance,
+        rng::with(|rng| *Vec3::random_unit_vector(rng)),
+    );
+    sample_with_volume(
+        hit,
+        env,
+        &ray,
+        cutoff - 1,
+        Some((
+            make_scatter_distance(neg_inv_density),
+            neg_inv_density,
+            color,
+        )),
+    ) * color
 }
 
 pub fn make_scatter_distance(neg_inv_density: f64) -> f64 {

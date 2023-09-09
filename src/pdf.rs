@@ -61,6 +61,32 @@ impl<'a, S: Shape> Pdf for ShapePdf<'a, S> {
     }
 }
 
+pub struct ShapesPdf<'a, S: Shape> {
+    origin: Vec3,
+    shapes: &'a [S],
+}
+
+impl<'a, S: Shape> ShapesPdf<'a, S> {
+    pub fn new(origin: Vec3, shapes: &'a [S]) -> Self {
+        ShapesPdf { origin, shapes }
+    }
+}
+
+impl<'a, S: Shape> Pdf for ShapesPdf<'a, S> {
+    fn value(&self, direction: &Vec3) -> f64 {
+        self.shapes
+            .iter()
+            .map(|shape| shape.pdf_value(&self.origin, direction))
+            .sum::<f64>()
+            / self.shapes.len() as f64
+    }
+
+    fn generate(&self) -> Vec3 {
+        let shape = rng::with(|rng| rng.gen_range(0..self.shapes.len()));
+        self.shapes[shape].random(&self.origin)
+    }
+}
+
 pub struct MixturePdf<'a, P1: Pdf, P2: Pdf> {
     p1: &'a P1,
     p2: &'a P2,
