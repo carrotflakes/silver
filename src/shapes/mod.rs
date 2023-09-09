@@ -23,6 +23,16 @@ pub struct HitRec {
 pub trait Shape {
     fn hit(&self, ray: &Ray, t0: f64, t1: f64) -> Option<HitRec>;
     fn bbox(&self) -> BBox;
+
+    fn pdf_value(&self, origin: &Vec3, direction: &Vec3) -> f64 {
+        let _ = (origin, direction);
+        0.0
+    }
+
+    fn random(&self, origin: &Vec3) -> Vec3 {
+        let _ = origin;
+        Vec3::new([1.0, 0.0, 0.0])
+    }
 }
 
 #[derive(Clone)]
@@ -46,6 +56,22 @@ impl Shape for Basic {
             Basic::Sphere(sphere) => sphere.bbox(),
             Basic::Triangle(triangle) => triangle.bbox(),
             Basic::Edge(edge) => edge.bbox(),
+        }
+    }
+
+    fn pdf_value(&self, origin: &Vec3, direction: &Vec3) -> f64 {
+        match self {
+            Basic::Sphere(sphere) => sphere.pdf_value(origin, direction),
+            Basic::Triangle(triangle) => triangle.pdf_value(origin, direction),
+            Basic::Edge(edge) => edge.pdf_value(origin, direction),
+        }
+    }
+
+    fn random(&self, origin: &Vec3) -> Vec3 {
+        match self {
+            Basic::Sphere(sphere) => sphere.random(origin),
+            Basic::Triangle(triangle) => triangle.random(origin),
+            Basic::Edge(edge) => edge.random(origin),
         }
     }
 }

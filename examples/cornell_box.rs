@@ -21,7 +21,7 @@ fn main() {
         4.0,
     );
     let sample_per_pixel = 25;
-    let cutoff = 20;
+    let cutoff = 10;
     let objects = make_cornell_box();
     let scene = Resolver::new(objects.iter().map(|(s, m)| (s, m)));
 
@@ -30,7 +30,7 @@ fn main() {
         &camera,
         |ray| {
             silver::rng::reseed(silver::util::vec3_to_u64(&ray.direction));
-            silver::sample::sample(&scene, env, ray, cutoff)
+            silver::sample::sample_weighted(&scene, env, ray, cutoff, &objects[2].0)
             // silver::sample::sample_with_volume(
             //     &scene,
             //     env,
@@ -67,9 +67,11 @@ pub fn make_cornell_box() -> Vec<(BasicShape, BasicMaterial)> {
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([-0.5, -0.3, 0.0]), 0.4)),
             BasicMaterial::Metal(Metal::new(Vec3::new([1.0, 1.0, 1.0]), 0.5)),
+            // BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.0, 0.0, 1.0]))),
         ),
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([0.5, -0.5, 0.0]), 0.4)),
+            // BasicMaterial::Lambertian(Lambertian::new(Vec3::new([1.0, 1.0, 1.0]))),
             BasicMaterial::Dielectric(Dielectric::new(1.5)),
             // BasicMaterial::ConstantMedium(silver::materials::constant_medium::ConstantMedium::new(4.0, Vec3::new([0.0, 0.0, 1.0]))),
         ),
@@ -77,6 +79,14 @@ pub fn make_cornell_box() -> Vec<(BasicShape, BasicMaterial)> {
             BasicShape::Sphere(Sphere::new(Vec3::new([0.0, 0.8, 0.0]), 0.2)),
             BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3::new([5.0, 5.0, 5.0]))),
         ),
+        // (
+        //     BasicShape::Triangle(silver::shapes::Triangle::new(
+        //         Vec3::new([0.0, 0.95, 0.5]),
+        //         Vec3::new([-0.25, 0.95, 0.0]),
+        //         Vec3::new([0.25, 0.95, 0.0]),
+        //     )),
+        //     BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3::new([5.0, 5.0, 5.0]))),
+        // ),
     ];
 
     v.extend(

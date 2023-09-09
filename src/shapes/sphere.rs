@@ -1,6 +1,9 @@
+use rand::Rng;
+
 use crate::{
     bbox::BBox,
     ray::Ray,
+    rng,
     shapes::{HitRec, Shape},
     vec3::Vec3,
 };
@@ -64,6 +67,24 @@ impl Shape for Sphere {
             self.center + Vec3::new([self.radius, self.radius, self.radius]),
         )
     }
+
+    fn pdf_value(&self, origin: &Vec3, direction: &Vec3) -> f64 {
+        if let Some(_) = self.hit(&Ray::new(*origin, *direction), 0.001, f64::INFINITY) {
+            let cos_theta_max =
+                (1.0 - self.radius.powi(2) / (self.center - *origin).norm_sqr()).sqrt();
+            let solid_angle = std::f64::consts::TAU * (1.0 - cos_theta_max);
+            1.0 / solid_angle
+        } else {
+            0.0
+        }
+    }
+
+    fn random(&self, origin: &Vec3) -> Vec3 {
+        let direction = self.center - *origin;
+        let distance_squared = direction.norm_sqr();
+        let uvw = crate::onb::Onb::from_w(direction.normalize());
+        uvw.local(random_to_sphere(self.radius, distance_squared))
+    }
 }
 
 fn get_sphere_uv(p: Vec3) -> [f64; 2] {
@@ -71,4 +92,14 @@ fn get_sphere_uv(p: Vec3) -> [f64; 2] {
     let phi = p.z().atan2(p.x());
     let theta = p.y().asin();
     [1.0 - (phi + PI) / (2.0 * PI), (theta + PI / 2.0) / PI]
+}
+
+fn random_to_sphere(radius: f64, distance_squared: f64) -> Vec3 {
+    let r1 = rng::with(|rng| rng.gen::<f64>());
+    let r2 = rng::with(|rng| rng.gen::<f64>());
+    let z = 1.0 + r2 * ((1.0 - radius.powi(2) / distance_squared).sqrt() - 1.0);
+    let phi = std::f64::consts::TAU * r1;
+    let x = phi.cos() * (1.0 - z.powi(2)).sqrt();
+    let y = phi.sin() * (1.0 - z.powi(2)).sqrt();
+    Vec3::new([x, y, z])
 }

@@ -1,4 +1,5 @@
 use crate::{
+    pdf::CosinePdf,
     ray::Ray,
     rng,
     vec3::{NormVec3, Vec3},
@@ -64,10 +65,11 @@ impl Material for Tex {
                 ]),
                 2.2,
             ),
-            ray: Some(Ray::new(
+            scattered: Some(Ray::new(
                 *location,
                 **normal + rng::with(|rng| Vec3::random_in_unit_sphere(rng)),
             )),
+            pdf: Some(CosinePdf::new(*normal)),
         }
     }
 }

@@ -13,19 +13,24 @@ pub use metal::Metal;
 
 use crate::{
     ray::Ray,
-    vec3::{NormVec3, Vec3},
+    vec3::{NormVec3, Vec3}, pdf::CosinePdf,
 };
 
 pub struct RayResult {
     pub emit: Vec3,
     pub albedo: Vec3,
-    pub ray: Option<Ray>,
+    pub scattered: Option<Ray>,
+    pub pdf: Option<CosinePdf>,
 }
 
 pub trait Material {
     fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, uv: [f64; 2]) -> RayResult;
     fn volume(&self) -> Option<(f64, Vec3)> {
         None
+    }
+    fn scattering_pdf(&self, ray: &Ray, normal: &NormVec3, scattered: &Ray) -> f64 {
+        let _ = (ray, normal, scattered);
+        0.0
     }
 }
 
@@ -61,6 +66,21 @@ impl Material for Basic {
             Basic::Metal(metal) => metal.volume(),
             Basic::Checker(checker) => checker.volume(),
             Basic::ConstantMedium(constant_medium) => constant_medium.volume(),
+        }
+    }
+
+    fn scattering_pdf(&self, ray: &Ray, normal: &NormVec3, scattered: &Ray) -> f64 {
+        match self {
+            Basic::Dielectric(dielectric) => dielectric.scattering_pdf(ray, normal, scattered),
+            Basic::DiffuseLight(diffuse_light) => {
+                diffuse_light.scattering_pdf(ray, normal, scattered)
+            }
+            Basic::Lambertian(lambertian) => lambertian.scattering_pdf(ray, normal, scattered),
+            Basic::Metal(metal) => metal.scattering_pdf(ray, normal, scattered),
+            Basic::Checker(checker) => checker.scattering_pdf(ray, normal, scattered),
+            Basic::ConstantMedium(constant_medium) => {
+                constant_medium.scattering_pdf(ray, normal, scattered)
+            }
         }
     }
 }

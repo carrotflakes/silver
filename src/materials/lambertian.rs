@@ -1,7 +1,8 @@
 use crate::{
+    onb::Onb,
     ray::Ray,
     rng,
-    vec3::{NormVec3, Vec3},
+    vec3::{NormVec3, Vec3}, pdf::CosinePdf,
 };
 
 use super::{Material, RayResult};
@@ -19,13 +20,30 @@ impl Lambertian {
 
 impl Material for Lambertian {
     fn ray(&self, _ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> RayResult {
+        // let direction = **normal + rng::with(|rng| *Vec3::random_unit_vector(rng));
+        let uvw = Onb::from_w(*normal);
+        let direction = uvw.local(rng::with(|rng| *Vec3::random_cosine_direction(rng)));
         RayResult {
             emit: Vec3::ZERO,
             albedo: self.albedo,
-            ray: Some(Ray::new(
-                *location,
-                **normal + rng::with(|rng| *Vec3::random_unit_vector(rng)),
-            )),
+            scattered: Some(Ray::new(*location, direction)),
+            pdf: Some(CosinePdf::new(*normal)),
+        }
+        // let direction = rng::with(|rng| Vec3::random_in_hemisphere(rng, normal)).normalize();
+        // RayResult {
+        //     emit: Vec3::ZERO,
+        //     albedo: self.albedo,
+        //     scattered: Some(Ray::new(*location, *direction)),
+        //     pdf: 0.5 / std::f64::consts::PI,
+        // }
+    }
+
+    fn scattering_pdf(&self, _ray: &Ray, normal: &NormVec3, scattered: &Ray) -> f64 {
+        let cosine = normal.dot(&scattered.direction.normalize());
+        if cosine < 0.0 {
+            0.0
+        } else {
+            cosine / std::f64::consts::PI
         }
     }
 }

@@ -26,10 +26,11 @@ impl Material for ConstantMedium {
         RayResult {
             emit: Vec3::ZERO,
             albedo: self.color.clone(),
-            ray: Some(Ray::new(
+            scattered: Some(Ray::new(
                 *location,
                 *rng::with(|rng| Vec3::random_unit_vector(rng)),
             )),
+            pdf: None,
         }
     }
 

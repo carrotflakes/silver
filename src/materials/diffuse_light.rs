@@ -21,7 +21,8 @@ impl Material for DiffuseLight {
         RayResult {
             emit: self.color,
             albedo: Vec3::ZERO,
-            ray: None,
+            scattered: None,
+            pdf: None,
         }
     }
 }

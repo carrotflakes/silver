@@ -49,7 +49,8 @@ impl Material for Dielectric {
         RayResult {
             emit: Vec3::ZERO,
             albedo: Vec3::new([1.0; 3]),
-            ray: Some(Ray::new(*location, v)),
+            scattered: Some(Ray::new(*location, v)),
+            pdf: None,
         }
     }
 }

@@ -117,6 +117,10 @@ impl Vec3 {
         (self.x().powi(2) + self.y().powi(2) + self.z().powi(2)).sqrt()
     }
 
+    pub fn norm_sqr(&self) -> f64 {
+        self.x().powi(2) + self.y().powi(2) + self.z().powi(2)
+    }
+
     pub fn normalize(&self) -> NormVec3 {
         let inv_norm = 1.0 / self.norm(); // panicable!
         NormVec3(Vec3([
@@ -161,6 +165,16 @@ impl Vec3 {
     }
 
     #[inline]
+    pub fn random_in_hemisphere(rng: &mut impl rand::Rng, normal: &Vec3) -> Vec3 {
+        let v = Vec3::random_in_unit_sphere(rng);
+        if v.dot(normal) > 0.0 {
+            v
+        } else {
+            -v
+        }
+    }
+
+    #[inline]
     pub fn random_unit_vector(rng: &mut impl rand::Rng) -> NormVec3 {
         use std::f64::consts::TAU;
         let a = TAU * rng.gen::<f64>();
@@ -172,6 +186,9 @@ impl Vec3 {
     }
 
     #[inline]
+    /// x: (-1, 1)
+    /// y: (-1, 1)
+    /// z: [0, 1)
     pub fn random_cosine_direction(rng: &mut impl rand::Rng) -> NormVec3 {
         use std::f64::consts::TAU;
         let a = TAU * rng.gen::<f64>();
@@ -202,5 +219,11 @@ impl Neg for NormVec3 {
     #[inline]
     fn neg(self) -> NormVec3 {
         NormVec3(-*self)
+    }
+}
+
+impl NormVec3 {
+    pub fn cross(&self, rhs: &NormVec3) -> NormVec3 {
+        NormVec3((**self).cross(rhs))
     }
 }

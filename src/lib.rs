@@ -4,6 +4,8 @@ pub mod envs;
 pub mod formats;
 pub mod materials;
 pub mod matrix;
+pub mod onb;
+pub mod pdf;
 pub mod primitives;
 pub mod ray;
 pub mod render;

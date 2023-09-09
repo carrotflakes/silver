@@ -1,6 +1,9 @@
+use rand::Rng;
+
 use crate::{
     bbox::BBox,
     ray::Ray,
+    rng,
     shapes::{HitRec, Shape},
     vec3::{NormVec3, Vec3},
 };
@@ -50,6 +53,28 @@ impl Shape for Triangle {
                 self.0.z().max(self.1.z()).max(self.2.z()),
             ]),
         )
+    }
+
+    fn pdf_value(&self, origin: &Vec3, direction: &Vec3) -> f64 {
+        if let Some(hr) = self.hit(&Ray::new(*origin, *direction), 0.001, f64::INFINITY) {
+            let area = 0.5 * (self.1 - self.0).cross(&(self.2 - self.0)).norm();
+            let distance_squared = hr.time.powi(2) * direction.norm_sqr();
+            let cosine = (direction.dot(&hr.normal)).abs() / direction.norm();
+            distance_squared / (cosine.max(1e-8) * area)
+        } else {
+            0.0
+        }
+    }
+
+    fn random(&self, origin: &Vec3) -> Vec3 {
+        let u = rng::with(|rng| rng.gen_range(0.0..1.0));
+        let v = rng::with(|rng| rng.gen_range(0.0..1.0));
+        let random_point = if u + v > 1.0 {
+            self.0 + (self.1 - self.0) * (1.0 - u) + (self.2 - self.0) * (1.0 - v)
+        } else {
+            self.0 + (self.1 - self.0) * u + (self.2 - self.0) * v
+        };
+        random_point - *origin
     }
 }
 
