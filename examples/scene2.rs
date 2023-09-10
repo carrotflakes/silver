@@ -1,6 +1,5 @@
 use rand::Rng;
 
-use silver::materials::checker::Checker;
 use silver::materials::{Basic as BasicMaterial, *};
 use silver::render::render;
 use silver::resolvers::linear_search::LinearSearch;
@@ -22,7 +21,7 @@ fn main() {
         0.01,
         3.0,
     );
-    let sample = 20;
+    let sample = 400;
     let objects = make_scene();
     let scene = LinearSearch::new(objects.iter().map(|(s, m)| (s, m)));
 
@@ -57,14 +56,17 @@ fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
     let mut objects = vec![
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([0.0, -1000.0, -2.0]), 1000.0)),
-            BasicMaterial::Checker(Checker::new(
-                Box::new(BasicMaterial::Lambertian(Lambertian::new(Vec3::new([
-                    0.7, 0.7, 0.7,
-                ])))),
-                Box::new(BasicMaterial::Lambertian(Lambertian::new(Vec3::new([
-                    0.8, 0.8, 0.8,
-                ])))),
-            )),
+            BasicMaterial::Lambertian(Lambertian::new(Vec3::new([
+                0.7, 0.7, 0.7,
+            ]))),
+            // BasicMaterial::Checker(Checker::new(
+            //     Box::new(BasicMaterial::Lambertian(Lambertian::new(Vec3::new([
+            //         0.7, 0.7, 0.7,
+            //     ])))),
+            //     Box::new(BasicMaterial::Lambertian(Lambertian::new(Vec3::new([
+            //         0.8, 0.8, 0.8,
+            //     ])))),
+            // )),
         ),
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([1.0, 0.5, -1.0]), 0.5)),
@@ -83,7 +85,7 @@ fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
             BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3::new([3.0, 3.0, 0.0]))),
         ),
         (
-            BasicShape::Triangle(Triangle::new(
+            BasicShape::TriangleBothSide(Triangle::new(
                 Vec3::new([0.0, 0.0, -0.5]),
                 Vec3::new([-0.2, 0.3, -0.5]),
                 Vec3::new([0.2, 0.3, -0.5]),

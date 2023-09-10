@@ -3,7 +3,7 @@ use crate::{ray::Ray, vec3::Vec3};
 pub fn default_env(ray: &Ray) -> Vec3 {
     let direction = ray.direction.normalize();
     let t: f64 = 0.5 * (1.0 - direction.y());
-    (1.0 - t) * Vec3::new([1.0, 1.0, 1.0]) + t * Vec3::new([0.5, 0.7, 1.0])
+    (1.0 - t) * Vec3::new([0.5, 0.7, 1.0]) + t * Vec3::new([1.0, 1.0, 1.0])
 }
 
 pub fn fancy_env(ray: &Ray) -> Vec3 {
