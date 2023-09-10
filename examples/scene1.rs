@@ -29,7 +29,8 @@ fn main() {
         &camera,
         |ray| {
             silver::rng::reseed(silver::util::vec3_to_u64(&ray.direction));
-            // silver::sample::sample(scene, silver::envs::default_env, ray, 20)
+            // silver::sample::sample(&scene, silver::envs::fancy_env, ray, 20)
+            // silver::sample::sample_weighted(&scene, silver::envs::fancy_env, ray, 20, &objects[0].0)
 
             silver::sample::sample_with_volume(&scene, silver::envs::fancy_env, ray, 20, None)
         },
@@ -54,6 +55,10 @@ fn main() {
 
 fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
     let mut v = vec![
+        (
+            BasicShape::Sphere(Sphere::new(Vec3::new([-0.8, 0.2, -1.0]), 0.2)),
+            BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3::new([3.0, 3.0, 3.0]))),
+        ),
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([0.0, -1000.0, -2.0]), 1000.0)),
             BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.7, 0.7, 0.7]))),
@@ -90,7 +95,7 @@ fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([1.3, 1.3, -1.0]), 0.6)),
             BasicMaterial::ConstantMedium(constant_medium::ConstantMedium::new(
-                20.0,
+                3.0,
                 Vec3::new([0.995, 0.5, 0.5]),
             )),
         ),
@@ -117,10 +122,6 @@ fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([-1.3, 0.2, -3.0]), 0.2)),
             BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.9, 0.9, 0.9]))),
-        ),
-        (
-            BasicShape::Sphere(Sphere::new(Vec3::new([-0.8, 0.2, -1.0]), 0.2)),
-            BasicMaterial::DiffuseLight(DiffuseLight::new(Vec3::new([3.0, 3.0, 3.0]))),
         ),
         (
             BasicShape::Edge(edge::Edge::new(

@@ -19,7 +19,7 @@ pub fn sample<M: Material, DM: Deref<Target = M>>(
     cutoff: i32,
 ) -> Vec3 {
     if cutoff == 0 {
-        return Vec3::ZERO;
+        return env(ray);
     }
 
     if let Some((hit_rec, material)) = hit.hit(ray) {
@@ -50,7 +50,7 @@ pub fn sample_weighted<M: Material, DM: Deref<Target = M>>(
     light: &impl crate::shapes::Shape,
 ) -> Vec3 {
     if cutoff == 0 {
-        return Vec3::ZERO;
+        return env(ray);
     }
 
     if let Some((hit_rec, material)) = hit.hit(ray) {
@@ -93,7 +93,7 @@ pub fn sample_with_volume<M: Material, DM: Deref<Target = M>, H: Hit<DM>, E: Fn(
     volume: Option<(f64, f64, Vec3)>,
 ) -> Vec3 {
     if cutoff == 0 {
-        return Vec3::ZERO;
+        return env(ray);
     }
 
     if let Some((
