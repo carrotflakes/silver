@@ -9,24 +9,25 @@ use crate::{
 };
 
 #[derive(Clone)]
-pub struct Triangle(Vec3, Vec3, Vec3);
+pub struct Triangle([Vec3; 3]);
 
 impl Triangle {
     pub fn new(v0: Vec3, v1: Vec3, v2: Vec3) -> Triangle {
-        Triangle(v0, v1, v2)
+        Triangle([v0, v1, v2])
     }
 }
 
 impl Shape for Triangle {
     fn hit(&self, ray: &Ray, t0: f64, t1: f64) -> Option<HitRec> {
-        if let Some((t, u, v, positive)) = triangle_intersect(ray, &self.0, &self.1, &self.2, true)
+        if let Some((t, u, v, positive)) =
+            triangle_intersect(ray, &self.0[0], &self.0[1], &self.0[2], true)
         {
             if t0 < t && t < t1 {
                 let location = ray.direction * t + ray.origin;
                 let normal = if positive {
-                    triangle_norm(&self.0, &self.1, &self.2)
+                    triangle_norm(&self.0[0], &self.0[1], &self.0[2])
                 } else {
-                    triangle_norm(&self.0, &self.2, &self.1)
+                    triangle_norm(&self.0[0], &self.0[2], &self.0[1])
                 };
                 return Some(HitRec {
                     time: t,
@@ -43,21 +44,24 @@ impl Shape for Triangle {
     fn bbox(&self) -> BBox {
         BBox::from_min_max(
             Vec3::new([
-                self.0.x().min(self.1.x()).min(self.2.x()),
-                self.0.y().min(self.1.y()).min(self.2.y()),
-                self.0.z().min(self.1.z()).min(self.2.z()),
+                self.0[0].x().min(self.0[1].x()).min(self.0[2].x()),
+                self.0[0].y().min(self.0[1].y()).min(self.0[2].y()),
+                self.0[0].z().min(self.0[1].z()).min(self.0[2].z()),
             ]),
             Vec3::new([
-                self.0.x().max(self.1.x()).max(self.2.x()),
-                self.0.y().max(self.1.y()).max(self.2.y()),
-                self.0.z().max(self.1.z()).max(self.2.z()),
+                self.0[0].x().max(self.0[1].x()).max(self.0[2].x()),
+                self.0[0].y().max(self.0[1].y()).max(self.0[2].y()),
+                self.0[0].z().max(self.0[1].z()).max(self.0[2].z()),
             ]),
         )
     }
 
     fn pdf_value(&self, ray: Ray) -> f64 {
         if let Some(hr) = self.hit(&ray, 0.001, f64::INFINITY) {
-            let area = 0.5 * (self.1 - self.0).cross(&(self.2 - self.0)).norm();
+            let area = 0.5
+                * (self.0[1] - self.0[0])
+                    .cross(&(self.0[2] - self.0[0]))
+                    .norm();
             let distance_squared = hr.time.powi(2) * ray.direction.norm_sqr();
             let cosine = (ray.direction.dot(&hr.normal)).abs() / ray.direction.norm();
             distance_squared / (cosine.max(1e-8) * area)
@@ -70,9 +74,9 @@ impl Shape for Triangle {
         let u = rng::with(|rng| rng.gen_range(0.0..1.0));
         let v = rng::with(|rng| rng.gen_range(0.0..1.0));
         let random_point = if u + v > 1.0 {
-            self.0 + (self.1 - self.0) * (1.0 - u) + (self.2 - self.0) * (1.0 - v)
+            self.0[0] + (self.0[1] - self.0[0]) * (1.0 - u) + (self.0[2] - self.0[0]) * (1.0 - v)
         } else {
-            self.0 + (self.1 - self.0) * u + (self.2 - self.0) * v
+            self.0[0] + (self.0[1] - self.0[0]) * u + (self.0[2] - self.0[0]) * v
         };
         random_point - *origin
     }
