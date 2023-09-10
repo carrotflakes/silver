@@ -64,19 +64,19 @@ fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
             BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.7, 0.7, 0.7]))),
         ),
         (
-            BasicShape::Sphere(Sphere::new(Vec3::new([0.0, 5.0, -7.0]), 5.0)),
-            BasicMaterial::Metal(Metal::new(Vec3::new([1.0, 1.0, 1.0]), 0.01)),
+            BasicShape::Sphere(Sphere::new(Vec3::new([0.0, 5.0, -7.0]), 4.0)),
+            BasicMaterial::Metal(Metal::new(Vec3::new([1.0, 1.0, 1.0]), 0.0)),
         ),
         (
-            BasicShape::Sphere(Sphere::new(Vec3::new([1.82, 0.5, -1.4]), 0.5)),
+            BasicShape::Sphere(Sphere::new(Vec3::new([1.82, 0.5, -1.0]), 0.5)),
             BasicMaterial::Checker(Checker::new(
                 Box::new(BasicMaterial::Metal(Metal::new(
                     Vec3::new([0.2, 1.0, 1.0]),
-                    0.5,
+                    0.01,
                 ))),
                 Box::new(BasicMaterial::Metal(Metal::new(
                     Vec3::new([1.0, 1.0, 0.2]),
-                    0.5,
+                    0.01,
                 ))),
             )),
         ),
@@ -105,7 +105,7 @@ fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
         ),
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([0.0, 0.5, -1.0]), 0.5)),
-            BasicMaterial::Dielectric(Dielectric::new(1.1)),
+            BasicMaterial::Dielectric(Dielectric::new(1.05)),
         ),
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([-1.3, 0.2, -0.0]), 0.2)),
@@ -128,16 +128,14 @@ fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
                 [Vec3::new([-0.2, 0.2, 0.2]), Vec3::new([0.2, 0.2, 0.5])],
                 [0.05, 0.1],
             )),
-            // BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.5, 0.5, 0.5]))),
-            BasicMaterial::Metal(Metal::new(Vec3::new([0.95, 0.95, 0.95]), 0.95)),
+            BasicMaterial::Metal(Metal::new(Vec3::new([0.95, 0.95, 0.95]), 0.1)),
         ),
         (
             BasicShape::Edge(edge::Edge::new(
                 [Vec3::new([-0.2, 0.2, 0.2]), Vec3::new([0.2, 0.2, 0.5])],
                 [0.1, 0.2],
             )),
-            // BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.5, 0.5, 0.5]))),
-            BasicMaterial::Metal(Metal::new(Vec3::new([1.0, 1.0, 1.0]), 0.95)),
+            BasicMaterial::Metal(Metal::new(Vec3::new([1.0, 1.0, 1.0]), 0.1)),
         ),
     ];
 
@@ -158,7 +156,7 @@ fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
     );
 
     v.extend(
-        silver::primitives::cube(Vec3::new([1.0, 0.3, 0.0]), Vec3::new([0.2, 0.2, 0.2]))
+        silver::primitives::cube(Vec3::new([1.0, 0.2, 0.25]), Vec3::new([0.2, 0.2, 0.2]))
             .into_iter()
             .enumerate()
             .map(|(i, t)| {
@@ -169,6 +167,17 @@ fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
                         1.0 - i as f64 * 0.05,
                         (i % 2) as f64 * 0.5,
                     ]))),
+                )
+            }),
+    );
+
+    v.extend(
+        silver::primitives::cube(Vec3::new([-2.8, 1.0, 0.0]), Vec3::new([0.2, 1.0, 3.0]))
+            .into_iter()
+            .map(|t| {
+                (
+                    BasicShape::Triangle(t),
+                    BasicMaterial::Metal(Metal::new(Vec3::new([0.8, 0.8, 0.8]), 0.3)),
                 )
             }),
     );
