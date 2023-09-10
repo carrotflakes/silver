@@ -13,6 +13,7 @@ fn main() {
     let height = 640;
     let camera = Camera::new(
         &Vec3::new([0.0, 0.0, 4.0]),
+        // &Vec3::new([2.0, 1.0, 4.0]),
         &Vec3::new([0.0, 0.0, 0.0]),
         &Vec3::new([0.0, 1.0, 0.0]),
         39.0f64.to_radians(),
@@ -66,7 +67,7 @@ pub fn make_cornell_box() -> Vec<(BasicShape, BasicMaterial)> {
     let mut v = vec![
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([-0.5, -0.3, 0.0]), 0.4)),
-            BasicMaterial::Metal(Metal::new(Vec3::new([1.0, 1.0, 1.0]), 0.5)),
+            BasicMaterial::Metal(Metal::new(Vec3::new([1.0, 1.0, 1.0]), 0.0)),
             // BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.0, 0.0, 1.0]))),
         ),
         (
@@ -89,6 +90,20 @@ pub fn make_cornell_box() -> Vec<(BasicShape, BasicMaterial)> {
         // ),
     ];
 
+    if false {
+        let z = 2.0;
+        for i in 0..20 {
+            let x = (i * 2 % 31) as f64 / 31.0 - 0.5;
+            let y = ((i * (i + 23) + 3) % 31) as f64 / 31.0 - 0.5;
+            let s = ((i % 3) as f64 / 3.0 + 1.0) * 0.03;
+            v.push(wet_glass([
+                Vec3::new([x, y, z]),
+                Vec3::new([x - s, y + s, z]),
+                Vec3::new([x + s, y + s, z]),
+            ]))
+        }
+    }
+
     v.extend(
         silver::primitives::cube(Vec3::new([0.0, 0.0, 0.0]), Vec3::new([1.0, 1.0, 1.0]))
             .into_iter()
@@ -107,4 +122,13 @@ pub fn make_cornell_box() -> Vec<(BasicShape, BasicMaterial)> {
     );
 
     v
+}
+
+fn wet_glass(vs: [Vec3; 3]) -> (BasicShape, BasicMaterial) {
+    (
+        BasicShape::TriangleBothSide(silver::shapes::Triangle::new(vs[0], vs[1], vs[2])),
+        BasicMaterial::WetGlass(wet_glass::WetGlass::new(
+            vs[0] * 0.5 + vs[1] * 0.25 + vs[2] * 0.25,
+        )),
+    )
 }

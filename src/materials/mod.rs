@@ -5,6 +5,7 @@ pub mod diffuse_light;
 pub mod lambertian;
 pub mod metal;
 pub mod tex;
+pub mod wet_glass;
 
 pub use dielectric::Dielectric;
 pub use diffuse_light::DiffuseLight;
@@ -12,8 +13,9 @@ pub use lambertian::Lambertian;
 pub use metal::Metal;
 
 use crate::{
+    pdf::CosinePdf,
     ray::Ray,
-    vec3::{NormVec3, Vec3}, pdf::CosinePdf,
+    vec3::{NormVec3, Vec3},
 };
 
 pub struct RayResult {
@@ -42,6 +44,7 @@ pub enum Basic {
     Metal(Metal),
     Checker(checker::Checker<Basic>),
     ConstantMedium(constant_medium::ConstantMedium),
+    WetGlass(wet_glass::WetGlass),
 }
 
 impl Material for Basic {
@@ -55,6 +58,7 @@ impl Material for Basic {
             Basic::ConstantMedium(constant_medium) => {
                 constant_medium.ray(ray, location, normal, uv)
             }
+            Basic::WetGlass(wet_glass) => wet_glass.ray(ray, location, normal, uv),
         }
     }
 
@@ -66,6 +70,7 @@ impl Material for Basic {
             Basic::Metal(metal) => metal.volume(),
             Basic::Checker(checker) => checker.volume(),
             Basic::ConstantMedium(constant_medium) => constant_medium.volume(),
+            Basic::WetGlass(wet_glass) => wet_glass.volume(),
         }
     }
 
@@ -81,6 +86,7 @@ impl Material for Basic {
             Basic::ConstantMedium(constant_medium) => {
                 constant_medium.scattering_pdf(ray, normal, scattered)
             }
+            Basic::WetGlass(wet_glass) => wet_glass.scattering_pdf(ray, normal, scattered),
         }
     }
 }
