@@ -1,3 +1,5 @@
+//! Pixel sampling
+
 use std::ops::Deref;
 
 use rand::Rng;

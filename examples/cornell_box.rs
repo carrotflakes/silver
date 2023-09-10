@@ -96,7 +96,7 @@ pub fn make_cornell_box() -> Vec<(BasicShape, BasicMaterial)> {
             .filter(|(i, _)| *i != 3 && *i != 2)
             .map(|(i, t)| {
                 (
-                    BasicShape::Triangle(t),
+                    BasicShape::TriangleBothSide(t.change_both_side()),
                     BasicMaterial::Lambertian(Lambertian::new(match i {
                         4 | 5 => Vec3::new([1.0, 0.0, 0.0]),
                         8 | 9 => Vec3::new([0.0, 1.0, 0.0]),

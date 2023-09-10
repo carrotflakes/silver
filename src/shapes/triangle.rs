@@ -9,22 +9,26 @@ use crate::{
 };
 
 #[derive(Clone)]
-pub struct Triangle([Vec3; 3]);
+pub struct Triangle<const BOTH_SIDE: bool = false>([Vec3; 3]);
 
-impl Triangle {
-    pub fn new(v0: Vec3, v1: Vec3, v2: Vec3) -> Triangle {
+impl<const BOTH_SIDE: bool> Triangle<BOTH_SIDE> {
+    pub fn new(v0: Vec3, v1: Vec3, v2: Vec3) -> Self {
         Triangle([v0, v1, v2])
+    }
+
+    pub fn change_both_side<const NEW_BOTH_SIDE: bool>(self) -> Triangle<NEW_BOTH_SIDE> {
+        Triangle(self.0)
     }
 }
 
-impl Shape for Triangle {
+impl<const BOTH_SIDE: bool> Shape for Triangle<BOTH_SIDE> {
     fn hit(&self, ray: &Ray, t0: f64, t1: f64) -> Option<HitRec> {
-        if let Some((t, u, v, positive)) =
-            triangle_intersect(ray, &self.0[0], &self.0[1], &self.0[2], true)
+        if let Some((t, u, v, front)) =
+            triangle_intersect(ray, &self.0[0], &self.0[1], &self.0[2], BOTH_SIDE)
         {
             if t0 < t && t < t1 {
                 let location = ray.direction * t + ray.origin;
-                let normal = if positive {
+                let normal = if front {
                     triangle_norm(&self.0[0], &self.0[1], &self.0[2])
                 } else {
                     triangle_norm(&self.0[0], &self.0[2], &self.0[1])
@@ -34,7 +38,7 @@ impl Shape for Triangle {
                     location,
                     normal,
                     uv: [u, v],
-                    front: positive,
+                    front,
                 });
             }
         }

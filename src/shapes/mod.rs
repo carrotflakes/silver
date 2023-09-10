@@ -38,40 +38,37 @@ pub trait Shape {
 #[derive(Clone)]
 pub enum Basic {
     Sphere(Sphere),
-    Triangle(Triangle),
+    Triangle(Triangle<false>),
+    TriangleBothSide(Triangle<true>),
     Edge(edge::Edge),
+}
+
+impl Basic {
+    #[inline]
+    fn as_ref(&self) -> &dyn Shape {
+        match self {
+            Basic::Sphere(sphere) => sphere,
+            Basic::Triangle(triangle) => triangle,
+            Basic::TriangleBothSide(triangle) => triangle,
+            Basic::Edge(edge) => edge,
+        }
+    }
 }
 
 impl Shape for Basic {
     fn hit(&self, ray: &crate::ray::Ray, t0: f64, t1: f64) -> Option<HitRec> {
-        match self {
-            Basic::Sphere(sphere) => sphere.hit(ray, t0, t1),
-            Basic::Triangle(triangle) => triangle.hit(ray, t0, t1),
-            Basic::Edge(edge) => edge.hit(ray, t0, t1),
-        }
+        self.as_ref().hit(ray, t0, t1)
     }
 
     fn bbox(&self) -> BBox {
-        match self {
-            Basic::Sphere(sphere) => sphere.bbox(),
-            Basic::Triangle(triangle) => triangle.bbox(),
-            Basic::Edge(edge) => edge.bbox(),
-        }
+        self.as_ref().bbox()
     }
 
     fn pdf_value(&self, ray: Ray) -> f64 {
-        match self {
-            Basic::Sphere(sphere) => sphere.pdf_value(ray),
-            Basic::Triangle(triangle) => triangle.pdf_value(ray),
-            Basic::Edge(edge) => edge.pdf_value(ray),
-        }
+        self.as_ref().pdf_value(ray)
     }
 
     fn random(&self, origin: &Vec3) -> Vec3 {
-        match self {
-            Basic::Sphere(sphere) => sphere.random(origin),
-            Basic::Triangle(triangle) => triangle.random(origin),
-            Basic::Edge(edge) => edge.random(origin),
-        }
+        self.as_ref().random(origin)
     }
 }

@@ -34,19 +34,19 @@ fn main() {
         .map(|f| {
             (
                 // silver::shapes::Triangle::new(transform(f[0].0), transform(f[1].0), transform(f[2].0)),
-                silver::shapes::triangle_with_normals::TriangleWithNormals::new(
+                silver::shapes::triangle_with_normals::TriangleWithNormals::<true>::new(
                     [
                         transform(f.0[0].0),
-                        transform(f.0[2].0),
                         transform(f.0[1].0),
+                        transform(f.0[2].0),
                     ],
                     [
                         transform(f.0[0].2),
-                        transform(f.0[2].2),
                         transform(f.0[1].2),
+                        transform(f.0[2].2),
                     ],
                 ),
-                silver::materials::tex::Tex::new(image, [f.0[0].1, f.0[2].1, f.0[1].1]),
+                silver::materials::tex::Tex::new(image, [f.0[0].1, f.0[1].1, f.0[2].1]),
             )
         })
         .collect();
