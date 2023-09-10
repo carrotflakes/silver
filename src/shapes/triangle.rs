@@ -55,11 +55,11 @@ impl Shape for Triangle {
         )
     }
 
-    fn pdf_value(&self, origin: &Vec3, direction: &Vec3) -> f64 {
-        if let Some(hr) = self.hit(&Ray::new(*origin, *direction), 0.001, f64::INFINITY) {
+    fn pdf_value(&self, ray: Ray) -> f64 {
+        if let Some(hr) = self.hit(&ray, 0.001, f64::INFINITY) {
             let area = 0.5 * (self.1 - self.0).cross(&(self.2 - self.0)).norm();
-            let distance_squared = hr.time.powi(2) * direction.norm_sqr();
-            let cosine = (direction.dot(&hr.normal)).abs() / direction.norm();
+            let distance_squared = hr.time.powi(2) * ray.direction.norm_sqr();
+            let cosine = (ray.direction.dot(&hr.normal)).abs() / ray.direction.norm();
             distance_squared / (cosine.max(1e-8) * area)
         } else {
             0.0

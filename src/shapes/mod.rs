@@ -24,8 +24,8 @@ pub trait Shape {
     fn hit(&self, ray: &Ray, t0: f64, t1: f64) -> Option<HitRec>;
     fn bbox(&self) -> BBox;
 
-    fn pdf_value(&self, origin: &Vec3, direction: &Vec3) -> f64 {
-        let _ = (origin, direction);
+    fn pdf_value(&self, ray: Ray) -> f64 {
+        let _ = ray;
         0.0
     }
 
@@ -59,11 +59,11 @@ impl Shape for Basic {
         }
     }
 
-    fn pdf_value(&self, origin: &Vec3, direction: &Vec3) -> f64 {
+    fn pdf_value(&self, ray: Ray) -> f64 {
         match self {
-            Basic::Sphere(sphere) => sphere.pdf_value(origin, direction),
-            Basic::Triangle(triangle) => triangle.pdf_value(origin, direction),
-            Basic::Edge(edge) => edge.pdf_value(origin, direction),
+            Basic::Sphere(sphere) => sphere.pdf_value(ray),
+            Basic::Triangle(triangle) => triangle.pdf_value(ray),
+            Basic::Edge(edge) => edge.pdf_value(ray),
         }
     }
 

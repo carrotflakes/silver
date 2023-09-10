@@ -68,10 +68,10 @@ impl Shape for Sphere {
         )
     }
 
-    fn pdf_value(&self, origin: &Vec3, direction: &Vec3) -> f64 {
-        if let Some(_) = self.hit(&Ray::new(*origin, *direction), 0.001, f64::INFINITY) {
+    fn pdf_value(&self, ray: Ray) -> f64 {
+        if let Some(_) = self.hit(&ray, 0.001, f64::INFINITY) {
             let cos_theta_max =
-                (1.0 - self.radius.powi(2) / (self.center - *origin).norm_sqr()).sqrt();
+                (1.0 - self.radius.powi(2) / (self.center - ray.origin).norm_sqr()).sqrt();
             let solid_angle = std::f64::consts::TAU * (1.0 - cos_theta_max);
             1.0 / solid_angle
         } else {

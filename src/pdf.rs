@@ -2,6 +2,7 @@ use rand::Rng;
 
 use crate::{
     onb::Onb,
+    ray::Ray,
     rng,
     shapes::Shape,
     vec3::{NormVec3, Vec3},
@@ -53,7 +54,7 @@ impl<'a, S: Shape> ShapePdf<'a, S> {
 
 impl<'a, S: Shape> Pdf for ShapePdf<'a, S> {
     fn value(&self, direction: &Vec3) -> f64 {
-        self.shape.pdf_value(&self.origin, direction)
+        self.shape.pdf_value(Ray::new(self.origin, *direction))
     }
 
     fn generate(&self) -> Vec3 {
@@ -76,7 +77,7 @@ impl<'a, S: Shape> Pdf for ShapesPdf<'a, S> {
     fn value(&self, direction: &Vec3) -> f64 {
         self.shapes
             .iter()
-            .map(|shape| shape.pdf_value(&self.origin, direction))
+            .map(|shape| shape.pdf_value(Ray::new(self.origin, *direction)))
             .sum::<f64>()
             / self.shapes.len() as f64
     }
