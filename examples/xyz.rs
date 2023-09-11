@@ -28,7 +28,7 @@ fn main() {
     let pixels = render(
         &camera,
         |ray| {
-            silver::rng::reseed(silver::util::vec3_to_u64(&ray.direction));
+            silver::rng::reseed(silver::util::vec3_to_u64(ray.direction));
             silver::sample::sample(&scene, silver::envs::default_env, ray, cutoff)
         },
         width,
@@ -38,7 +38,7 @@ fn main() {
     println!("{:?} elapsed", start.elapsed());
 
     let img = image::ImageBuffer::from_fn(width as u32, height as u32, |x, y| {
-        let col = silver::util::linear_to_gamma(&pixels[y as usize][x as usize], 2.2);
+        let col = silver::util::linear_to_gamma(pixels[y as usize][x as usize], 2.2);
         image::Rgb([
             ((col.r().min(1.0) * 255.99).floor() as u8),
             ((col.g().min(1.0) * 255.99).floor() as u8),

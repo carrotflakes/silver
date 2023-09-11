@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use image::GenericImageView;
 use silver::camera::Camera;
 use silver::render::render;
@@ -28,7 +30,12 @@ fn main() {
         img.height() as usize,
         img.pixels().map(|p| [p.2[0], p.2[1], p.2[2]]).collect(),
     );
-    let image = unsafe { std::mem::transmute::<_, &'static silver::materials::tex::Image>(&image) };
+    let tex_pixel = Arc::new(move |[u, v]: [f32; 2]| {
+        silver::util::gamma_to_linear(
+            image.get([(u * image.width() as f32), (v * image.height() as f32)]),
+            2.2,
+        )
+    });
     let objects: Vec<_> = faces
         .into_iter()
         .map(|f| {
@@ -46,7 +53,7 @@ fn main() {
                         transform(f.0[2].2),
                     ],
                 ),
-                silver::materials::tex::Tex::new(image, [f.0[0].1, f.0[1].1, f.0[2].1]),
+                silver::materials::tex::Tex::new(tex_pixel.clone(), [f.0[0].1, f.0[1].1, f.0[2].1]),
             )
         })
         .collect();
@@ -57,7 +64,7 @@ fn main() {
     let pixels = render(
         &camera,
         |ray| {
-            silver::rng::reseed(silver::util::vec3_to_u64(&ray.direction));
+            silver::rng::reseed(silver::util::vec3_to_u64(ray.direction));
             silver::sample::sample(&scene, silver::envs::default_env, ray, 50)
         },
         width,
@@ -67,7 +74,7 @@ fn main() {
     println!("{:?} elapsed", start.elapsed());
 
     let img = image::ImageBuffer::from_fn(width as u32, height as u32, |x, y| {
-        let col = silver::util::linear_to_gamma(&pixels[y as usize][x as usize], 2.2);
+        let col = silver::util::linear_to_gamma(pixels[y as usize][x as usize], 2.2);
         image::Rgb([
             ((col.r().min(1.0) * 255.99).floor() as u8),
             ((col.g().min(1.0) * 255.99).floor() as u8),
