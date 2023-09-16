@@ -1,5 +1,6 @@
 use crate::bbox::BBox;
 use crate::matrix::Matrix;
+use crate::onb::Onb;
 use crate::ray::Ray;
 use crate::shapes::HitRec;
 
@@ -35,7 +36,11 @@ impl<M: Clone, T: Hit<M>> Hit<M> for Transformed<M, T> {
                 HitRec {
                     time: hr.time,
                     location: self.matrix.apply(&hr.location),
-                    normal: self.matrix.apply(&hr.normal).normalize(),
+                    normal: Onb::from_uvw(
+                        self.matrix.apply(&hr.normal.u()).normalize(),
+                        self.matrix.apply(&hr.normal.v()).normalize(),
+                        self.matrix.apply(&hr.normal.w()).normalize(),
+                    ),
                     uv: hr.uv,
                     front: hr.front,
                 },

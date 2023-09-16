@@ -1,8 +1,9 @@
 use crate::{
     onb::Onb,
+    pdf::CosinePdf,
     ray::Ray,
     rng,
-    vec3::{NormVec3, Vec3}, pdf::CosinePdf,
+    vec3::{NormVec3, Vec3},
 };
 
 use super::{Material, RayResult};
@@ -19,15 +20,15 @@ impl Lambertian {
 }
 
 impl Material for Lambertian {
-    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> RayResult {
+    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &Onb, _uv: [f64; 2]) -> RayResult {
         // let direction = **normal + rng::with(|rng| *Vec3::random_unit_vector(rng));
-        let uvw = Onb::from_w(*normal);
+        let uvw = Onb::from_w(normal.w());
         let direction = uvw.local(rng::with(|rng| *Vec3::random_cosine_direction(rng)));
         RayResult {
             emit: Vec3::ZERO,
             albedo: self.albedo,
             scattered: Some(Ray::new(*location, direction)),
-            pdf: Some(CosinePdf::new(*normal)),
+            pdf: Some(CosinePdf::new(normal.w())),
         }
         // let direction = rng::with(|rng| Vec3::random_in_hemisphere(rng, normal)).normalize();
         // RayResult {

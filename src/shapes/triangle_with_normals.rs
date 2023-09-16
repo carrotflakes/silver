@@ -2,6 +2,7 @@ use rand::Rng;
 
 use crate::{
     bbox::BBox,
+    onb::Onb,
     ray::Ray,
     rng,
     shapes::{HitRec, Shape},
@@ -49,7 +50,7 @@ impl<const BOTH_SIDE: bool> Shape for TriangleWithNormals<BOTH_SIDE> {
                 return Some(HitRec {
                     time: t,
                     location,
-                    normal,
+                    normal: Onb::from_w(normal), // TODO
                     uv: [u, v],
                     front,
                 });
@@ -98,7 +99,7 @@ impl<const BOTH_SIDE: bool> Shape for TriangleWithNormals<BOTH_SIDE> {
                     .cross(&(self.vertexes[2] - self.vertexes[0]))
                     .norm();
             let distance_squared = hr.time.powi(2) * ray.direction.norm_sqr();
-            let cosine = (ray.direction.dot(&hr.normal)).abs() / ray.direction.norm();
+            let cosine = (ray.direction.dot(&hr.normal.w())).abs() / ray.direction.norm();
             distance_squared / (cosine.max(1e-8) * area)
         } else {
             0.0

@@ -70,7 +70,7 @@ pub fn sample_weighted<M: Material, DM: Deref<Target = M>>(
             let p = crate::pdf::MixturePdf::new(&p1, &p2);
 
             let scattered = Ray::new(location, p.generate());
-            let scattering_pdf = material.scattering_pdf(&ray, &normal, &scattered);
+            let scattering_pdf = material.scattering_pdf(&ray, &normal.w(), &scattered);
             let pdf_value = p.value(&scattered.direction);
             if pdf_value <= 0.0 {
                 return r.emit;

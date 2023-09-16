@@ -1,4 +1,5 @@
 use crate::{
+    onb::Onb,
     ray::Ray,
     vec3::{NormVec3, Vec3},
 };
@@ -17,11 +18,12 @@ impl WetGlass {
 }
 
 impl Material for WetGlass {
-    fn ray(&self, ray: &Ray, location: &Vec3, _normal: &NormVec3, uv: [f64; 2]) -> RayResult {
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &Onb, uv: [f64; 2]) -> RayResult {
         let x = (uv[0] - 0.25) * 4.0;
         let y = (uv[1] - 0.25) * 4.0;
         let r = x.hypot(y);
-        let r = if r < 1.0 { r.powf(2.0) } else { 0.0 };
+        let r = (x + (1.0 - r) * 0.5).hypot(y + (1.0 - r) * 0.2);
+        let r = if r < 1.0 { r.powf(2.0) * 0.2 } else { 0.0 };
         let dir =
             (1.0 - r) * *ray.direction.normalize() + r * *(*location - self.center).normalize();
 

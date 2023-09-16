@@ -1,4 +1,8 @@
+mod env_map;
+
 use silver::camera::Camera;
+#[allow(unused_imports)]
+use silver::envs::fancy_env as env;
 use silver::materials::checker::Checker;
 use silver::materials::{Basic as BasicMaterial, *};
 use silver::render::render;
@@ -24,6 +28,8 @@ fn main() {
     let objects = make_scene();
     let scene = LinearSearch::new(objects.iter().map(|(s, m)| (s, m)));
 
+    // let env = env_map::env_map("qwantani_4k.exr");
+
     let start = std::time::Instant::now();
     let pixels = render(
         &camera,
@@ -32,7 +38,7 @@ fn main() {
             // silver::sample::sample(&scene, silver::envs::fancy_env, ray, 20)
             // silver::sample::sample_weighted(&scene, silver::envs::fancy_env, ray, 20, &objects[0].0)
 
-            silver::sample::sample_with_volume(&scene, silver::envs::fancy_env, ray, 20, None)
+            silver::sample::sample_with_volume(&scene, &env, ray, 20, None)
         },
         width,
         height,
@@ -53,7 +59,7 @@ fn main() {
     println!("done!");
 }
 
-fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
+fn make_scene() -> Vec<(BasicShape, BasicMaterial<'static>)> {
     let mut v = vec![
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([-0.8, 0.2, -1.0]), 0.2)),

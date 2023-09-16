@@ -50,7 +50,7 @@ fn main() {
     println!("done!");
 }
 
-fn make_scene() -> Vec<(BasicShape, Basic)> {
+fn make_scene() -> Vec<(BasicShape, Basic<'static>)> {
     vec![
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([0.0, 0.0, 0.0]), 0.2)),

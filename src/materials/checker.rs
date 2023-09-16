@@ -1,7 +1,4 @@
-use crate::{
-    ray::Ray,
-    vec3::{NormVec3, Vec3},
-};
+use crate::{onb::Onb, ray::Ray, vec3::Vec3};
 
 use super::{Material, RayResult};
 
@@ -18,7 +15,7 @@ impl<T: Material> Checker<T> {
 }
 
 impl<T: Material> Material for Checker<T> {
-    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, uv: [f64; 2]) -> RayResult {
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &Onb, uv: [f64; 2]) -> RayResult {
         let [u, v] = uv;
         if ((u * 10.0).floor() as i32 + (v * 10.0).floor() as i32) % 2 == 0 {
             self.even.ray(ray, location, normal, uv)

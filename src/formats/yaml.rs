@@ -41,8 +41,8 @@ mod map {
     }
 }
 
-impl Into<(Shape, Material)> for map::Object {
-    fn into(self) -> (Shape, Material) {
+impl<'a> Into<(Shape, Material<'a>)> for map::Object {
+    fn into(self) -> (Shape, Material<'a>) {
         (self.shape.into(), self.material.into())
     }
 }
@@ -57,8 +57,8 @@ impl Into<Shape> for map::Shape {
     }
 }
 
-impl Into<Material> for map::Material {
-    fn into(self) -> Material {
+impl<'a> Into<Material<'a>> for map::Material {
+    fn into(self) -> Material<'a> {
         match self {
             map::Material::Lambertian { color } => {
                 Material::Lambertian(crate::materials::Lambertian::new(Vec3::new(color)))

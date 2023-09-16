@@ -1,8 +1,4 @@
-use crate::{
-    ray::Ray,
-    rng,
-    vec3::{NormVec3, Vec3},
-};
+use crate::{onb::Onb, ray::Ray, rng, vec3::Vec3};
 
 use super::{Material, RayResult};
 
@@ -22,7 +18,7 @@ impl ConstantMedium {
 }
 
 impl Material for ConstantMedium {
-    fn ray(&self, _ray: &Ray, location: &Vec3, _normal: &NormVec3, _uv: [f64; 2]) -> RayResult {
+    fn ray(&self, _ray: &Ray, location: &Vec3, _normal: &Onb, _uv: [f64; 2]) -> RayResult {
         RayResult {
             emit: Vec3::ZERO,
             albedo: self.color.clone(),

@@ -1,10 +1,6 @@
 use rand::Rng;
 
-use crate::{
-    ray::Ray,
-    rng,
-    vec3::{NormVec3, Vec3},
-};
+use crate::{onb::Onb, ray::Ray, rng, vec3::Vec3};
 
 use super::{Material, RayResult};
 
@@ -20,21 +16,22 @@ impl Dielectric {
 }
 
 impl Material for Dielectric {
-    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> RayResult {
-        let b: Vec3 = -(ray.direction.dot(normal)) * **normal;
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &Onb, _uv: [f64; 2]) -> RayResult {
+        let normal = normal.w();
+        let b: Vec3 = -(ray.direction.dot(&*normal)) * *normal;
         let reflected: Vec3 = ray.direction + 2.0 * b;
 
-        let (outward_normal, ni_over_nt, cosine) = if ray.direction.dot(normal) > 0.0 {
+        let (outward_normal, ni_over_nt, cosine) = if ray.direction.dot(&*normal) > 0.0 {
             (
-                -**normal,
+                -*normal,
                 self.ri,
-                self.ri * ray.direction.dot(normal) / ray.direction.norm(),
+                self.ri * ray.direction.dot(&*normal) / ray.direction.norm(),
             )
         } else {
             (
-                **normal,
+                *normal,
                 self.ri.recip(),
-                -ray.direction.dot(normal) / ray.direction.norm(),
+                -ray.direction.dot(&*normal) / ray.direction.norm(),
             )
         };
 

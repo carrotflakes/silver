@@ -1,6 +1,11 @@
+mod env_map;
+
 use silver::camera::Camera;
+#[allow(unused_imports)]
 use silver::envs::dark_env as env;
+use silver::materials::uv_map::UvMap;
 use silver::materials::{Basic as BasicMaterial, *};
+use silver::ray::Ray;
 use silver::render::render;
 use silver::resolvers::linear_search::LinearSearch as Resolver;
 use silver::shapes::{Basic as BasicShape, Sphere};
@@ -26,12 +31,14 @@ fn main() {
     let objects = make_cornell_box();
     let scene = Resolver::new(objects.iter().map(|(s, m)| (s, m)));
 
+    // let env = env_map::env_map("qwantani_4k.exr");
+
     let start = std::time::Instant::now();
     let pixels = render(
         &camera,
         |ray| {
             silver::rng::reseed(silver::util::vec3_to_u64(ray.direction));
-            silver::sample::sample_weighted(&scene, env, ray, cutoff, &objects[2].0)
+            silver::sample::sample_weighted(&scene, &env, ray, cutoff, &objects[2].0)
             // silver::sample::sample_with_volume(
             //     &scene,
             //     env,
@@ -63,7 +70,7 @@ fn main() {
     println!("done!");
 }
 
-pub fn make_cornell_box() -> Vec<(BasicShape, BasicMaterial)> {
+pub fn make_cornell_box() -> Vec<(BasicShape, BasicMaterial<'static>)> {
     let mut v = vec![
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([-0.5, -0.3, 0.0]), 0.4)),
@@ -104,6 +111,42 @@ pub fn make_cornell_box() -> Vec<(BasicShape, BasicMaterial)> {
         }
     }
 
+    // fn uv_map_fn(
+    //     ray: Ray,
+    //     location: Vec3,
+    //     normal: silver::onb::Onb,
+    //     uv: [f32; 2],
+    // ) -> (Vec3, Option<Ray>) {
+    //     // let x = (uv[0] as f64 - 0.5) * 2.0;
+    //     // let y = -(uv[1] as f64 - 0.5) * 2.0;
+    //     let x = (uv[0] as f64 * 10.0 % 2.0 - 1.0) * 2.0;
+    //     let y = -(uv[1] as f64 * 10.0 % 2.0 - 1.0) * 2.0;
+
+    //     let dir = ray.direction;
+    //     // let dir = dir + silver::rng::with(|rng| Vec3::random_in_unit_sphere(rng) * 0.1);
+    //     let r = (x).hypot(y);
+    //     let r = if r < 1.0 { r.powf(2.0) * 0.5 } else { 0.0 };
+    //     let dir = *dir.normalize() * (1.0 - r) + *Vec3::new([x, y, 0.001]).normalize() * r;
+    //     let color = Vec3::new([1.0; 3]);
+    //     (color, Some(Ray::new(location, dir)))
+    // }
+    // v.push((
+    //     BasicShape::TriangleBothSide(silver::shapes::Triangle::new(
+    //         Vec3::new([-1.0, -1.0, 1.0]),
+    //         Vec3::new([1.0, -1.0, 1.0]),
+    //         Vec3::new([-1.0, 1.0, 1.0]),
+    //     )),
+    //     BasicMaterial::UvMap(UvMap::new(&uv_map_fn, [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]])),
+    // ));
+    // v.push((
+    //     BasicShape::TriangleBothSide(silver::shapes::Triangle::new(
+    //         Vec3::new([-1.0, 1.0, 1.0]),
+    //         Vec3::new([1.0, -1.0, 1.0]),
+    //         Vec3::new([1.0, 1.0, 1.0]),
+    //     )),
+    //     BasicMaterial::UvMap(UvMap::new(&uv_map_fn, [[0.0, 1.0], [1.0, 0.0], [1.0, 1.0]])),
+    // ));
+
     v.extend(
         silver::primitives::cube(Vec3::new([0.0, 0.0, 0.0]), Vec3::new([1.0, 1.0, 1.0]))
             .into_iter()
@@ -124,7 +167,7 @@ pub fn make_cornell_box() -> Vec<(BasicShape, BasicMaterial)> {
     v
 }
 
-fn wet_glass(vs: [Vec3; 3]) -> (BasicShape, BasicMaterial) {
+fn wet_glass(vs: [Vec3; 3]) -> (BasicShape, BasicMaterial<'static>) {
     (
         BasicShape::TriangleBothSide(silver::shapes::Triangle::new(vs[0], vs[1], vs[2])),
         BasicMaterial::WetGlass(wet_glass::WetGlass::new(

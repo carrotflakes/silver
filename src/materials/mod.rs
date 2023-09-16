@@ -5,6 +5,7 @@ pub mod diffuse_light;
 pub mod lambertian;
 pub mod metal;
 pub mod tex;
+pub mod uv_map;
 pub mod wet_glass;
 
 pub use dielectric::Dielectric;
@@ -13,6 +14,7 @@ pub use lambertian::Lambertian;
 pub use metal::Metal;
 
 use crate::{
+    onb::Onb,
     pdf::CosinePdf,
     ray::Ray,
     vec3::{NormVec3, Vec3},
@@ -26,7 +28,7 @@ pub struct RayResult {
 }
 
 pub trait Material {
-    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, uv: [f64; 2]) -> RayResult;
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &Onb, uv: [f64; 2]) -> RayResult;
     fn volume(&self) -> Option<(f64, Vec3)> {
         None
     }
@@ -37,56 +39,45 @@ pub trait Material {
 }
 
 #[derive(Clone)]
-pub enum Basic {
+pub enum Basic<'a> {
     Dielectric(Dielectric),
     DiffuseLight(DiffuseLight),
     Lambertian(Lambertian),
     Metal(Metal),
-    Checker(checker::Checker<Basic>),
+    Checker(checker::Checker<Basic<'a>>),
     ConstantMedium(constant_medium::ConstantMedium),
     WetGlass(wet_glass::WetGlass),
+    UvMap(
+        uv_map::UvMap<&'a (dyn Fn(Ray, Vec3, Onb, [f32; 2]) -> (Vec3, Option<Ray>) + Send + Sync)>,
+    ),
 }
 
-impl Material for Basic {
-    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, uv: [f64; 2]) -> RayResult {
+impl<'a> Basic<'a> {
+    #[inline]
+    pub fn as_ref(&self) -> &dyn Material {
         match self {
-            Basic::Dielectric(dielectric) => dielectric.ray(ray, location, normal, uv),
-            Basic::DiffuseLight(diffuse_light) => diffuse_light.ray(ray, location, normal, uv),
-            Basic::Lambertian(lambertian) => lambertian.ray(ray, location, normal, uv),
-            Basic::Metal(metal) => metal.ray(ray, location, normal, uv),
-            Basic::Checker(checker) => checker.ray(ray, location, normal, uv),
-            Basic::ConstantMedium(constant_medium) => {
-                constant_medium.ray(ray, location, normal, uv)
-            }
-            Basic::WetGlass(wet_glass) => wet_glass.ray(ray, location, normal, uv),
+            Basic::Dielectric(dielectric) => dielectric,
+            Basic::DiffuseLight(diffuse_light) => diffuse_light,
+            Basic::Lambertian(lambertian) => lambertian,
+            Basic::Metal(metal) => metal,
+            Basic::Checker(checker) => checker,
+            Basic::ConstantMedium(constant_medium) => constant_medium,
+            Basic::WetGlass(wet_glass) => wet_glass,
+            Basic::UvMap(uv_map) => uv_map,
         }
+    }
+}
+
+impl<'a> Material for Basic<'a> {
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &Onb, uv: [f64; 2]) -> RayResult {
+        self.as_ref().ray(ray, location, normal, uv)
     }
 
     fn volume(&self) -> Option<(f64, Vec3)> {
-        match self {
-            Basic::Dielectric(dielectric) => dielectric.volume(),
-            Basic::DiffuseLight(diffuse_light) => diffuse_light.volume(),
-            Basic::Lambertian(lambertian) => lambertian.volume(),
-            Basic::Metal(metal) => metal.volume(),
-            Basic::Checker(checker) => checker.volume(),
-            Basic::ConstantMedium(constant_medium) => constant_medium.volume(),
-            Basic::WetGlass(wet_glass) => wet_glass.volume(),
-        }
+        self.as_ref().volume()
     }
 
     fn scattering_pdf(&self, ray: &Ray, normal: &NormVec3, scattered: &Ray) -> f64 {
-        match self {
-            Basic::Dielectric(dielectric) => dielectric.scattering_pdf(ray, normal, scattered),
-            Basic::DiffuseLight(diffuse_light) => {
-                diffuse_light.scattering_pdf(ray, normal, scattered)
-            }
-            Basic::Lambertian(lambertian) => lambertian.scattering_pdf(ray, normal, scattered),
-            Basic::Metal(metal) => metal.scattering_pdf(ray, normal, scattered),
-            Basic::Checker(checker) => checker.scattering_pdf(ray, normal, scattered),
-            Basic::ConstantMedium(constant_medium) => {
-                constant_medium.scattering_pdf(ray, normal, scattered)
-            }
-            Basic::WetGlass(wet_glass) => wet_glass.scattering_pdf(ray, normal, scattered),
-        }
+        self.as_ref().scattering_pdf(ray, normal, scattered)
     }
 }

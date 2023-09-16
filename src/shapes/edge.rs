@@ -1,5 +1,6 @@
 use crate::{
     bbox::BBox,
+    onb::Onb,
     ray::Ray,
     shapes::{HitRec, Shape},
     vec3::Vec3,
@@ -31,7 +32,7 @@ impl Shape for Edge {
                 return Some(HitRec {
                     time: a.0,
                     location: ray.at(a.0),
-                    normal: (a.2).normalize(),
+                    normal: Onb::from_w((a.2).normalize()),
                     uv: [0.0, 0.0],
                     front: true,
                 });
@@ -40,7 +41,7 @@ impl Shape for Edge {
                 return Some(HitRec {
                     time: b.0,
                     location: ray.at(b.0),
-                    normal: (-b.2).normalize(),
+                    normal: Onb::from_w((-b.2).normalize()),
                     uv: [0.0, 0.0],
                     front: false,
                 });

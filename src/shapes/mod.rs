@@ -6,16 +6,12 @@ pub mod triangle_with_normals;
 pub use sphere::Sphere;
 pub use triangle::Triangle;
 
-use crate::{
-    bbox::BBox,
-    ray::Ray,
-    vec3::{NormVec3, Vec3},
-};
+use crate::{bbox::BBox, onb::Onb, ray::Ray, vec3::Vec3};
 
 pub struct HitRec {
     pub time: f64,
     pub location: Vec3,
-    pub normal: NormVec3,
+    pub normal: Onb,
     pub uv: [f64; 2],
     pub front: bool,
 }

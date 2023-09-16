@@ -2,6 +2,7 @@ use rand::Rng;
 
 use crate::{
     bbox::BBox,
+    onb::Onb,
     ray::Ray,
     rng,
     shapes::{HitRec, Shape},
@@ -37,7 +38,7 @@ impl Shape for Sphere {
                     return Some(HitRec {
                         time,
                         location,
-                        normal,
+                        normal: Onb::from_w(normal), // TODO
                         uv: get_sphere_uv(*normal),
                         front: true,
                     });
@@ -51,7 +52,7 @@ impl Shape for Sphere {
                     return Some(HitRec {
                         time,
                         location,
-                        normal,
+                        normal: Onb::from_w(normal), // TODO
                         uv: get_sphere_uv(*normal),
                         front: false,
                     });

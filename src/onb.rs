@@ -31,4 +31,13 @@ impl Onb {
         let u = w.cross(&v);
         Onb([u, v, w])
     }
+
+    pub fn from_uv(u: NormVec3, v: NormVec3) -> Self {
+        let w = u.cross(&v);
+        Onb([u, v, w])
+    }
+
+    pub fn from_uvw(u: NormVec3, v: NormVec3, w: NormVec3) -> Self {
+        Onb([u, v, w])
+    }
 }

@@ -52,7 +52,7 @@ fn main() {
     println!("done!");
 }
 
-fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
+fn make_scene() -> Vec<(BasicShape, BasicMaterial<'static>)> {
     let mut rng: rand::rngs::StdRng = rand::SeedableRng::seed_from_u64(1);
     let radius = 0.08;
     let mut bs: Vec<_> = (0..500)

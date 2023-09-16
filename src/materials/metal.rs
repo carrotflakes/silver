@@ -1,8 +1,4 @@
-use crate::{
-    ray::Ray,
-    rng,
-    vec3::{NormVec3, Vec3},
-};
+use crate::{onb::Onb, ray::Ray, rng, vec3::Vec3};
 
 use super::{Material, RayResult};
 
@@ -19,9 +15,9 @@ impl Metal {
 }
 
 impl Material for Metal {
-    fn ray(&self, ray: &Ray, location: &Vec3, normal: &NormVec3, _uv: [f64; 2]) -> RayResult {
+    fn ray(&self, ray: &Ray, location: &Vec3, normal: &Onb, _uv: [f64; 2]) -> RayResult {
         let ray_dir = ray.direction.normalize();
-        let b = -(ray_dir.dot(normal)) * **normal;
+        let b = -(ray_dir.dot(&normal.w())) * *normal.w();
         let f = self.fuzz * rng::with(|rng| Vec3::random_in_unit_sphere(rng));
         RayResult {
             emit: Vec3::ZERO,

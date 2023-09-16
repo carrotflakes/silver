@@ -1,11 +1,6 @@
 use std::sync::Arc;
 
-use crate::{
-    pdf::CosinePdf,
-    ray::Ray,
-    rng,
-    vec3::{NormVec3, Vec3},
-};
+use crate::{onb::Onb, pdf::CosinePdf, ray::Ray, rng, vec3::Vec3};
 
 use super::{Material, RayResult};
 
@@ -59,15 +54,15 @@ impl Tex {
 }
 
 impl Material for Tex {
-    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &NormVec3, uv: [f64; 2]) -> RayResult {
+    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &Onb, uv: [f64; 2]) -> RayResult {
         RayResult {
             emit: Vec3::ZERO,
             albedo: (self.pixel)(uv_to_xy(self.poses, [uv[0] as f32, uv[1] as f32])),
             scattered: Some(Ray::new(
                 *location,
-                **normal + rng::with(|rng| Vec3::random_in_unit_sphere(rng)),
+                *normal.w() + rng::with(|rng| Vec3::random_in_unit_sphere(rng)),
             )),
-            pdf: Some(CosinePdf::new(*normal)),
+            pdf: Some(CosinePdf::new(normal.w())),
         }
     }
 }

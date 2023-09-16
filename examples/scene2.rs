@@ -27,8 +27,8 @@ fn main() {
     let objects = make_scene();
     let scene = LinearSearch::new(objects.iter().map(|(s, m)| (s, m)));
 
-    // let env = env_map::env_map("qwantani_4k.exr");
-    let env = silver::envs::default_env;
+    let env = env_map::env_map("qwantani_4k.exr");
+    // let env = silver::envs::default_env;
 
     let start = std::time::Instant::now();
     let pixels = render(
@@ -56,7 +56,7 @@ fn main() {
     println!("done!");
 }
 
-fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
+fn make_scene() -> Vec<(BasicShape, BasicMaterial<'static>)> {
     let mut rng: rand::rngs::StdRng = rand::SeedableRng::seed_from_u64(13);
     let mut objects = vec![
         (
