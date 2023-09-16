@@ -1,3 +1,5 @@
+mod env_map;
+
 use rand::Rng;
 
 use silver::materials::{Basic as BasicMaterial, *};
@@ -25,12 +27,15 @@ fn main() {
     let objects = make_scene();
     let scene = LinearSearch::new(objects.iter().map(|(s, m)| (s, m)));
 
+    // let env = env_map::env_map("qwantani_4k.exr");
+    let env = silver::envs::default_env;
+
     let start = std::time::Instant::now();
     let pixels = render(
         &camera,
         |ray| {
             silver::rng::reseed(silver::util::vec3_to_u64(ray.direction));
-            silver::sample::sample(&scene, silver::envs::default_env, ray, 50)
+            silver::sample::sample(&scene, &env, ray, 50)
         },
         width,
         height,
@@ -56,9 +61,7 @@ fn make_scene() -> Vec<(BasicShape, BasicMaterial)> {
     let mut objects = vec![
         (
             BasicShape::Sphere(Sphere::new(Vec3::new([0.0, -1000.0, -2.0]), 1000.0)),
-            BasicMaterial::Lambertian(Lambertian::new(Vec3::new([
-                0.7, 0.7, 0.7,
-            ]))),
+            BasicMaterial::Lambertian(Lambertian::new(Vec3::new([0.7, 0.7, 0.7]))),
             // BasicMaterial::Checker(Checker::new(
             //     Box::new(BasicMaterial::Lambertian(Lambertian::new(Vec3::new([
             //         0.7, 0.7, 0.7,
