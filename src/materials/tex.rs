@@ -59,17 +59,10 @@ impl Tex {
 }
 
 impl Material for Tex {
-    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &NormVec3, [u, v]: [f64; 2]) -> RayResult {
+    fn ray(&self, _ray: &Ray, location: &Vec3, normal: &NormVec3, uv: [f64; 2]) -> RayResult {
         RayResult {
             emit: Vec3::ZERO,
-            albedo: (self.pixel)([
-                self.poses[0][0] * (1.0 - (u + v) as f32)
-                    + self.poses[1][0] * u as f32
-                    + self.poses[2][0] * v as f32,
-                self.poses[0][1] * (1.0 - (u + v) as f32)
-                    + self.poses[1][1] * u as f32
-                    + self.poses[2][1] * v as f32,
-            ]),
+            albedo: (self.pixel)(uv_to_xy(self.poses, [uv[0] as f32, uv[1] as f32])),
             scattered: Some(Ray::new(
                 *location,
                 **normal + rng::with(|rng| Vec3::random_in_unit_sphere(rng)),
@@ -77,4 +70,12 @@ impl Material for Tex {
             pdf: Some(CosinePdf::new(*normal)),
         }
     }
+}
+
+pub fn uv_to_xy(poses: [[f32; 2]; 3], uv: [f32; 2]) -> [f32; 2] {
+    let [u, v] = uv;
+    [
+        poses[0][0] * (1.0 - (u + v)) + poses[1][0] * u + poses[2][0] * v,
+        poses[0][1] * (1.0 - (u + v)) + poses[1][1] * u + poses[2][1] * v,
+    ]
 }
