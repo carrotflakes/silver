@@ -11,6 +11,11 @@ use crate::{
 pub trait Pdf {
     fn value(&self, direction: &Vec3) -> f64;
     fn generate(&self) -> Vec3;
+
+    fn generate_with_value(&self) -> (Vec3, f64) {
+        let direction = self.generate();
+        (direction, self.value(&direction))
+    }
 }
 
 pub struct CosinePdf {
@@ -111,5 +116,48 @@ impl<'a, P1: Pdf, P2: Pdf> Pdf for MixturePdf<'a, P1, P2> {
         } else {
             self.p1.generate()
         }
+    }
+
+    fn generate_with_value(&self) -> (Vec3, f64) {
+        if rng::with(|rng| rng.gen_bool(self.ratio)) {
+            self.p2.generate_with_value()
+        } else {
+            self.p1.generate_with_value()
+        }
+    }
+}
+
+pub struct EnvPdf {
+    areas: Vec<(f64, Vec3, f64)>,
+}
+
+impl EnvPdf {
+    pub fn new(areas: Vec<(f64, Vec3, f64)>) -> Self {
+        EnvPdf { areas }
+    }
+}
+
+impl Pdf for EnvPdf {
+    fn value(&self, _direction: &Vec3) -> f64 {
+        unimplemented!()
+    }
+
+    fn generate(&self) -> Vec3 {
+        unimplemented!()
+    }
+
+    fn generate_with_value(&self) -> (Vec3, f64) {
+        let mut r = rng::with(|rng| rng.gen::<f64>());
+        for (weight, direction, variance) in &self.areas {
+            r -= weight;
+            if r <= 0.0 {
+                let vec =
+                    *direction + rng::with(|rng| Vec3::random_in_unit_sphere(rng)) * *variance;
+                // TODO
+                let pdf = 1.0 / (4.0 * std::f64::consts::PI);
+                return (vec, pdf);
+            }
+        }
+        unreachable!()
     }
 }

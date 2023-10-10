@@ -33,12 +33,18 @@ fn main() {
 
     // let env = env_map::env_map("qwantani_4k.exr");
 
+    let pdf_gen = |p1, location| {
+        let p2 = silver::pdf::ShapePdf::new(location, &objects[2].0);
+        let p = silver::pdf::MixturePdf::new(&p1, &p2);
+        silver::pdf::Pdf::generate_with_value(&p)
+    };
+
     let start = std::time::Instant::now();
     let pixels = render(
         &camera,
         |ray| {
             silver::rng::reseed(silver::util::vec3_to_u64(ray.direction));
-            silver::sample::sample_weighted(&scene, &env, ray, cutoff, &objects[2].0)
+            silver::sample::sample_weighted(&scene, &env, ray, cutoff, &pdf_gen)
             // silver::sample::sample_with_volume(
             //     &scene,
             //     env,

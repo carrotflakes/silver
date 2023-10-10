@@ -5,7 +5,6 @@ use std::ops::Deref;
 use rand::Rng;
 
 use crate::materials::Material;
-use crate::pdf::Pdf;
 use crate::ray::Ray;
 use crate::resolvers::Hit;
 use crate::rng;
@@ -47,7 +46,7 @@ pub fn sample_weighted<M: Material, DM: Deref<Target = M>>(
     env: impl Fn(&Ray) -> Vec3,
     ray: &Ray,
     cutoff: i32,
-    light: &impl crate::shapes::Shape,
+    pdf_gen: &impl Fn(crate::pdf::CosinePdf, Vec3) -> (Vec3, f64),
 ) -> Vec3 {
     if cutoff == 0 {
         return env(ray);
@@ -64,19 +63,18 @@ pub fn sample_weighted<M: Material, DM: Deref<Target = M>>(
         let r = material.ray(&ray, &location, &normal, uv);
         if let Some(scattered) = &r.scattered {
             let Some(p1) = r.pdf else {
-                return r.albedo * sample_weighted(hit, env, scattered, cutoff - 1, light);
+                return r.albedo * sample_weighted(hit, env, scattered, cutoff - 1, pdf_gen);
             };
-            let p2 = crate::pdf::ShapePdf::new(location, light);
-            let p = crate::pdf::MixturePdf::new(&p1, &p2);
 
-            let scattered = Ray::new(location, p.generate());
+            let (direction, pdf_value) = pdf_gen(p1, location);
+
+            let scattered = Ray::new(location, direction);
             let scattering_pdf = material.scattering_pdf(&ray, &normal.w(), &scattered);
-            let pdf_value = p.value(&scattered.direction);
             if pdf_value <= 0.0 {
                 return r.emit;
             }
             let pdf = scattering_pdf / pdf_value;
-            r.emit + r.albedo * sample_weighted(hit, env, &scattered, cutoff - 1, light) * pdf
+            r.emit + r.albedo * sample_weighted(hit, env, &scattered, cutoff - 1, pdf_gen) * pdf
         } else {
             r.emit
         }

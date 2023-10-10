@@ -27,7 +27,7 @@ fn main() {
     let objects = make_scene();
     let scene = LinearSearch::new(objects.iter().map(|(s, m)| (s, m)));
 
-    let env = env_map::env_map("qwantani_4k.exr");
+    let (env, pdf_gen) = env_map::env_map("qwantani_4k.exr");
     // let env = silver::envs::default_env;
 
     let start = std::time::Instant::now();
@@ -35,7 +35,8 @@ fn main() {
         &camera,
         |ray| {
             silver::rng::reseed(silver::util::vec3_to_u64(ray.direction));
-            silver::sample::sample(&scene, &env, ray, 50)
+            // silver::sample::sample(&scene, &env, ray, 50)
+            silver::sample::sample_weighted(&scene, &env, ray, 50, &pdf_gen)
         },
         width,
         height,
